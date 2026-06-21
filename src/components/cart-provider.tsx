@@ -24,6 +24,8 @@ import {
 import {
   formatStorefrontCurrency,
   getStorefrontVariant,
+  getStorefrontCartUnitPriceCents,
+  isPsaGuardVariant,
   type StorefrontCartVariant
 } from "@/lib/storefront-products";
 import { cn } from "@/lib/utils";
@@ -33,10 +35,18 @@ type CartItem = {
   quantity: number;
 };
 
+type PricedCartItem = CartItem & {
+  variant: StorefrontCartVariant;
+  unitPriceCents: number;
+  lineTotalCents: number;
+  hasDiscount: boolean;
+};
+
 type CartContextValue = {
   items: CartItem[];
-  detailedItems: Array<CartItem & { variant: StorefrontCartVariant }>;
+  detailedItems: PricedCartItem[];
   itemCount: number;
+  psaGuardCount: number;
   subtotalCents: number;
   openCart: () => void;
   closeCart: () => void;
@@ -76,7 +86,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items, mounted]);
 
-  const detailedItems = useMemo(
+  const cartItemsWithVariants = useMemo(
     () =>
       items
         .map((item) => {
@@ -87,13 +97,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [items]
   );
 
+  const psaGuardCount = useMemo(
+    () =>
+      cartItemsWithVariants.reduce(
+        (total, item) => total + (isPsaGuardVariant(item.variant) ? item.quantity : 0),
+        0
+      ),
+    [cartItemsWithVariants]
+  );
+
+  const detailedItems = useMemo(
+    () =>
+      cartItemsWithVariants.map((item) => {
+        const unitPriceCents = getStorefrontCartUnitPriceCents(item.variant, psaGuardCount);
+
+        return {
+          ...item,
+          unitPriceCents,
+          lineTotalCents: unitPriceCents * item.quantity,
+          hasDiscount: unitPriceCents < item.variant.priceCents
+        };
+      }),
+    [cartItemsWithVariants, psaGuardCount]
+  );
+
   const itemCount = useMemo(
     () => detailedItems.reduce((total, item) => total + item.quantity, 0),
     [detailedItems]
   );
 
   const subtotalCents = useMemo(
-    () => detailedItems.reduce((total, item) => total + item.variant.priceCents * item.quantity, 0),
+    () => detailedItems.reduce((total, item) => total + item.lineTotalCents, 0),
     [detailedItems]
   );
 
@@ -146,6 +180,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items,
       detailedItems,
       itemCount,
+      psaGuardCount,
       subtotalCents,
       openCart: () => setOpen(true),
       closeCart: () => setOpen(false),
@@ -154,7 +189,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       clearCart
     }),
-    [addItem, clearCart, detailedItems, itemCount, items, removeItem, subtotalCents, updateQuantity]
+    [
+      addItem,
+      clearCart,
+      detailedItems,
+      itemCount,
+      items,
+      psaGuardCount,
+      removeItem,
+      subtotalCents,
+      updateQuantity
+    ]
   );
 
   return (
@@ -233,7 +278,15 @@ export function AddToCartButton({
 }
 
 function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { detailedItems, subtotalCents, itemCount, updateQuantity, removeItem, clearCart } = useCart();
+  const {
+    detailedItems,
+    subtotalCents,
+    itemCount,
+    psaGuardCount,
+    updateQuantity,
+    removeItem,
+    clearCart
+  } = useCart();
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -245,7 +298,7 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
             .map(
               (item) =>
                 `${item.quantity} x ${item.variant.label} (${formatStorefrontCurrency(
-                  item.variant.priceCents
+                  item.unitPriceCents
                 )} each)`
             )
             .join("\n")
@@ -344,13 +397,27 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
                   className="grid grid-cols-[74px_1fr] gap-4 rounded-[8px] border border-[#d4af37]/16 bg-white/[0.035] p-3"
                 >
                   <div className="relative h-[74px] overflow-hidden rounded-[8px] border border-[#d4af37]/18 bg-black">
-                    <Image src={item.variant.image} alt="" fill className="object-cover" sizes="74px" />
+                    <Image
+                      src={item.variant.image}
+                      alt=""
+                      fill
+                      className={cn(
+                        isPsaGuardVariant(item.variant) ? "object-contain p-1.5" : "object-cover"
+                      )}
+                      sizes="74px"
+                    />
                   </div>
                   <div>
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-sm font-semibold text-white">{item.variant.label}</h3>
                         <p className="mt-1 text-xs text-[#b8b0a0]">{item.variant.familyName}</p>
+                        {isPsaGuardVariant(item.variant) ? (
+                          <p className="mt-1 text-xs text-[#d4af37]">
+                            {formatStorefrontCurrency(item.unitPriceCents)} each
+                            {item.hasDiscount ? " bulk discount applied" : ""}
+                          </p>
+                        ) : null}
                       </div>
                       <button
                         type="button"
@@ -384,7 +451,7 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
                         </button>
                       </div>
                       <p className="text-sm font-semibold text-white">
-                        {formatStorefrontCurrency(item.variant.priceCents * item.quantity)}
+                        {formatStorefrontCurrency(item.lineTotalCents)}
                       </p>
                     </div>
                   </div>
@@ -423,6 +490,12 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
           <p className="mt-2 text-xs leading-5 text-[#8d866f]">
             Taxes, pickup notes, and custom engraving details are handled during checkout or follow-up.
           </p>
+          {psaGuardCount > 0 ? (
+            <p className="mt-2 text-xs leading-5 text-[#d4af37]">
+              PSA Guard discount applied automatically from {psaGuardCount} guard
+              {psaGuardCount === 1 ? "" : "s"} in cart.
+            </p>
+          ) : null}
 
           {error ? (
             <div className="mt-4 rounded-[8px] border border-[#d4af37]/24 bg-[#d4af37]/10 p-3 text-xs leading-5 text-[#f4df91]">

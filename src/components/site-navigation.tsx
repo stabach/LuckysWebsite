@@ -9,9 +9,8 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
-  { href: "/events", label: "Upcoming Events" },
-  { href: "/#contact", label: "Contact" }
+  { href: "/products", label: "All Products" },
+  { href: "/events", label: "Upcoming Events" }
 ];
 
 export function SiteNavigation() {
@@ -43,15 +42,30 @@ export function SiteNavigation() {
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c8c0ad] transition hover:text-[#d4af37] focus-ring"
-              href={link.href}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Link
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c8c0ad] transition hover:text-[#d4af37] focus-ring"
+            href="/"
+          >
+            Home
+          </Link>
+          <Link
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c8c0ad] transition hover:text-[#d4af37] focus-ring"
+            href="/products"
+          >
+            All Products
+          </Link>
+          <Link
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c8c0ad] transition hover:text-[#d4af37] focus-ring"
+            href="/events"
+          >
+            Upcoming Events
+          </Link>
+          <Link
+            className="text-xs font-semibold uppercase tracking-[0.18em] text-[#c8c0ad] transition hover:text-[#d4af37] focus-ring"
+            href="/contact"
+          >
+            Contact
+          </Link>
         </div>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -66,14 +80,14 @@ export function SiteNavigation() {
           >
             <Instagram size={17} />
           </a>
-          <a
-            href="mailto:LuckysLootSupplies@gmail.com?subject=Product%20Inquiry"
+          <Link
+            href="/contact"
             className="grid h-10 w-10 place-items-center rounded-[8px] border border-[#d4af37]/28 text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
-            aria-label="Email Lucky's Loot"
-            title="Email"
+            aria-label="Contact Lucky's Loot"
+            title="Contact"
           >
             <Mail size={17} />
-          </a>
+          </Link>
         </div>
 
         <button
@@ -89,7 +103,7 @@ export function SiteNavigation() {
 
       <div
         className={cn(
-          "border-t border-[#d4af37]/18 bg-black/96 px-4 py-5 backdrop-blur-xl md:hidden",
+          "border-t border-[#d4af37]/18 bg-[#050505] px-4 py-5 backdrop-blur-xl md:hidden",
           open ? "block" : "hidden"
         )}
       >
@@ -104,6 +118,13 @@ export function SiteNavigation() {
               {link.label}
             </Link>
           ))}
+          <Link
+            className="rounded-[8px] border border-[#d4af37]/16 bg-[#111111] px-4 py-3 text-sm uppercase tracking-[0.16em] text-[#c8c0ad]"
+            href="/contact"
+            onClick={() => setOpen(false)}
+          >
+            Contact
+          </Link>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <CartButton compact className="col-span-2" />
@@ -117,14 +138,14 @@ export function SiteNavigation() {
             <Instagram size={16} />
             Instagram
           </a>
-          <a
-            href="mailto:LuckysLootSupplies@gmail.com?subject=Product%20Inquiry"
+          <Link
+            href="/contact"
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/18 bg-[#111111] px-3 text-xs uppercase tracking-[0.14em] text-[#d4af37]"
             onClick={() => setOpen(false)}
           >
             <Mail size={16} />
-            Email
-          </a>
+            Contact
+          </Link>
         </div>
       </div>
     </header>

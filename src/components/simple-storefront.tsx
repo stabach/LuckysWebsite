@@ -1,65 +1,51 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Instagram, Mail, Sparkles, X } from "lucide-react";
+import { Instagram, Mail, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { AddToCartButton } from "@/components/cart-provider";
-import { formatStorefrontCurrency, storefrontProductFamilies } from "@/lib/storefront-products";
+import { useEffect, useState } from "react";
+import { storefrontCategories } from "@/lib/storefront-products";
 
 type HeroSpotlightItem = {
   id: string;
   name: string;
+  href: string;
 };
 
 export function SimpleStorefront() {
   const [contactOpen, setContactOpen] = useState(false);
-  const [slides, setSlides] = useState(() => storefrontProductFamilies.map(() => 0));
-  const heroSpotlights: HeroSpotlightItem[] = [
-    {
-      id: "acrylic-cases",
-      name: "Acrylic Cases"
-    },
-    {
-      id: "psa-guards",
-      name: "PSA Guards"
-    },
-    {
-      id: "binders",
-      name: "Binders"
-    },
-    {
-      id: "pokemon-products",
-      name: "Pokemon Products"
+  const [showOpener, setShowOpener] = useState(false);
+  const heroSpotlights: HeroSpotlightItem[] = storefrontCategories.map((category) => ({
+    id: category.id,
+    name: category.label,
+    href: category.standaloneHref
+  }));
+
+  useEffect(() => {
+    const openerKey = "luckys-loot-opener-played";
+
+    try {
+      if (window.sessionStorage.getItem(openerKey)) {
+        return;
+      }
+
+      window.sessionStorage.setItem(openerKey, "true");
+      setShowOpener(true);
+    } catch {
+      setShowOpener(true);
     }
-  ];
-
-  function moveSlide(productIndex: number, direction: number) {
-    setSlides((current) =>
-      current.map((slide, index) =>
-        index === productIndex
-          ? (slide + direction + storefrontProductFamilies[index].images.length) %
-            storefrontProductFamilies[index].images.length
-          : slide
-      )
-    );
-  }
-
-  function setProductSlide(productIndex: number, slideIndex: number) {
-    setSlides((current) => current.map((slide, index) => (index === productIndex ? slideIndex : slide)));
-  }
+  }, []);
 
   return (
-    <div className="simple-storefront bg-[#0a0a0a] text-[#e7e0cf]">
-      <Opener />
+    <div className="simple-storefront starry-night text-[#e7e0cf]">
+      {showOpener ? <Opener /> : null}
 
-      <section className="relative min-h-[84vh] overflow-hidden border-b border-[#d4af37]/25 bg-[#050505] pt-16">
-        <div className="absolute inset-0 retro-stars opacity-70" aria-hidden />
+      <section className="relative min-h-[76vh] overflow-hidden pt-16">
         <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.22),transparent_68%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,#111111)]" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(180deg,transparent,rgba(5,5,5,0.36))]" />
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(84vh-4rem)] max-w-7xl flex-col justify-center px-4 py-10 text-center sm:px-6 lg:py-12">
+        <div className="relative z-10 mx-auto flex min-h-[calc(76vh-4rem)] max-w-7xl flex-col justify-center px-4 py-8 text-center sm:px-6 lg:py-10">
           <div className="grid w-full items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(560px,820px)_minmax(0,1fr)]">
             <aside className="hidden gap-5 text-left lg:grid">
               {heroSpotlights.slice(0, 2).map((product) => (
@@ -80,19 +66,16 @@ export function SimpleStorefront() {
                 />
               </div>
 
-              <h1 className="gold-glow hero-chrome-gold mt-6 whitespace-nowrap font-pixel text-[1.5rem] font-bold text-[#d4af37] sm:text-[2.45rem] lg:text-[3.35rem] xl:text-[4.1rem]">
+              <p className="mt-6 font-pixel text-lg leading-8 text-[#d4af37] sm:text-xl">
+                Welcome to
+              </p>
+              <h1 className="gold-glow hero-chrome-gold mt-2 whitespace-nowrap font-pixel text-[1.5rem] font-bold text-[#d4af37] sm:text-[2.45rem] lg:text-[3.35rem] xl:text-[4.1rem]">
                 Lucky&apos;s Loot
               </h1>
-              <div className="mx-auto mt-5 flex w-full max-w-[19rem] items-center justify-center border-2 border-[#d4af37] bg-[#d4af37]/10 px-4 py-3 text-center font-pixel text-[0.52rem] uppercase leading-5 text-[#d4af37] shadow-[0_0_22px_rgba(212,175,55,0.16)] sm:w-fit sm:max-w-none sm:px-7 sm:py-4 sm:text-[0.72rem]">
+              <p className="mx-auto mt-5 text-center font-pixel text-[0.52rem] uppercase leading-5 text-[#d4af37] sm:text-[0.72rem]">
                 Premium Trading Card Supplies
-              </div>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link
-                  href="/products"
-                  className="inline-flex min-h-14 items-center justify-center rounded-[8px] border-2 border-[#d4af37] bg-[#d4af37] px-9 py-4 font-pixel text-[0.68rem] uppercase text-black shadow-[0_0_24px_rgba(212,175,55,0.35)] transition hover:-translate-y-0.5 hover:bg-[#fff4bd] focus-ring"
-                >
-                  Shop Products
-                </Link>
+              </p>
+              <div className="mt-8 flex justify-center">
                 <button
                   type="button"
                   onClick={() => setContactOpen(true)}
@@ -118,124 +101,6 @@ export function SimpleStorefront() {
         </div>
       </section>
 
-      <section className="border-b border-[#2f2a1c] bg-[#111111] px-4 py-10 text-center sm:px-6">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="font-pixel text-lg leading-8 text-[#d4af37] sm:text-xl">Welcome to Lucky&apos;s Loot</h2>
-        </div>
-      </section>
-
-      <section id="collection" className="bg-[#0a0a0a] px-4 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="section-gold-title text-center font-pixel text-xl leading-9 text-[#d4af37] sm:text-2xl">
-            Our Collection
-          </h2>
-          <div className="mt-12 grid gap-8 lg:grid-cols-3">
-            {storefrontProductFamilies.map((product, productIndex) => (
-              <article
-                key={product.name}
-                className="group overflow-hidden rounded-[8px] border border-[#d4af37]/18 bg-[#1a1a1a] shadow-[0_10px_34px_rgba(0,0,0,0.42)] transition duration-300 hover:border-[#d4af37]/70 hover:shadow-[0_18px_48px_rgba(212,175,55,0.22)]"
-              >
-                <div className={`relative h-[300px] overflow-hidden bg-gradient-to-br ${product.gradient}`}>
-                  {product.images.map((image, imageIndex) => (
-                    <motion.div
-                      key={image.src}
-                      className="absolute inset-0"
-                      initial={false}
-                      animate={{ opacity: slides[productIndex] === imageIndex ? 1 : 0 }}
-                      transition={{ duration: 0.45, ease: "easeOut" }}
-                      aria-hidden={slides[productIndex] !== imageIndex}
-                    >
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        fill
-                        className="object-cover"
-                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      />
-                    </motion.div>
-                  ))}
-                  <button
-                    type="button"
-                    className="absolute left-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-[6px] border border-black/20 bg-[#d4af37]/90 text-black shadow-lg transition hover:bg-[#fff4bd] focus-ring"
-                    onClick={() => moveSlide(productIndex, -1)}
-                    aria-label={`Previous ${product.name} image`}
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-[6px] border border-black/20 bg-[#d4af37]/90 text-black shadow-lg transition hover:bg-[#fff4bd] focus-ring"
-                    onClick={() => moveSlide(productIndex, 1)}
-                    aria-label={`Next ${product.name} image`}
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                  <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-                    {product.images.map((image, imageIndex) => (
-                      <button
-                        key={image.src}
-                        type="button"
-                        className={`h-3 w-3 rounded-full border-2 transition ${
-                          slides[productIndex] === imageIndex
-                            ? "scale-110 border-[#fff4bd] bg-[#d4af37] shadow-[0_0_12px_rgba(212,175,55,0.8)]"
-                            : "border-[#d4af37]/70 bg-white/45"
-                        }`}
-                        onClick={() => setProductSlide(productIndex, imageIndex)}
-                        aria-label={`Show ${product.name} image ${imageIndex + 1}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-6 sm:p-7">
-                  <h3 className="font-pixel text-base leading-7 text-[#d4af37]">{product.name}</h3>
-                  <p className="mt-4 text-sm font-bold text-[#e5e0d2] underline decoration-[#d4af37]/60 underline-offset-4">
-                    {product.subtitle}
-                  </p>
-                  <p className="mt-5 text-sm font-bold text-[#d8d1bd]">{product.intro}</p>
-                  <ul className="mt-4 grid gap-2 text-sm leading-6 text-[#b8b0a0]">
-                    {product.details.map((detail) => (
-                      <li key={detail} className="flex gap-2">
-                        <Sparkles className="mt-1 h-4 w-4 shrink-0 text-[#d4af37]" />
-                        <strong>{detail}</strong>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-5 text-sm leading-7 text-[#dad4c4]">{product.note}</p>
-                  <div className="mt-6 grid gap-2 border-t border-[#d4af37]/14 pt-5">
-                    {product.variants.map((variant) => (
-                      <AddToCartButton
-                        key={variant.id}
-                        variantId={variant.id}
-                        className="justify-between"
-                        label={`${variant.shortLabel} - ${formatStorefrontCurrency(variant.priceCents)}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="border-t-[3px] border-[#d4af37] bg-black px-4 py-16 text-center shadow-[0_-4px_24px_rgba(212,175,55,0.24)] sm:px-6">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="font-pixel text-xl leading-9 text-[#d4af37] sm:text-2xl">Interested in a Product?</h2>
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[#b8b0a0] sm:text-lg">
-            All products are available for local pickup only. Get in touch to arrange a meetup,
-            view items in person, or ask about bulk purchases.
-          </p>
-          <button
-            type="button"
-            onClick={() => setContactOpen(true)}
-            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-transparent bg-[#d4af37] px-8 py-3 font-pixel text-[0.68rem] uppercase text-black shadow-[0_8px_24px_rgba(212,175,55,0.32)] transition hover:-translate-y-0.5 hover:bg-[#fff4bd] focus-ring"
-          >
-            Contact Me
-          </button>
-        </div>
-      </section>
-
       <ContactDialog open={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   );
@@ -250,7 +115,7 @@ function HeroSpotlight({
 }) {
   return (
     <Link
-      href="/products"
+      href={item.href}
       className={`hero-thought-bubble group flex min-h-28 flex-col justify-center overflow-visible border-2 border-[#d4af37]/80 bg-black/42 px-7 py-6 text-center shadow-[0_18px_44px_rgba(0,0,0,0.38)] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 hover:shadow-[0_18px_44px_rgba(212,175,55,0.16)] focus-ring ${
         compact ? "min-h-24 px-5" : ""
       }`}
@@ -263,20 +128,21 @@ function HeroSpotlight({
 function Opener() {
   return (
     <div className="site-opener fixed inset-0 z-[100] grid place-items-center bg-black">
-      <div className="relative grid h-64 w-64 place-items-center">
-        <div className="opener-spark opener-spark-one absolute h-3 w-3 rounded-full bg-[#d4af37] shadow-[0_0_18px_rgba(212,175,55,0.9)]" />
-        <div className="opener-spark opener-spark-two absolute h-2.5 w-2.5 rounded-full bg-[#fff4bd] shadow-[0_0_16px_rgba(255,244,189,0.9)]" />
-        <div className="opener-logo relative h-44 w-44 overflow-visible rounded-full shadow-[0_0_45px_rgba(212,175,55,0.38)]">
+      <div className="relative grid w-[min(94vw,54rem)] place-items-center gap-5">
+        <div className="opener-logo opener-pikachu-frame relative aspect-video w-full overflow-visible">
           <Image
-            src="/old-site/LuckysLoot-transparent.webp"
+            src="/brand/pikachu_transparent.webp"
             alt=""
             fill
-            className="lucky-logo-image object-contain"
-            sizes="176px"
+            className="opener-pikachu-image object-contain"
+            sizes="(min-width: 640px) 54rem, 94vw"
             unoptimized
             priority
           />
         </div>
+        <p className="opener-loading-text font-pixel text-[0.96rem] uppercase leading-7 text-[#71efff] sm:text-[1.18rem]">
+          Loading...
+        </p>
       </div>
     </div>
   );

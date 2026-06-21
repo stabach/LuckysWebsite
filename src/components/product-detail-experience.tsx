@@ -3,17 +3,19 @@
 import { useMemo, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Check, PackageCheck, Shield, ShoppingBag, ZoomIn } from "lucide-react";
 import { AddToCartButton } from "@/components/cart-provider";
 import { ProductVisual } from "@/components/product-visual";
 import { products } from "@/lib/catalog";
+import { psaGuardColors, storefrontVariants } from "@/lib/storefront-products";
 import type { Product } from "@/lib/types";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const purchasableVariantsBySlug: Record<string, string> = {
   "pokemon-etb-acrylic-case": "acrylic-etb-case",
   "pokemon-booster-box-acrylic-case": "acrylic-booster-box-case",
-  "gradient-psa-guard": "psa-gradient-guard",
+  "gradient-psa-guard": "psa-guard-arctic",
   "9-pocket-topload-binder": "toploader-binder-basic",
   "4-pocket-topload-binder": "toploader-binder-basic"
 };
@@ -21,7 +23,13 @@ const purchasableVariantsBySlug: Record<string, string> = {
 export function ProductDetailExperience({ product }: { product: Product }) {
   const [demoStep, setDemoStep] = useState(0);
   const [zoomed, setZoomed] = useState(false);
+  const [selectedPsaColor, setSelectedPsaColor] = useState(psaGuardColors[0]?.name ?? "Arctic");
+  const isPsaGuardProduct = product.slug === "gradient-psa-guard";
   const purchasableVariantId = purchasableVariantsBySlug[product.slug];
+  const selectedPsaVariantId = storefrontVariants.find(
+    (variant) => variant.familyId === "psa-guards" && variant.colorName === selectedPsaColor
+  )?.id;
+  const selectedVariantId = isPsaGuardProduct ? selectedPsaVariantId : purchasableVariantId;
   const related = useMemo(
     () =>
       products.filter((candidate) => product.pairings.includes(candidate.name)).slice(0, 3),
@@ -32,6 +40,9 @@ export function ProductDetailExperience({ product }: { product: Product }) {
     { icon: PackageCheck, label: "Fitment checked" },
     { icon: Check, label: "Premium finish" }
   ];
+  const contactHref = `mailto:LuckysLootSupplies@gmail.com?subject=${encodeURIComponent(
+    `Question about ${product.name}`
+  )}&body=${encodeURIComponent(`Hi, I have a question about ${product.name}.`)}`;
 
   return (
     <div className="bg-[#fff8df] pt-16 text-[#143a29]">
@@ -75,17 +86,46 @@ export function ProductDetailExperience({ product }: { product: Product }) {
               ) : null}
             </div>
 
+            {isPsaGuardProduct ? (
+              <div className="mt-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#2f8f5b]">
+                  Select Guard Color
+                </p>
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {psaGuardColors.map((color) => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      onClick={() => setSelectedPsaColor(color.name)}
+                      className={cn(
+                        "flex min-h-12 items-center gap-2 rounded-[8px] border px-2 py-2 text-left text-xs font-semibold uppercase leading-4 tracking-[0.06em] transition focus-ring",
+                        selectedPsaColor === color.name
+                          ? "border-[#2f8f5b] bg-[#2f8f5b] text-white"
+                          : "border-[#1e5f3f]/14 bg-white/72 text-[#143a29] hover:border-[#2f8f5b]/42"
+                      )}
+                      aria-pressed={selectedPsaColor === color.name}
+                    >
+                      <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-[6px] border border-current/30 bg-white">
+                        <Image src={color.src} alt="" fill className="object-contain p-0.5" sizes="32px" />
+                      </span>
+                      <span>{color.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              {purchasableVariantId ? (
+              {selectedVariantId ? (
                 <AddToCartButton
-                  variantId={purchasableVariantId}
-                  label="Add to Cart"
+                  variantId={selectedVariantId}
+                  label={isPsaGuardProduct ? `Add ${selectedPsaColor} Guard` : "Add to Cart"}
                   className="w-full justify-center sm:w-auto"
                 />
               ) : (
                 <Link
                   className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-[#2f8f5b] bg-[#2f8f5b] px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#256f48] focus-ring"
-                  href="/#contact"
+                  href={contactHref}
                 >
                   <ShoppingBag size={18} />
                   Ask about this item
@@ -93,7 +133,7 @@ export function ProductDetailExperience({ product }: { product: Product }) {
               )}
               <Link
                 className="inline-flex items-center justify-center gap-2 rounded-[8px] border border-[#1e5f3f]/16 bg-white/72 px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-[#143a29] transition hover:border-[#2f8f5b]/42 focus-ring"
-                href="/#contact"
+                href={contactHref}
               >
                 Ask about pickup
                 <ArrowRight size={17} />

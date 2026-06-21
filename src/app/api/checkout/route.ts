@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getStorefrontVariant } from "@/lib/storefront-products";
+import {
+  getStorefrontCartUnitPriceCents,
+  getStorefrontVariant,
+  isPsaGuardVariant
+} from "@/lib/storefront-products";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,6 +58,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
   }
 
+  const psaGuardCount = sanitizedItems.reduce(
+    (total, item) => total + (isPsaGuardVariant(item.variant) ? item.quantity : 0),
+    0
+  );
+
   const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const includeStripeImages = origin.startsWith("https://");
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -88,14 +97,18 @@ export async function POST(request: Request) {
       ],
       line_items: sanitizedItems.map(({ variant, quantity }) => ({
         quantity,
-        adjustable_quantity: {
-          enabled: true,
-          minimum: 1,
-          maximum: variant.maxQuantity
-        },
+        ...(isPsaGuardVariant(variant)
+          ? {}
+          : {
+              adjustable_quantity: {
+                enabled: true,
+                minimum: 1,
+                maximum: variant.maxQuantity
+              }
+            }),
         price_data: {
           currency: "usd",
-          unit_amount: variant.priceCents,
+          unit_amount: getStorefrontCartUnitPriceCents(variant, psaGuardCount),
           product_data: {
             name: variant.label,
             description: variant.description,

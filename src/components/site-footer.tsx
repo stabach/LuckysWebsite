@@ -1,10 +1,19 @@
+"use client";
+
 import { Instagram, Mail } from "lucide-react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  if (pathname === "/") {
+    return null;
+  }
+
   return (
-    <footer className="border-t border-[#d4af37]/22 bg-[#050505] px-4 py-8 text-center text-[#b8b0a0] sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-5">
+    <footer className="bg-[#050505] px-4 py-6 text-center text-[#b8b0a0] sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4">
         <div className="flex items-center gap-3">
           <span className="relative block h-12 w-12 overflow-visible rounded-full">
             <Image

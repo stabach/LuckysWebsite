@@ -1,9 +1,10 @@
 import type { Category, InspirationSetup, Product, ShelfItem } from "@/lib/types";
 
 export const productImages = {
-  etb: "/product-images/pokemon-etb-black-bolt.jpg",
-  boosterBox: "/product-images/pokemon-booster-box-destined-rivals.jpg",
-  boosterBundle: "/product-images/pokemon-booster-bundle-destined-rivals.jpg",
+  etb: "/product-images/acrylic-etb.png",
+  boosterBox: "/product-images/acrylic-booster-box.png",
+  boosterBundle: "/product-images/acrylic-booster-bundle.png",
+  psaGuardAcrylic: "/product-images/acrylic-psa-guard.png",
   phantomRuby: "/product-images/phantom-ruby-gradedguard.webp",
   phantomEmerald: "/product-images/phantom-emerald-gradedguard.webp",
   phantomFrosted: "/product-images/phantom-frosted-psa-gradedguard.webp",
@@ -103,7 +104,7 @@ export const products: Product[] = [
     finish: "Clear acrylic with soft polished edges and magnetic lid",
     accent: "#2f8f5b",
     image: productImages.etb,
-    imageAlt: "Pokemon Black Bolt Elite Trainer Box used as a sealed ETB fitment example",
+    imageAlt: "Clear acrylic case for Pokemon Elite Trainer Boxes",
     imageSource: imageSources.etb,
     productInsideLabel: "Pokemon ETB shown for fitment",
     featured: true,
@@ -150,14 +151,14 @@ export const products: Product[] = [
     tagline: "A crystal-clear home for sealed booster boxes.",
     summary:
       "A Lucky's Loot acrylic case that frames a sealed Pokemon booster box without hiding the art, set name, or premium shelf presence.",
-    price: 29,
+    price: 12,
     inventory: 52,
     status: "in_stock",
     dimensions: "5.5 x 4.9 x 3.0 in",
     finish: "Clear acrylic with magnetic lid and stacked-shelf profile",
     accent: "#44a7d8",
     image: productImages.boosterBox,
-    imageAlt: "Pokemon Destined Rivals booster display box used as a booster box fitment example",
+    imageAlt: "Clear acrylic case for sealed Pokemon booster boxes",
     imageSource: imageSources.boosterBox,
     productInsideLabel: "Booster box shown for fitment",
     featured: true,
@@ -206,7 +207,7 @@ export const products: Product[] = [
     finish: "Clear acrylic with playful gold lid detail",
     accent: "#ffb84d",
     image: productImages.boosterBundle,
-    imageAlt: "Pokemon Destined Rivals Booster Bundle used as a sealed booster bundle fitment example",
+    imageAlt: "Clear acrylic case for sealed Pokemon booster bundles",
     imageSource: imageSources.boosterBundle,
     productInsideLabel: "Booster bundle shown for fitment",
     featured: true,
@@ -250,8 +251,8 @@ export const products: Product[] = [
     dimensions: "PSA display footprint",
     finish: "Clear acrylic display with guard-friendly slab channel",
     accent: "#8d5cf6",
-    image: productImages.phantomRuby,
-    imageAlt: "Ruby color Phantom Display GradedGuard-style PSA slab display example",
+    image: productImages.psaGuardAcrylic,
+    imageAlt: "Clear acrylic case for PSA Guard slab displays",
     imageSource: imageSources.phantom,
     productInsideLabel: "Guarded PSA slab shown for style",
     colorways: ["Ruby", "Emerald", "Sapphire", "Amethyst", "Frosted"],
@@ -288,8 +289,8 @@ export const products: Product[] = [
     categoryId: "psa-slab-guards",
     tagline: "Color-match your slab without hiding the card.",
     summary:
-      "A PSA slab guard line with fun gradient-style colorways for collectors who want protection that feels expressive.",
-    price: 12,
+      "A PSA slab guard line with 15 colorways for collectors who want protection that feels expressive.",
+    price: 7,
     inventory: 140,
     status: "in_stock",
     dimensions: "Fits standard PSA slab",
@@ -299,12 +300,28 @@ export const products: Product[] = [
     imageAlt: "Emerald style PSA graded guard example showing colorful slab protection",
     imageSource: imageSources.phantom,
     productInsideLabel: "Gradient guard colorway example",
-    colorways: ["Cotton Candy", "Sunset", "Emerald", "Ocean", "Phantom Black"],
+    colorways: [
+      "Arctic",
+      "Cosmic Pop",
+      "Cotton Candy",
+      "Diamond",
+      "Eclipse",
+      "Emerald",
+      "Galaxy",
+      "Glacier",
+      "Gold Dust",
+      "Midnight Gold",
+      "Nebula",
+      "Reef",
+      "Solar Flare",
+      "Solar Rush",
+      "Void"
+    ],
     bestSeller: true,
     materials: ["impact-resistant guard", "raised lip", "soft-touch edge"],
     specs: [
       { label: "Fitment", value: "Standard PSA slab" },
-      { label: "Frame", value: "Gradient color edge" },
+      { label: "Frame", value: "15 color options" },
       { label: "Protection", value: "Raised front and corner guard" }
     ],
     fitment: ["PSA standard slabs"],
@@ -322,7 +339,11 @@ export const products: Product[] = [
     faq: [
       {
         question: "Are these similar to GradedGuard color styles?",
-        answer: "The site uses gradient/colorway references for direction; Lucky's Loot colorways can be branded and named independently."
+        answer: "Available colors are Arctic, Cosmic Pop, Cotton Candy, Diamond, Eclipse, Emerald, Galaxy, Glacier, Gold Dust, Midnight Gold, Nebula, Reef, Solar Flare, Solar Rush, and Void."
+      },
+      {
+        question: "How does bulk pricing work?",
+        answer: "Bulk pricing applies automatically in cart and checkout. 1-9 guards are $7 each, 10-24 guards are $6 each, and 25+ guards are $4 each."
       }
     ]
   },
