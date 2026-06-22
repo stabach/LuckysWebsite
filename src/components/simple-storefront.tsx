@@ -13,9 +13,15 @@ type HeroSpotlightItem = {
   href: string;
 };
 
+type OpenerState = "checking" | "playing" | "hidden";
+
+let openerResolvedThisSession = false;
+
 export function SimpleStorefront() {
   const [contactOpen, setContactOpen] = useState(false);
-  const [showOpener, setShowOpener] = useState(false);
+  const [openerState, setOpenerState] = useState<OpenerState>(
+    openerResolvedThisSession ? "hidden" : "checking"
+  );
   const heroSpotlights: HeroSpotlightItem[] = storefrontCategories.map((category) => ({
     id: category.id,
     name: category.label,
@@ -24,22 +30,36 @@ export function SimpleStorefront() {
 
   useEffect(() => {
     const openerKey = "luckys-loot-opener-played";
+    let hideTimer: ReturnType<typeof window.setTimeout> | undefined;
 
     try {
       if (window.sessionStorage.getItem(openerKey)) {
+        openerResolvedThisSession = true;
+        setOpenerState("hidden");
         return;
       }
 
       window.sessionStorage.setItem(openerKey, "true");
-      setShowOpener(true);
+      openerResolvedThisSession = true;
+      setOpenerState("playing");
     } catch {
-      setShowOpener(true);
+      openerResolvedThisSession = true;
+      setOpenerState("playing");
     }
+
+    hideTimer = window.setTimeout(() => setOpenerState("hidden"), 4200);
+
+    return () => {
+      if (hideTimer) {
+        window.clearTimeout(hideTimer);
+      }
+    };
   }, []);
 
   return (
     <div className="simple-storefront starry-night text-[#e7e0cf]">
-      {showOpener ? <Opener /> : null}
+      {openerState === "checking" ? <OpenerCover /> : null}
+      {openerState === "playing" ? <Opener /> : null}
 
       <section className="relative min-h-[76vh] overflow-hidden pt-16">
         <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.22),transparent_68%)]" />
@@ -104,6 +124,10 @@ export function SimpleStorefront() {
       <ContactDialog open={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   );
+}
+
+function OpenerCover() {
+  return <div className="fixed inset-0 z-[100] bg-black" aria-hidden="true" />;
 }
 
 function HeroSpotlight({
