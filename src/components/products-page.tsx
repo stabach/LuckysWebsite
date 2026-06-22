@@ -222,11 +222,22 @@ export function ProductCard({
         </div>
 
         <div className="relative z-20 mt-auto pt-6">
-          <AddToCartButton
-            variantId={product.id}
-            label={`Add to Cart - ${formatStorefrontCurrency(product.priceCents)}`}
-            className="justify-between"
-          />
+          {isSinglePsaGuard(product) ? (
+            <button
+              type="button"
+              onClick={() => onOpen(product)}
+              className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-[8px] border border-[#d4af37]/46 bg-[#d4af37] px-4 py-3 text-[0.78rem] font-black uppercase leading-5 tracking-[0.08em] text-black shadow-[0_8px_22px_rgba(212,175,55,0.18)] transition hover:-translate-y-0.5 hover:bg-[#fff4bd] focus-ring"
+            >
+              <span className="text-left">Choose Your Colors!</span>
+              <ChevronRight size={16} />
+            </button>
+          ) : (
+            <AddToCartButton
+              variantId={product.id}
+              label={`Add to Cart - ${formatStorefrontCurrency(product.priceCents)}`}
+              className="justify-between"
+            />
+          )}
         </div>
       </div>
     </article>
