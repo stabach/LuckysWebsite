@@ -60,7 +60,7 @@ export function AcrylicCaseInteractiveFeatures() {
       className="relative overflow-hidden rounded-[8px] border border-[#d4af37]/18 bg-[linear-gradient(135deg,#050505,#111111_44%,#070707)] px-4 py-8 shadow-[0_24px_90px_rgba(0,0,0,0.46)] sm:px-6 sm:py-10 lg:px-9"
       aria-labelledby="acrylic-feature-title"
     >
-      <div className="relative grid gap-6 lg:grid-cols-[minmax(390px,0.66fr)_minmax(560px,1fr)] lg:items-center">
+      <div className="acrylic-feature-layout relative grid gap-6 lg:grid-cols-[minmax(390px,0.66fr)_minmax(560px,1fr)] lg:items-center">
         <motion.div
           className="acrylic-reference-panel relative min-h-[360px] overflow-visible sm:min-h-[500px] lg:-ml-9 lg:min-h-[720px]"
           initial={reduceMotion ? false : { opacity: 0, y: 28 }}
@@ -79,8 +79,8 @@ export function AcrylicCaseInteractiveFeatures() {
           </div>
         </motion.div>
 
-        <div>
-          <div className="max-w-2xl">
+        <div className="acrylic-feature-copy">
+          <div className="acrylic-feature-heading max-w-2xl">
             <p className="font-pixel text-[0.62rem] uppercase leading-5 text-[#d4af37]">
               Built for display
             </p>
@@ -92,7 +92,7 @@ export function AcrylicCaseInteractiveFeatures() {
             </p>
           </div>
 
-          <div className="mt-5 grid gap-2">
+          <div className="acrylic-feature-grid mt-5 grid gap-2">
             {acrylicFeatures.map((feature, index) => (
               <FeatureRow
                 key={feature.title}

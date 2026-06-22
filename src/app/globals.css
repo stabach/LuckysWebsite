@@ -386,6 +386,113 @@ textarea {
   animation: acrylicLineStrike 520ms ease-out var(--feature-delay) both;
 }
 
+@media (max-width: 639px) {
+  .acrylic-feature-layout {
+    gap: 0.8rem;
+  }
+
+  .acrylic-reference-panel {
+    min-height: 9.5rem !important;
+    margin-inline: -0.35rem;
+  }
+
+  .acrylic-reference-panel > div {
+    inset: -32% -4.5rem -38% -1.35rem !important;
+  }
+
+  .acrylic-reference-image {
+    transform: translateY(-11%) scale(1.02);
+    opacity: 0.72;
+    object-position: left center;
+    filter:
+      drop-shadow(0 0 12px rgba(255, 255, 255, 0.12))
+      drop-shadow(0 0 26px rgba(56, 169, 232, 0.06));
+  }
+
+  .acrylic-feature-copy {
+    margin-top: -2.7rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .acrylic-feature-heading {
+    padding-inline: 0.15rem;
+  }
+
+  .acrylic-feature-heading > p:first-child {
+    font-size: 0.48rem;
+    line-height: 1.15rem;
+  }
+
+  .acrylic-feature-heading h2 {
+    margin-top: 0.28rem;
+    max-width: 20rem;
+    font-size: 1.55rem;
+    line-height: 1.12;
+  }
+
+  .acrylic-feature-heading h2 + p {
+    margin-top: 0.55rem;
+    max-width: 20rem;
+    font-size: 0.78rem;
+    line-height: 1.45rem;
+  }
+
+  .acrylic-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-top: 0.8rem;
+  }
+
+  .acrylic-feature-row {
+    min-height: 4.65rem;
+    padding: 0.48rem !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .acrylic-feature-row > div:first-child {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.48rem;
+    align-items: center;
+  }
+
+  .acrylic-feature-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-color: rgba(255, 255, 255, 0.42);
+  }
+
+  .acrylic-feature-icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .acrylic-feature-icon::after {
+    width: 0.34rem;
+    height: 0.72rem;
+  }
+
+  .acrylic-feature-row .min-w-0 {
+    padding-top: 0;
+  }
+
+  .acrylic-feature-title {
+    font-size: 0.78rem !important;
+    line-height: 1rem !important;
+  }
+
+  .acrylic-feature-title + p {
+    margin-top: 0.18rem;
+    font-size: 0.58rem !important;
+    line-height: 0.88rem !important;
+  }
+
+  .acrylic-feature-line {
+    margin-top: 0.42rem !important;
+  }
+}
+
 @keyframes acrylicRowFlash {
   0%,
   100% {
