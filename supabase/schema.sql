@@ -58,6 +58,8 @@ create table public.inventory (
 create table public.customers (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
+  first_name text,
+  last_name text,
   full_name text,
   marketing_opt_in boolean not null default false,
   created_at timestamptz not null default now(),
@@ -73,7 +75,10 @@ create table public.admin_users (
 create table public.orders (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid references public.customers(id) on delete set null,
+  order_number text unique,
   status public.order_status not null default 'draft',
+  payment_status text,
+  fulfillment_status text,
   stripe_checkout_session_id text unique,
   stripe_payment_intent_id text,
   stripe_payment_status text,
@@ -84,9 +89,13 @@ create table public.orders (
   subtotal_cents integer not null default 0 check (subtotal_cents >= 0),
   shipping_cents integer not null default 0 check (shipping_cents >= 0),
   tax_cents integer not null default 0 check (tax_cents >= 0),
+  discount_cents integer not null default 0 check (discount_cents >= 0),
   total_cents integer not null default 0 check (total_cents >= 0),
+  shipping_method text,
   shipping_address jsonb,
   billing_address jsonb,
+  tracking_number text,
+  tracking_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -94,9 +103,15 @@ create table public.orders (
 create table public.order_items (
   id uuid primary key default gen_random_uuid(),
   order_id uuid not null references public.orders(id) on delete cascade,
-  product_id uuid not null references public.products(id) on delete restrict,
+  product_id uuid references public.products(id) on delete set null,
+  variant_id text,
+  product_name text not null default '',
+  product_image text,
+  variant_name text,
+  options jsonb not null default '{}'::jsonb,
   quantity integer not null check (quantity > 0),
   unit_price_cents integer not null check (unit_price_cents >= 0),
+  total_price_cents integer not null default 0 check (total_price_cents >= 0),
   created_at timestamptz not null default now()
 );
 
@@ -175,6 +190,42 @@ as $$
   );
 $$;
 
+create or replace function public.sync_auth_user_customer()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  profile_first_name text := nullif(new.raw_user_meta_data ->> 'first_name', '');
+  profile_last_name text := nullif(new.raw_user_meta_data ->> 'last_name', '');
+  profile_full_name text := nullif(trim(concat_ws(' ', profile_first_name, profile_last_name)), '');
+begin
+  insert into public.customers (id, email, first_name, last_name, full_name, updated_at)
+  values (
+    new.id,
+    coalesce(new.email, ''),
+    profile_first_name,
+    profile_last_name,
+    profile_full_name,
+    now()
+  )
+  on conflict (id) do update set
+    email = excluded.email,
+    first_name = coalesce(excluded.first_name, public.customers.first_name),
+    last_name = coalesce(excluded.last_name, public.customers.last_name),
+    full_name = coalesce(excluded.full_name, public.customers.full_name),
+    updated_at = now();
+
+  return new;
+end;
+$$;
+
+drop trigger if exists sync_auth_user_customer_profile on auth.users;
+create trigger sync_auth_user_customer_profile
+after insert or update of email, raw_user_meta_data on auth.users
+for each row execute function public.sync_auth_user_customer();
+
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
 alter table public.product_images enable row level security;
@@ -229,6 +280,9 @@ on public.product_recommendations for all using (public.is_admin()) with check (
 create policy "Customers read own profile"
 on public.customers for select using (id = auth.uid() or public.is_admin());
 
+create policy "Customers insert own profile"
+on public.customers for insert with check (id = auth.uid());
+
 create policy "Customers update own profile"
 on public.customers for update using (id = auth.uid()) with check (id = auth.uid());
 
@@ -279,7 +333,9 @@ create index categories_slug_idx on public.categories(slug);
 create index products_slug_idx on public.products(slug);
 create index products_category_idx on public.products(category_id);
 create index orders_customer_idx on public.orders(customer_id);
+create index orders_order_number_idx on public.orders(order_number);
 create index orders_stripe_checkout_idx on public.orders(stripe_checkout_session_id);
+create index order_items_order_idx on public.order_items(order_id);
 create index wishlist_customer_idx on public.wishlist_items(customer_id);
 create index saved_shelf_customer_idx on public.saved_shelf_layouts(customer_id);
 create index saved_collection_customer_idx on public.saved_collection_builds(customer_id);

@@ -5,6 +5,7 @@ import {
   getStorefrontVariant,
   isPsaGuardVariant
 } from "@/lib/storefront-products";
+import { createSupabaseServerClient, hasSupabaseServerEnv } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
   const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const includeStripeImages = origin.startsWith("https://");
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const checkoutCustomer = await getCheckoutCustomer();
   const cartMetadata = JSON.stringify(
     sanitizedItems.map((item) => ({
       variantId: item.variant.id,
@@ -120,12 +122,16 @@ export async function POST(request: Request) {
           }
         }
       })),
+      ...(checkoutCustomer?.id ? { client_reference_id: checkoutCustomer.id } : {}),
+      ...(checkoutCustomer?.email ? { customer_email: checkoutCustomer.email } : {}),
       metadata: {
-        cart_items: cartMetadata
+        cart_items: cartMetadata,
+        ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
       },
       payment_intent_data: {
         metadata: {
-          cart_items: cartMetadata
+          cart_items: cartMetadata,
+          ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
         }
       },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -140,5 +146,44 @@ export async function POST(request: Request) {
       },
       { status: 500 }
     );
+  }
+}
+
+async function getCheckoutCustomer() {
+  if (!hasSupabaseServerEnv()) {
+    return null;
+  }
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return null;
+    }
+
+    const firstName = typeof user.user_metadata?.first_name === "string" ? user.user_metadata.first_name : "";
+    const lastName = typeof user.user_metadata?.last_name === "string" ? user.user_metadata.last_name : "";
+
+    await supabase.from("customers").upsert(
+      {
+        id: user.id,
+        email: user.email ?? "",
+        first_name: firstName,
+        last_name: lastName,
+        full_name: [firstName, lastName].filter(Boolean).join(" "),
+        updated_at: new Date().toISOString()
+      },
+      { onConflict: "id" }
+    );
+
+    return {
+      id: user.id,
+      email: user.email ?? ""
+    };
+  } catch {
+    return null;
   }
 }

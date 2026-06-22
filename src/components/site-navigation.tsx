@@ -1,10 +1,11 @@
 "use client";
 
-import { Instagram, Mail, Menu, X } from "lucide-react";
+import { Instagram, LogIn, Mail, Menu, UserRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CartButton } from "@/components/cart-provider";
+import { createSupabaseBrowserClient, hasSupabaseEnv } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -15,6 +16,40 @@ const links = [
 
 export function SiteNavigation() {
   const [open, setOpen] = useState(false);
+  const [accountHref, setAccountHref] = useState("/login");
+  const [accountLabel, setAccountLabel] = useState("Login");
+
+  useEffect(() => {
+    if (!hasSupabaseEnv()) {
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) {
+        return;
+      }
+
+      const loggedIn = Boolean(data.session?.user);
+      setAccountHref(loggedIn ? "/account" : "/login");
+      setAccountLabel(loggedIn ? "Account" : "Login");
+    });
+
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const loggedIn = Boolean(session?.user);
+      setAccountHref(loggedIn ? "/account" : "/login");
+      setAccountLabel(loggedIn ? "Account" : "Login");
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[#d4af37]/24 bg-black/88 text-[#e7e0cf] shadow-[0_8px_24px_rgba(0,0,0,0.36)] backdrop-blur-xl">
@@ -70,6 +105,14 @@ export function SiteNavigation() {
 
         <div className="hidden items-center gap-2 md:flex">
           <CartButton />
+          <Link
+            href={accountHref}
+            className="grid h-10 w-10 place-items-center rounded-[8px] border border-[#d4af37]/28 text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
+            aria-label={accountLabel}
+            title={accountLabel}
+          >
+            {accountLabel === "Account" ? <UserRound size={17} /> : <LogIn size={17} />}
+          </Link>
           <a
             href="https://ig.me/m/LuckysLootSupplies"
             target="_blank"
@@ -128,6 +171,14 @@ export function SiteNavigation() {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <CartButton compact className="col-span-2" />
+          <Link
+            href={accountHref}
+            className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/18 bg-[#111111] px-3 text-xs uppercase tracking-[0.14em] text-[#d4af37]"
+            onClick={() => setOpen(false)}
+          >
+            {accountLabel === "Account" ? <UserRound size={16} /> : <LogIn size={16} />}
+            {accountLabel}
+          </Link>
           <a
             href="https://ig.me/m/LuckysLootSupplies"
             target="_blank"

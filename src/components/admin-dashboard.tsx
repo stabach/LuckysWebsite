@@ -73,7 +73,8 @@ export function AdminDashboard() {
             Service role order recording is {serviceConfigured ? "configured" : "not configured yet"}.
             Stripe checkout is {stripeConfigured ? "configured" : "not configured yet"} and webhooks are{" "}
             {webhookConfigured ? "configured" : "not configured yet"}. Run
-            `supabase/checkout_migration.sql` if your database already exists.
+            `supabase/checkout_migration.sql` and `supabase/account_migration.sql` if your database
+            already exists.
           </p>
         </div>
 
