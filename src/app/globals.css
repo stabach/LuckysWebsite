@@ -201,8 +201,53 @@ textarea {
 }
 
 @media (max-width: 639px) {
+  .simple-storefront.starry-night {
+    background-color: #050505;
+    background-image:
+      radial-gradient(ellipse at 50% 22rem, rgba(212, 175, 55, 0.11), transparent 13rem),
+      radial-gradient(ellipse at 50% 16rem, rgba(255, 232, 122, 0.08), transparent 10rem),
+      radial-gradient(circle at 8% 18%, rgba(255, 255, 255, 0.64) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 28% 58%, rgba(255, 255, 255, 0.52) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 68% 28%, rgba(255, 244, 189, 0.56) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 86% 72%, rgba(255, 255, 255, 0.42) 0 1px, transparent 1.6px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 1px, transparent 1.4px),
+      radial-gradient(circle, rgba(212, 175, 55, 0.16) 0 1px, transparent 1.4px),
+      linear-gradient(180deg, #050505 0%, #080704 34%, #050505 100%);
+    background-position:
+      center top,
+      center top,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      31px 37px,
+      center;
+    background-size:
+      auto,
+      auto,
+      174px 174px,
+      231px 231px,
+      289px 289px,
+      337px 337px,
+      78px 78px,
+      126px 126px,
+      auto;
+  }
+
+  .simple-storefront > section:first-of-type {
+    background:
+      radial-gradient(ellipse at 50% 18rem, rgba(212, 175, 55, 0.1), transparent 13rem),
+      linear-gradient(180deg, rgba(9, 8, 4, 0.42), rgba(5, 5, 5, 0.08) 42%, rgba(5, 5, 5, 0.28));
+  }
+
   .simple-storefront > section:first-of-type > div:first-child {
-    opacity: 0.48;
+    opacity: 0.2;
+    background: radial-gradient(ellipse at 50% 100%, rgba(212, 175, 55, 0.14), transparent 72%) !important;
+  }
+
+  .simple-storefront > section:first-of-type > div:nth-child(2) {
+    display: none;
   }
 
   .simple-storefront .gold-glow,
@@ -219,7 +264,24 @@ textarea {
   }
 
   .simple-storefront .lucky-logo-glitch {
-    filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.12));
+    filter:
+      drop-shadow(0 0 14px rgba(212, 175, 55, 0.12))
+      drop-shadow(0 0 34px rgba(212, 175, 55, 0.1));
+  }
+
+  .simple-storefront .lucky-logo-glitch::before {
+    background-image: url("/old-site/LuckysLoot-transparent.png");
+  }
+
+  .simple-storefront .lucky-logo-glitch::after {
+    background-image: url("/old-site/LuckysLoot-glitch-flash.webp");
+    opacity: 0.72;
+  }
+
+  .simple-storefront .hero-logo-image {
+    filter:
+      drop-shadow(0 0 7px rgba(255, 233, 144, 0.32))
+      drop-shadow(0 0 18px rgba(212, 175, 55, 0.2));
   }
 }
 

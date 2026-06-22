@@ -73,10 +73,20 @@ export function SimpleStorefront() {
             <div className="mx-auto flex w-full max-w-3xl flex-col items-center">
               <div className="lucky-logo-glitch relative h-56 w-56 overflow-visible rounded-full sm:h-72 sm:w-72">
                 <Image
+                  src="/old-site/LuckysLoot-transparent.png"
+                  alt="Lucky's Loot logo"
+                  width={1024}
+                  height={1024}
+                  className="hero-logo-image lucky-logo-image h-full w-full object-contain sm:hidden"
+                  priority
+                  sizes="224px"
+                  quality={100}
+                />
+                <Image
                   src="/old-site/LuckysLoot-transparent.webp"
                   alt="Lucky's Loot logo"
                   fill
-                  className="hero-logo-image lucky-logo-image object-contain"
+                  className="hero-logo-image lucky-logo-image hidden object-contain sm:block"
                   priority
                   sizes="(min-width: 640px) 288px, 224px"
                   unoptimized
