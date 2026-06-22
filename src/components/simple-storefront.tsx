@@ -30,7 +30,6 @@ export function SimpleStorefront() {
 
   useEffect(() => {
     const openerKey = "luckys-loot-opener-played";
-    let hideTimer: ReturnType<typeof window.setTimeout> | undefined;
 
     try {
       if (window.sessionStorage.getItem(openerKey)) {
@@ -47,12 +46,10 @@ export function SimpleStorefront() {
       setOpenerState("playing");
     }
 
-    hideTimer = window.setTimeout(() => setOpenerState("hidden"), 4200);
+    const hideTimer = window.setTimeout(() => setOpenerState("hidden"), 4200);
 
     return () => {
-      if (hideTimer) {
-        window.clearTimeout(hideTimer);
-      }
+      window.clearTimeout(hideTimer);
     };
   }, []);
 
