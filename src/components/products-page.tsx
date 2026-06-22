@@ -177,7 +177,7 @@ export function ProductCard({
 
       <div className="relative h-64 overflow-hidden border-b border-[#d4af37]/12 bg-black">
         <Image
-          src={product.image}
+          src={product.tileImage ?? product.image}
           alt=""
           fill
           className={getCardImageClassName(product)}

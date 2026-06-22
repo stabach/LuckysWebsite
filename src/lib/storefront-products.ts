@@ -7,6 +7,7 @@ export type StorefrontVariant = {
   maxQuantity: number;
   filters: ProductFilterId[];
   image?: string;
+  tileImage?: string;
   colorName?: string;
   packSize?: number;
   requiresNotes?: boolean;
@@ -99,6 +100,7 @@ const psaGuardColorVariants: StorefrontVariant[] = psaGuardColors.map((color) =>
   maxQuantity: 99,
   filters: ["psa-guards", "graded-cards"],
   image: color.src,
+  tileImage: color.name === "Arctic" ? "/psa-guards/psa-guards-tile-display.png" : undefined,
   colorName: color.name,
   packSize: 1
 }));
