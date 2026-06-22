@@ -810,9 +810,7 @@ nextjs-portal,
 }
 
 .opener-pikachu-image {
-  filter:
-    drop-shadow(0 0 18px rgba(58, 212, 255, 0.58))
-    drop-shadow(0 0 42px rgba(58, 212, 255, 0.28));
+  filter: none;
 }
 
 .opener-loading-text {
