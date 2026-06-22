@@ -162,7 +162,7 @@ function Opener() {
       <div className="relative grid w-[min(94vw,54rem)] place-items-center gap-5">
         <div className="opener-logo opener-pikachu-frame relative aspect-video w-full overflow-visible">
           <Image
-            src="/brand/pikachu_transparent.webp"
+            src="/brand/pikachu_transparent_v2.webp"
             alt=""
             fill
             className="opener-pikachu-image object-contain"
