@@ -14,7 +14,7 @@ import {
 } from "@/components/account/account-ui";
 import { SignOutButton } from "@/components/account/sign-out-button";
 import { getCustomerOrderById, getRequiredAccountSession } from "@/lib/account";
-import { formatStorefrontCurrency } from "@/lib/storefront-products";
+import { formatCurrency } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Order Details",
@@ -64,7 +64,7 @@ export default async function AccountOrderDetailPage({ params }: OrderDetailPage
         profile={session.profile}
         eyebrow="Order details"
         title={order.orderNumber}
-        description={`Placed ${formatDate(order.createdAt)} with a total of ${formatStorefrontCurrency(
+        description={`Placed ${formatDate(order.createdAt)} with a total of ${formatCurrency(
           order.totalCents
         )}.`}
       >
@@ -92,7 +92,14 @@ export default async function AccountOrderDetailPage({ params }: OrderDetailPage
             <DetailLine label="Order" value={order.status.replaceAll("_", " ")} />
             <DetailLine label="Payment" value={order.paymentStatus?.replaceAll("_", " ")} />
             <DetailLine label="Fulfillment" value={order.fulfillmentStatus?.replaceAll("_", " ")} />
-            <DetailLine label="Shipping" value={order.shippingMethod} />
+            <DetailLine
+              label="Pickup"
+              value={
+                order.pickupMethod === "event"
+                  ? "Eligible event pickup"
+                  : "Richmond / Houston area"
+              }
+            />
             {order.trackingUrl ? (
               <DetailLine
                 label="Tracking"
@@ -110,8 +117,9 @@ export default async function AccountOrderDetailPage({ params }: OrderDetailPage
             <DetailLine label="Name" value={order.customerName} />
             <DetailLine label="Email" value={order.email} />
           </DetailPanel>
-          <DetailPanel title="Shipping address">
-            <AddressBlock address={order.shippingAddress} />
+          <DetailPanel title="Pickup notes">
+            <DetailLine label="Method" value={order.pickupMethod} />
+            <DetailLine label="Notes" value={order.pickupNotes} />
           </DetailPanel>
           <DetailPanel title="Billing address">
             <AddressBlock address={order.billingAddress} />

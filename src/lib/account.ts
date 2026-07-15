@@ -7,10 +7,9 @@ import {
   hasSupabaseServerEnv
 } from "@/lib/supabase/server";
 import {
-  getStorefrontCartUnitPriceCents,
-  getStorefrontVariant,
-  type StorefrontCartVariant
-} from "@/lib/storefront-products";
+  getVariantById
+} from "@/lib/catalog";
+import { getUnitPriceCents } from "@/lib/pricing";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
@@ -59,6 +58,7 @@ export type AccountOrder = {
   totalCents: number;
   email: string | null;
   customerName: string | null;
+  pickupMethod: string | null;
   pickupNotes: string | null;
   shippingAddress: AccountAddress | null;
   billingAddress: AccountAddress | null;
@@ -249,6 +249,7 @@ function normalizeOrder(raw: Record<string, unknown>): AccountOrder {
     totalCents: numberValue(raw.total_cents),
     email: stringValue(raw.customer_email),
     customerName: stringValue(raw.customer_name),
+    pickupMethod: stringValue(raw.pickup_method),
     pickupNotes: stringValue(raw.pickup_notes),
     shippingAddress: addressValue(raw.shipping_address),
     billingAddress: addressValue(raw.billing_address),
@@ -262,21 +263,36 @@ function normalizeOrder(raw: Record<string, unknown>): AccountOrder {
 }
 
 function normalizeOrderItems(items: Array<Record<string, unknown>>) {
+  const totalGuardQuantity = items.reduce((total, item) => {
+    const resolved = getVariantById(stringValue(item.variant_id));
+    return resolved?.product.id === "psa-guards"
+      ? total + Math.max(1, numberValue(item.quantity))
+      : total;
+  }, 0);
+
   return items.map((item, index) => {
     const variantId = stringValue(item.variant_id);
-    const variant = variantId ? getStorefrontVariant(variantId) : undefined;
+    const resolved = variantId ? getVariantById(variantId) : undefined;
     const quantity = Math.max(1, numberValue(item.quantity));
     const unitPriceCents =
-      numberValue(item.unit_price_cents) || (variant ? getFallbackUnitPrice(variant, quantity) : 0);
+      numberValue(item.unit_price_cents) ||
+      (resolved
+        ? getUnitPriceCents(resolved.product, resolved.variant, totalGuardQuantity)
+        : 0);
     const totalPriceCents = numberValue(item.total_price_cents) || unitPriceCents * quantity;
+    const fallbackImage = resolved?.product.images.find((media) => media.type === "image")?.src;
 
     return {
       id: stringValue(item.id) || `${variantId || "item"}-${index}`,
       variantId,
-      productId: stringValue(item.product_id),
-      productName: stringValue(item.product_name) || variant?.label || "Lucky's Loot item",
-      productImage: stringValue(item.product_image) || variant?.image || "/old-site/LuckysLoot.png",
-      variantName: stringValue(item.variant_name) || variant?.familyName || null,
+      productId: stringValue(item.catalog_product_id) || stringValue(item.product_id),
+      productName: stringValue(item.product_name) || resolved?.product.name || "Lucky's Loot item",
+      productImage:
+        stringValue(item.product_image) ||
+        resolved?.variant.image ||
+        fallbackImage ||
+        "/brand/luckys-loot-logo.webp",
+      variantName: stringValue(item.variant_name) || resolved?.variant.label || null,
       options: recordValue(item.options),
       quantity,
       unitPriceCents,
@@ -289,8 +305,8 @@ function normalizeCheckoutItems(raw: unknown) {
   const items = Array.isArray(raw) ? raw : [];
   const totalGuardQuantity = items.reduce((total, item) => {
     const candidate = item as Record<string, unknown>;
-    const variant = getStorefrontVariant(stringValue(candidate.variantId));
-    return variant?.familyId === "psa-guards"
+    const resolved = getVariantById(stringValue(candidate.variantId));
+    return resolved?.product.id === "psa-guards"
       ? total + Math.max(1, numberValue(candidate.quantity))
       : total;
   }, 0);
@@ -299,36 +315,33 @@ function normalizeCheckoutItems(raw: unknown) {
     .map((item, index) => {
       const candidate = item as Record<string, unknown>;
       const variantId = stringValue(candidate.variantId);
-      const variant = getStorefrontVariant(variantId);
+      const resolved = getVariantById(variantId);
 
-      if (!variant) {
+      if (!resolved) {
         return null;
       }
 
       const quantity = Math.max(1, numberValue(candidate.quantity));
-      const unitPriceCents = getStorefrontCartUnitPriceCents(variant, totalGuardQuantity);
+      const unitPriceCents =
+        numberValue(candidate.unitPriceCents) ||
+        getUnitPriceCents(resolved.product, resolved.variant, totalGuardQuantity);
+      const fallbackImage = resolved.product.images.find((media) => media.type === "image")?.src;
 
       return {
         id: `${variantId}-${index}`,
         variantId,
-        productId: null,
-        productName: variant.label,
-        productImage: variant.image,
-        variantName: variant.familyName,
-        options: variant.colorName ? { color: variant.colorName } : null,
+        productId: resolved.product.id,
+        productName: resolved.product.name,
+        productImage:
+          resolved.variant.image || fallbackImage || "/brand/luckys-loot-logo.webp",
+        variantName: resolved.variant.label,
+        options: resolved.variant.color ? { color: resolved.variant.color } : null,
         quantity,
         unitPriceCents,
         totalPriceCents: unitPriceCents * quantity
       };
     })
     .filter(Boolean) as AccountOrderItem[];
-}
-
-function getFallbackUnitPrice(variant: StorefrontCartVariant, quantity: number) {
-  return getStorefrontCartUnitPriceCents(
-    variant,
-    variant.familyId === "psa-guards" ? quantity : 0
-  );
 }
 
 function getUserNameMetadata(user: User) {

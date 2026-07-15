@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import {
-  getStorefrontCartUnitPriceCents,
-  getStorefrontVariant,
-  isPsaGuardVariant
-} from "@/lib/storefront-products";
+import { encodeCheckoutMetadata, type CheckoutPickupMethod } from "@/lib/checkout-metadata";
+import { getVariantById } from "@/lib/catalog";
+import { calculateCartPricing, type CartLineInput } from "@/lib/pricing";
 import { createSupabaseServerClient, hasSupabaseServerEnv } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -16,10 +14,13 @@ type CheckoutItemInput = {
 };
 
 export async function POST(request: Request) {
-  let payload: { items?: CheckoutItemInput[] };
+  let payload: { items?: CheckoutItemInput[]; pickupMethod?: unknown };
 
   try {
-    payload = (await request.json()) as { items?: CheckoutItemInput[] };
+    payload = (await request.json()) as {
+      items?: CheckoutItemInput[];
+      pickupMethod?: unknown;
+    };
   } catch {
     return NextResponse.json({ error: "Invalid checkout payload." }, { status: 400 });
   }
@@ -27,53 +28,51 @@ export async function POST(request: Request) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json(
       {
-        error:
-          "Stripe is not configured yet. Add STRIPE_SECRET_KEY to .env.local or send a cart inquiry."
+        error: "Secure checkout is temporarily unavailable. Please try again or contact Lucky’s Loot."
       },
       { status: 503 }
     );
   }
 
-  const items = Array.isArray(payload.items) ? payload.items : [];
-  const sanitizedItems = items
-    .map((item) => {
-      const variantId = typeof item.variantId === "string" ? item.variantId : "";
-      const variant = getStorefrontVariant(variantId);
-      const quantity = Math.floor(Number(item.quantity) || 0);
+  const pickupMethod = parsePickupMethod(payload.pickupMethod);
+  if (!pickupMethod) {
+    return NextResponse.json({ error: "Choose an available pickup method." }, { status: 400 });
+  }
+  if (pickupMethod === "event") {
+    return NextResponse.json(
+      { error: "Event pickup is not available without an eligible verified event." },
+      { status: 400 }
+    );
+  }
 
-      if (!variant || quantity < 1) {
-        return null;
-      }
-
-      return {
-        variant,
-        quantity: Math.min(quantity, variant.maxQuantity)
-      };
-    })
-    .filter(Boolean) as Array<{
-    variant: NonNullable<ReturnType<typeof getStorefrontVariant>>;
-    quantity: number;
-  }>;
-
-  if (sanitizedItems.length === 0) {
+  const rawItems = Array.isArray(payload.items) ? payload.items : [];
+  if (rawItems.length === 0) {
     return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
   }
 
-  const psaGuardCount = sanitizedItems.reduce(
-    (total, item) => total + (isPsaGuardVariant(item.variant) ? item.quantity : 0),
-    0
-  );
+  let pricing: ReturnType<typeof calculateCartPricing>;
+  try {
+    pricing = calculateCartPricing(
+      rawItems.map<CartLineInput>((item) => ({
+        variantId: typeof item.variantId === "string" ? item.variantId : "",
+        quantity: Math.floor(Number(item.quantity))
+      }))
+    );
+  } catch {
+    return NextResponse.json(
+      { error: "Your cart contains an unavailable item or invalid quantity." },
+      { status: 400 }
+    );
+  }
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const includeStripeImages = origin.startsWith("https://");
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const checkoutCustomer = await getCheckoutCustomer();
-  const cartMetadata = JSON.stringify(
-    sanitizedItems.map((item) => ({
-      variantId: item.variant.id,
-      quantity: item.quantity
-    }))
-  );
+  const checkoutMetadata = {
+    ...encodeCheckoutMetadata(pricing.lines, pickupMethod),
+    ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
+  };
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -97,56 +96,50 @@ export async function POST(request: Request) {
           type: "text"
         }
       ],
-      line_items: sanitizedItems.map(({ variant, quantity }) => ({
-        quantity,
-        ...(isPsaGuardVariant(variant)
-          ? {}
-          : {
-              adjustable_quantity: {
-                enabled: true,
-                minimum: 1,
-                maximum: variant.maxQuantity
+      line_items: pricing.lines.map((line) => {
+        const resolved = getVariantById(line.variantId);
+        if (!resolved) throw new Error("Checkout catalog changed before session creation.");
+
+        return {
+          quantity: line.quantity,
+          price_data: {
+            currency: "usd",
+            unit_amount: line.unitPriceCents,
+            product_data: {
+              name: line.productName,
+              description: `${line.variantName}. ${resolved.product.summary}`,
+              ...(includeStripeImages
+                ? { images: [new URL(line.productImage, origin).toString()] }
+                : {}),
+              metadata: {
+                variant_id: line.variantId,
+                catalog_product_id: line.productId
               }
-            }),
-        price_data: {
-          currency: "usd",
-          unit_amount: getStorefrontCartUnitPriceCents(variant, psaGuardCount),
-          product_data: {
-            name: variant.label,
-            description: variant.description,
-            ...(includeStripeImages ? { images: [new URL(variant.image, origin).toString()] } : {}),
-            metadata: {
-              variant_id: variant.id,
-              family_id: variant.familyId
             }
           }
-        }
-      })),
+        };
+      }),
       ...(checkoutCustomer?.id ? { client_reference_id: checkoutCustomer.id } : {}),
       ...(checkoutCustomer?.email ? { customer_email: checkoutCustomer.email } : {}),
-      metadata: {
-        cart_items: cartMetadata,
-        ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
-      },
+      metadata: checkoutMetadata,
       payment_intent_data: {
-        metadata: {
-          cart_items: cartMetadata,
-          ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
-        }
+        metadata: checkoutMetadata
       },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout/cancelled`
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Checkout could not be started."
-      },
+      { error: "Secure checkout could not be started. Please try again." },
       { status: 500 }
     );
   }
+}
+
+function parsePickupMethod(value: unknown): CheckoutPickupMethod | null {
+  return value === "richmond" || value === "event" ? value : null;
 }
 
 async function getCheckoutCustomer() {

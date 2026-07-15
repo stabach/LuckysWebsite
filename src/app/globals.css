@@ -371,6 +371,566 @@ video {
   font-size: 1.1rem;
 }
 
+/* Checkout confirmation */
+.checkout-state-page {
+  min-height: 72vh;
+  display: grid;
+  place-items: center;
+  padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+.checkout-state-card {
+  width: min(100%, 780px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 88% 0%, rgba(42, 212, 78, 0.12), transparent 22rem),
+    var(--color-surface);
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  box-shadow: var(--shadow-soft);
+}
+
+.checkout-state-card h1 {
+  max-width: 13ch;
+  margin: 0.8rem 0 0;
+  color: var(--color-text-strong);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.6rem, 8vw, 5.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+}
+
+.checkout-state-lede {
+  max-width: 650px;
+  margin: 1.3rem 0 0;
+  color: var(--color-muted);
+  line-height: 1.75;
+}
+
+.checkout-summary {
+  display: grid;
+  gap: 0;
+  margin: 2rem 0 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.18);
+  padding: 0 1rem;
+}
+
+.checkout-summary > div {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.4fr) minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.checkout-summary > div:last-child {
+  border-bottom: 0;
+}
+
+.checkout-summary dt {
+  color: var(--color-muted);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.checkout-summary dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-strong);
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-align: right;
+}
+
+.checkout-state-actions {
+  margin-top: 1.5rem;
+}
+
+.checkout-state-note {
+  margin: 1.2rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+/* Customer account */
+.account-page {
+  min-height: 68vh;
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.account-setup-notice,
+.account-hero,
+.account-panel,
+.account-order-card,
+.account-metric-card,
+.account-action-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.account-setup-notice {
+  max-width: 780px;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(42, 212, 78, 0.13), transparent 22rem),
+    var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.account-setup-notice > svg {
+  margin-bottom: 1.25rem;
+  color: var(--color-neon-green);
+}
+
+.account-setup-notice h1,
+.account-hero h1 {
+  max-width: 15ch;
+  margin: 0.7rem 0 0;
+  color: var(--color-text-strong);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+
+.account-setup-notice > p:not(.eyebrow),
+.account-hero > div > p:not(.eyebrow) {
+  max-width: 660px;
+  margin: 1.2rem 0 0;
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+.account-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(244, 196, 81, 0.1), transparent 24rem),
+    var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.account-identity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+.account-identity strong {
+  color: var(--color-text-strong);
+}
+
+.account-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.account-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.account-tab {
+  min-height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 243, 214, 0.03);
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.account-tab:hover,
+.account-tab.is-active {
+  border-color: rgba(244, 196, 81, 0.55);
+  color: var(--color-text-strong);
+}
+
+.account-tab.is-active {
+  background: var(--color-gold);
+  color: #171005;
+}
+
+.account-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.account-metric-card {
+  padding: 1.25rem;
+}
+
+.account-metric-card svg,
+.account-action-card svg,
+.account-empty-orders > svg {
+  color: var(--color-gold);
+}
+
+.account-metric-card span {
+  display: block;
+  margin-top: 1rem;
+  color: var(--color-muted);
+  font-size: 0.67rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.account-metric-card strong {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--color-text-strong);
+  font-size: 1.15rem;
+  text-transform: capitalize;
+}
+
+.account-action-card {
+  padding: 1.35rem;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.account-action-card:hover {
+  border-color: rgba(244, 196, 81, 0.5);
+  transform: translateY(-2px);
+}
+
+.account-action-card > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.account-action-card h2,
+.account-panel h2,
+.account-empty-orders h2 {
+  margin: 1.25rem 0 0;
+  color: var(--color-text-strong);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+}
+
+.account-action-card p,
+.account-empty-orders p {
+  margin: 0.5rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.account-order-card,
+.account-panel {
+  padding: 1.35rem;
+}
+
+.account-order-head,
+.account-order-foot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-order-head > div:first-child > p {
+  margin: 0;
+  color: var(--color-gold);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.account-order-head > div:last-child {
+  text-align: right;
+}
+
+.account-order-head > div:last-child > strong {
+  display: block;
+  color: var(--color-text-strong);
+  font-size: 1.1rem;
+}
+
+.account-order-head > div:last-child > span {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.account-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.account-status {
+  border: 1px solid rgba(42, 212, 78, 0.34);
+  border-radius: 999px;
+  background: rgba(42, 212, 78, 0.09);
+  padding: 0.28rem 0.62rem;
+  color: #bdf7c8;
+  font-size: 0.62rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-status.is-subtle {
+  border-color: var(--color-border);
+  background: rgba(255, 243, 214, 0.03);
+  color: var(--color-muted);
+}
+
+.account-order-foot {
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.account-order-foot p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+}
+
+.account-empty-orders {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 1px dashed rgba(244, 196, 81, 0.25);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: 2rem;
+  text-align: center;
+}
+
+.account-empty-orders .button {
+  margin-top: 1.3rem;
+}
+
+.account-panel h2 {
+  margin-top: 0;
+}
+
+.account-detail-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.1rem;
+}
+
+.account-detail-line,
+.account-total-line,
+.account-total-final {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+
+.account-detail-line > span,
+.account-total-line > span {
+  color: var(--color-muted);
+  font-size: 0.74rem;
+}
+
+.account-detail-line > strong,
+.account-total-line > strong {
+  color: var(--color-text-strong);
+  font-size: 0.8rem;
+  text-align: right;
+  text-transform: capitalize;
+}
+
+.account-total-final {
+  align-items: baseline;
+  border-bottom: 0;
+  padding-top: 0.4rem;
+}
+
+.account-total-final span {
+  color: var(--color-gold);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.account-total-final strong {
+  color: var(--color-text-strong);
+  font-size: 1.2rem;
+}
+
+.account-detail-list address {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-style: normal;
+}
+
+.account-detail-list address span {
+  display: block;
+}
+
+.account-unavailable {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.account-order-items {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.account-order-items > article {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.8rem;
+}
+
+.account-item-image {
+  position: relative;
+  width: 82px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.account-item-image img,
+.account-item-strip img {
+  object-fit: contain;
+  padding: 0.35rem;
+}
+
+.account-order-items h3 {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 0.9rem;
+}
+
+.account-order-items p,
+.account-order-items span,
+.account-item-price span {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.account-item-price {
+  text-align: right;
+}
+
+.account-item-price strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--color-text-strong);
+}
+
+.account-item-strip {
+  display: flex;
+  margin-top: 1.2rem;
+}
+
+.account-item-strip > div,
+.account-item-strip > span {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  margin-left: -0.55rem;
+  border: 1px solid rgba(244, 196, 81, 0.24);
+  border-radius: 50%;
+  background: var(--color-surface-strong);
+}
+
+.account-item-strip > div:first-child {
+  margin-left: 0;
+}
+
+.account-item-strip > span {
+  color: var(--color-gold);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .checkout-summary > div {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .checkout-summary dd {
+    text-align: left;
+  }
+
+  .account-hero,
+  .account-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-order-head,
+  .account-order-foot {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .account-order-head > div:last-child {
+    text-align: left;
+  }
+
+  .account-order-head > div:last-child > span {
+    justify-content: flex-start;
+  }
+
+  .account-order-items > article {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+
+  .account-item-image {
+    width: 68px;
+  }
+
+  .account-item-price {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
 /* Brand opener */
 .neon-opener {
   position: fixed;

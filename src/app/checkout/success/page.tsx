@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Stripe from "stripe";
-import { formatStorefrontCurrency } from "@/lib/storefront-products";
+import { ClearCartAfterCheckout } from "@/components/checkout/clear-cart-after-checkout";
+import { decodeCheckoutMetadata } from "@/lib/checkout-metadata";
+import { formatCurrency } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",
-  description: "Your Lucky's Loot order has been received."
+  description: "Your Lucky's Loot order has been received.",
+  robots: { index: false, follow: false }
 };
 
 type CheckoutSuccessPageProps = {
@@ -15,47 +18,59 @@ type CheckoutSuccessPageProps = {
 export default async function CheckoutSuccessPage({ searchParams }: CheckoutSuccessPageProps) {
   const { session_id: sessionId } = await searchParams;
   const session = await getCheckoutSession(sessionId);
+  const paid = session?.payment_status === "paid";
+  const checkout = decodeCheckoutMetadata(session?.metadata);
+  const pickupLabel =
+    checkout?.pickupMethod === "event"
+      ? "Eligible event pickup"
+      : checkout?.pickupMethod === "richmond"
+        ? "Richmond / Houston-area pickup"
+        : "Not verified";
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] px-4 pb-16 pt-28 text-[#e7e0cf] sm:px-6">
-      <section className="mx-auto max-w-3xl rounded-[8px] border border-[#d4af37]/24 bg-[#111111] p-6 text-center shadow-[0_18px_60px_rgba(0,0,0,0.42)] sm:p-10">
-        <p className="font-pixel text-[0.7rem] uppercase leading-6 text-[#d4af37]">Order confirmed</p>
-        <h1 className="gold-glow mt-5 text-4xl font-bold text-[#d4af37] sm:text-5xl">
-          Thank you for your purchase.
+    <div className="checkout-state-page section-shell">
+      {paid ? <ClearCartAfterCheckout /> : null}
+      <section className="checkout-state-card" aria-labelledby="checkout-status-title">
+        <p className="eyebrow">{paid ? "Order confirmed" : "Confirmation pending"}</p>
+        <h1 id="checkout-status-title">
+          {paid ? "Your Loot is secured." : "We’re checking your payment."}
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#b8b0a0] sm:text-base">
-          Your order is in. Lucky&apos;s Loot will follow up with pickup details and any custom
-          notes needed for engraved binders or color preferences.
+        <p className="checkout-state-lede">
+          {paid
+            ? "Your payment is complete. We’ll use the contact details from checkout to coordinate private pickup details."
+            : "Your cart has not been cleared. Check your Stripe receipt or return to Your Loot while payment confirmation finishes."}
         </p>
 
-        <div className="mx-auto mt-8 grid max-w-xl gap-3 rounded-[8px] border border-[#d4af37]/16 bg-black/34 p-5 text-left">
-          <OrderLine label="Checkout" value={session?.id ?? sessionId ?? "Confirmed"} />
-          <OrderLine label="Email" value={session?.customer_details?.email ?? "Collected by Stripe"} />
+        <dl className="checkout-summary">
+          <OrderLine label="Checkout" value={session?.id ?? sessionId ?? "Not available"} />
+          <OrderLine
+            label="Email"
+            value={session?.customer_details?.email ?? "Provided securely in Stripe"}
+          />
           <OrderLine
             label="Total"
             value={
               typeof session?.amount_total === "number"
-                ? formatStorefrontCurrency(session.amount_total)
-                : "Shown in your Stripe receipt"
+                ? formatCurrency(session.amount_total)
+                : "See your Stripe receipt"
             }
           />
-          <OrderLine label="Payment" value={session?.payment_status ?? "processing"} />
-        </div>
+          <OrderLine label="Pickup" value={pickupLabel} />
+          <OrderLine label="Payment" value={session?.payment_status ?? "Not verified"} />
+        </dl>
 
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link
-            href="/"
-            className="inline-flex min-h-12 items-center justify-center rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-6 py-3 font-pixel text-[0.62rem] uppercase text-black transition hover:bg-[#fff4bd] focus-ring"
-          >
-            Back Home
+        <div className="button-row checkout-state-actions">
+          <Link href={paid ? "/account/orders" : "/shop"} className="button button-primary">
+            {paid ? "View order history" : "Return to shop"}
           </Link>
-          <a
-            href="mailto:LuckysLootSupplies@gmail.com?subject=Order%20Pickup"
-            className="inline-flex min-h-12 items-center justify-center rounded-[8px] border border-[#d4af37]/40 px-6 py-3 font-pixel text-[0.62rem] uppercase text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
-          >
-            Email Pickup Notes
-          </a>
+          <Link href="/contact?topic=order" className="button button-secondary">
+            Ask about this order
+          </Link>
         </div>
+        <p className="checkout-state-note">
+          For privacy, exact pickup locations are shared directly after payment and are never
+          published on the storefront.
+        </p>
       </section>
     </div>
   );
@@ -63,15 +78,15 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
 
 function OrderLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-[#d4af37]/10 pb-3 last:border-b-0 last:pb-0">
-      <span className="text-xs uppercase tracking-[0.18em] text-[#8d866f]">{label}</span>
-      <strong className="max-w-[13rem] text-right text-sm text-white break-words">{value}</strong>
+    <div>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
     </div>
   );
 }
 
 async function getCheckoutSession(sessionId: string | undefined) {
-  if (!sessionId || !process.env.STRIPE_SECRET_KEY) {
+  if (!sessionId || !sessionId.startsWith("cs_") || !process.env.STRIPE_SECRET_KEY) {
     return null;
   }
 
