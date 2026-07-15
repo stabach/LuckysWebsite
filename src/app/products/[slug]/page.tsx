@@ -3,6 +3,7 @@ import { ChevronRight, Check, MapPin, Ruler } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HomeProductCard } from "@/components/home/product-card";
+import { GuardBundleBuilder } from "@/components/product/guard-bundle-builder";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
 import {
@@ -74,6 +75,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <ProductPurchasePanel product={product} />
         </div>
       </section>
+
+      {product.id === "psa-guards" ? <GuardBundleBuilder /> : null}
 
       <section className="product-benefits section-pad" aria-labelledby="benefits-title">
         <div className="section-shell">

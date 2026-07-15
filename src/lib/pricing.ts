@@ -36,6 +36,14 @@ export function getGuardUnitPriceCents(totalGuardQuantity: number) {
   return eligibleTiers.at(-1)?.unitPriceCents ?? guardPricingTiers[0].unitPriceCents;
 }
 
+export function getGuardPricingMessage(totalGuardQuantity: number) {
+  const quantity = Math.max(0, Math.floor(totalGuardQuantity));
+  if (quantity === 0) return "Choose colors to start your Guard bundle.";
+  if (quantity < 10) return `Add ${10 - quantity} more guards to unlock $6 each.`;
+  if (quantity < 25) return `$6 pricing unlocked. Add ${25 - quantity} more to unlock $4 each.`;
+  return "Best bulk price unlocked: $4 each.";
+}
+
 export function getUnitPriceCents(
   product: Product,
   variant: ProductVariant,
@@ -75,6 +83,11 @@ export function calculateCartPricing(rawLines: ReadonlyArray<CartLineInput>): Ca
     (total, line) => total + (line.product.id === "psa-guards" ? line.quantity : 0),
     0
   );
+
+  const guardMaximum = resolvedLines.find((line) => line.product.id === "psa-guards")?.product.maxPerOrder;
+  if (guardMaximum !== undefined && guardQuantity > guardMaximum) {
+    throw new Error("PSA Guard quantity exceeds the allowed cart maximum.");
+  }
 
   const lines = resolvedLines.map<PricedCartLine>(({ product, variant, quantity }) => {
     const baseUnitPriceCents = variant.priceCents ?? product.priceCents;

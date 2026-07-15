@@ -1,17 +1,18 @@
 "use client";
 
 import {
+  ArrowRight,
+  Check,
   Loader2,
-  Mail,
   MapPin,
   Minus,
   Plus,
-  ShieldCheck,
   ShoppingBag,
   Trash2,
   X
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   createContext,
   type ReactNode,
@@ -19,150 +20,100 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from "react";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
+import { getVariantById, formatCurrency } from "@/lib/catalog";
+import { isVariantPurchasable } from "@/lib/inventory";
 import {
-  formatStorefrontCurrency,
-  getStorefrontVariant,
-  getStorefrontCartUnitPriceCents,
-  isPsaGuardVariant,
-  type StorefrontCartVariant
-} from "@/lib/storefront-products";
+  calculateCartPricing,
+  getGuardPricingMessage,
+  type CartLineInput,
+  type CartPricing
+} from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
-type CartItem = {
-  variantId: string;
-  quantity: number;
-};
-
-type PricedCartItem = CartItem & {
-  variant: StorefrontCartVariant;
-  unitPriceCents: number;
-  lineTotalCents: number;
-  hasDiscount: boolean;
-};
+export type CartItem = CartLineInput;
+export type PickupMethod = "richmond" | "event";
 
 type CartContextValue = {
   items: CartItem[];
-  detailedItems: PricedCartItem[];
+  pricing: CartPricing;
+  detailedItems: CartPricing["lines"];
   itemCount: number;
   psaGuardCount: number;
   subtotalCents: number;
+  pickupMethod: PickupMethod;
+  setPickupMethod: (method: PickupMethod) => void;
   openCart: () => void;
   closeCart: () => void;
   addItem: (variantId: string, quantity?: number) => void;
+  addItems: (items: ReadonlyArray<CartItem>) => void;
   updateQuantity: (variantId: string, quantity: number) => void;
   removeItem: (variantId: string) => void;
   clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const CART_STORAGE_KEY = "luckys-loot-cart-v1";
+const CART_STORAGE_KEY = "luckys-loot-cart-v2";
+const LEGACY_CART_STORAGE_KEY = "luckys-loot-cart-v1";
+const emptyPricing = calculateCartPricing([]);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [pickupMethod, setPickupMethod] = useState<PickupMethod>("richmond");
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-
     try {
       const saved = window.localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as CartItem[];
-        setItems(sanitizeCartItems(parsed));
+        const parsed = JSON.parse(saved) as { items?: CartItem[]; pickupMethod?: PickupMethod };
+        setItems(sanitizeCartItems(parsed.items ?? []));
+        setPickupMethod("richmond");
+        return;
       }
+
+      const legacy = window.localStorage.getItem(LEGACY_CART_STORAGE_KEY);
+      if (legacy) setItems(sanitizeCartItems(JSON.parse(legacy) as CartItem[]));
     } catch {
       setItems([]);
     }
   }, []);
 
   useEffect(() => {
-    if (!mounted) {
-      return;
+    if (!mounted) return;
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items, pickupMethod }));
+  }, [items, mounted, pickupMethod]);
+
+  const pricing = useMemo(() => {
+    try {
+      return calculateCartPricing(items);
+    } catch {
+      return emptyPricing;
     }
+  }, [items]);
 
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  }, [items, mounted]);
-
-  const cartItemsWithVariants = useMemo(
-    () =>
-      items
-        .map((item) => {
-          const variant = getStorefrontVariant(item.variantId);
-          return variant ? { ...item, variant } : null;
-        })
-        .filter(Boolean) as Array<CartItem & { variant: StorefrontCartVariant }>,
-    [items]
-  );
-
-  const psaGuardCount = useMemo(
-    () =>
-      cartItemsWithVariants.reduce(
-        (total, item) => total + (isPsaGuardVariant(item.variant) ? item.quantity : 0),
-        0
-      ),
-    [cartItemsWithVariants]
-  );
-
-  const detailedItems = useMemo(
-    () =>
-      cartItemsWithVariants.map((item) => {
-        const unitPriceCents = getStorefrontCartUnitPriceCents(item.variant, psaGuardCount);
-
-        return {
-          ...item,
-          unitPriceCents,
-          lineTotalCents: unitPriceCents * item.quantity,
-          hasDiscount: unitPriceCents < item.variant.priceCents
-        };
-      }),
-    [cartItemsWithVariants, psaGuardCount]
-  );
-
-  const itemCount = useMemo(
-    () => detailedItems.reduce((total, item) => total + item.quantity, 0),
-    [detailedItems]
-  );
-
-  const subtotalCents = useMemo(
-    () => detailedItems.reduce((total, item) => total + item.lineTotalCents, 0),
-    [detailedItems]
-  );
-
-  const addItem = useCallback((variantId: string, quantity = 1) => {
-    const variant = getStorefrontVariant(variantId);
-    if (!variant) {
-      return;
-    }
-
-    setItems((current) => {
-      const existing = current.find((item) => item.variantId === variantId);
-      const nextQuantity = Math.min((existing?.quantity ?? 0) + quantity, variant.maxQuantity);
-
-      if (existing) {
-        return current.map((item) =>
-          item.variantId === variantId ? { ...item, quantity: nextQuantity } : item
-        );
-      }
-
-      return [...current, { variantId, quantity: Math.max(1, nextQuantity) }];
-    });
+  const addItems = useCallback((incoming: ReadonlyArray<CartItem>) => {
+    setItems((current) => mergeCartItems(current, incoming));
     setOpen(true);
   }, []);
 
-  const updateQuantity = useCallback((variantId: string, quantity: number) => {
-    const variant = getStorefrontVariant(variantId);
-    if (!variant) {
-      return;
-    }
+  const addItem = useCallback(
+    (variantId: string, quantity = 1) => addItems([{ variantId, quantity }]),
+    [addItems]
+  );
 
+  const updateQuantity = useCallback((variantId: string, quantity: number) => {
+    const maximum = getVariantMaximum(variantId);
     setItems((current) =>
       current
         .map((item) =>
           item.variantId === variantId
-            ? { ...item, quantity: Math.min(Math.max(quantity, 0), variant.maxQuantity) }
+            ? { ...item, quantity: Math.min(Math.max(Math.floor(quantity), 0), maximum) }
             : item
         )
         .filter((item) => item.quantity > 0)
@@ -174,387 +125,213 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
+  const openCart = useCallback(() => setOpen(true), []);
+  const closeCart = useCallback(() => setOpen(false), []);
 
   const value = useMemo<CartContextValue>(
     () => ({
       items,
-      detailedItems,
-      itemCount,
-      psaGuardCount,
-      subtotalCents,
-      openCart: () => setOpen(true),
-      closeCart: () => setOpen(false),
+      pricing,
+      detailedItems: pricing.lines,
+      itemCount: pricing.itemCount,
+      psaGuardCount: pricing.guardQuantity,
+      subtotalCents: pricing.subtotalCents,
+      pickupMethod,
+      setPickupMethod,
+      openCart,
+      closeCart,
       addItem,
+      addItems,
       updateQuantity,
       removeItem,
       clearCart
     }),
-    [
-      addItem,
-      clearCart,
-      detailedItems,
-      itemCount,
-      items,
-      psaGuardCount,
-      removeItem,
-      subtotalCents,
-      updateQuantity
-    ]
+    [addItem, addItems, clearCart, closeCart, items, openCart, pickupMethod, pricing, removeItem, updateQuantity]
   );
 
   return (
     <CartContext.Provider value={value}>
       {children}
-      <CartDrawer open={open} onClose={() => setOpen(false)} />
+      {open ? <CartDrawer onClose={closeCart} /> : null}
     </CartContext.Provider>
   );
 }
 
 export function useCart() {
   const context = useContext(CartContext);
-
-  if (!context) {
-    throw new Error("useCart must be used within CartProvider.");
-  }
-
+  if (!context) throw new Error("useCart must be used within CartProvider.");
   return context;
 }
 
 export function CartButton({ className, compact = false }: { className?: string; compact?: boolean }) {
   const { itemCount, openCart } = useCart();
-
   return (
-    <button
-      type="button"
-      onClick={openCart}
-      className={cn(
-        "relative inline-flex min-h-10 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/28 px-3 text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring",
-        compact ? "w-full" : "w-10",
-        className
-      )}
-      aria-label={`Open cart with ${itemCount} item${itemCount === 1 ? "" : "s"}`}
-      title="Cart"
-    >
-      <ShoppingBag size={17} />
-      {compact ? <span className="text-xs uppercase tracking-[0.14em]">Cart</span> : null}
-      {itemCount > 0 ? (
-        <span className="absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#d4af37] px-1 text-[10px] font-bold text-black">
-          {itemCount}
-        </span>
-      ) : null}
+    <button type="button" onClick={openCart} className={cn("button button-secondary cart-provider-button", className)} aria-label={`Open cart with ${itemCount} item${itemCount === 1 ? "" : "s"}`}>
+      <ShoppingBag size={17} aria-hidden="true" /> {compact ? "Your Loot" : null}
+      {itemCount ? <span>{itemCount}</span> : null}
     </button>
   );
 }
 
-export function AddToCartButton({
-  variantId,
-  label,
-  className
-}: {
-  variantId: string;
-  label?: string;
-  className?: string;
-}) {
+export function AddToCartButton({ variantId, label = "Add to Loot", className }: { variantId: string; label?: string; className?: string }) {
   const { addItem } = useCart();
-  const variant = getStorefrontVariant(variantId);
-
-  if (!variant) {
-    return null;
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => addItem(variantId)}
-      className={cn(
-        "inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-[8px] border border-[#d4af37]/46 bg-[#d4af37] px-4 py-3 text-[0.78rem] font-black uppercase leading-5 tracking-[0.08em] text-black shadow-[0_8px_22px_rgba(212,175,55,0.18)] transition hover:-translate-y-0.5 hover:bg-[#fff4bd] focus-ring",
-        className
-      )}
-    >
-      <span className="text-left">{label ?? `Add ${variant.shortLabel}`}</span>
-      <ShoppingBag size={16} />
-    </button>
-  );
+  return <button type="button" className={cn("button button-primary", className)} onClick={() => addItem(variantId)}>{label}<ShoppingBag size={16} aria-hidden="true" /></button>;
 }
 
-function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+function CartDrawer({ onClose }: { onClose: () => void }) {
   const {
     detailedItems,
-    subtotalCents,
-    itemCount,
-    psaGuardCount,
+    pricing,
+    pickupMethod,
+    setPickupMethod,
     updateQuantity,
     removeItem,
     clearCart
   } = useCart();
+  const drawerRef = useRef<HTMLElement>(null);
+  const close = useCallback(() => onClose(), [onClose]);
+  useDialogFocus(true, drawerRef, close);
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const inquiryHref = useMemo(() => {
-    const subject = encodeURIComponent("Lucky's Loot Cart Inquiry");
-    const cartSummary =
-      detailedItems.length > 0
-        ? detailedItems
-            .map(
-              (item) =>
-                `${item.quantity} x ${item.variant.label} (${formatStorefrontCurrency(
-                  item.unitPriceCents
-                )} each)`
-            )
-            .join("\n")
-        : "I would like to ask about Lucky's Loot products.";
-    const body = encodeURIComponent(`${cartSummary}\n\nSubtotal: ${formatStorefrontCurrency(subtotalCents)}`);
-
-    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
-    return supportEmail
-      ? `mailto:${supportEmail}?subject=${subject}&body=${body}`
-      : "/contact?topic=cart";
-  }, [detailedItems, subtotalCents]);
-
   async function checkout() {
-    if (detailedItems.length === 0) {
-      return;
-    }
-
+    if (!detailedItems.length) return;
     setCheckingOut(true);
     setError(null);
-
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: detailedItems.map((item) => ({
-            variantId: item.variantId,
-            quantity: item.quantity
-          }))
+          items: detailedItems.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+          pickupMethod
         })
       });
       const payload = (await response.json()) as { url?: string; error?: string };
-
-      if (!response.ok || !payload.url) {
-        throw new Error(payload.error ?? "Checkout could not be started.");
-      }
-
+      if (!response.ok || !payload.url) throw new Error(payload.error ?? "Checkout could not be started.");
       window.location.href = payload.url;
     } catch (checkoutError) {
-      setError(
-        checkoutError instanceof Error
-          ? checkoutError.message
-          : "Checkout could not be started. Please send an inquiry instead."
-      );
+      setError(checkoutError instanceof Error ? checkoutError.message : "Checkout could not be started.");
     } finally {
       setCheckingOut(false);
     }
   }
 
-  return (
-    <div
-      className={cn(
-        "fixed inset-0 z-[95] transition",
-        open ? "pointer-events-auto" : "pointer-events-none"
-      )}
-      aria-hidden={!open}
-    >
-      <button
-        type="button"
-        className={cn(
-          "absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity",
-          open ? "opacity-100" : "opacity-0"
-        )}
-        onClick={onClose}
-        aria-label="Close cart overlay"
-      />
-      <aside
-        className={cn(
-          "absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-[#d4af37]/28 bg-[#0b0b0b] text-[#e7e0cf] shadow-[0_0_60px_rgba(0,0,0,0.72)] transition-transform duration-300",
-          open ? "translate-x-0" : "translate-x-full"
-        )}
-        aria-label="Shopping cart"
-      >
-        <div className="flex items-center justify-between border-b border-[#d4af37]/18 px-5 py-4">
-          <div>
-            <p className="font-pixel text-[0.72rem] uppercase text-[#d4af37]">Your Loot</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#8d866f]">
-              {itemCount} item{itemCount === 1 ? "" : "s"}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid h-10 w-10 place-items-center rounded-[8px] border border-[#d4af37]/24 text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
-            aria-label="Close cart"
-          >
-            <X size={18} />
-          </button>
-        </div>
+  const tierProgress =
+    pricing.guardQuantity >= 25
+      ? 100
+      : pricing.guardQuantity >= 10
+        ? 40 + ((pricing.guardQuantity - 10) / 15) * 60
+        : (pricing.guardQuantity / 10) * 40;
 
-        <div className="flex-1 overflow-auto px-5 py-5">
-          {detailedItems.length > 0 ? (
-            <div className="grid gap-4">
+  return (
+    <div className="cart-dialog-layer" role="presentation" onMouseDown={(event) => {
+      if (event.currentTarget === event.target) onClose();
+    }}>
+      <aside ref={drawerRef} className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <header className="cart-drawer-head">
+          <div><p className="eyebrow">Collector cart</p><h2 id="cart-title">Your Loot</h2><span>{pricing.itemCount} item{pricing.itemCount === 1 ? "" : "s"}</span></div>
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Close Your Loot"><X size={20} aria-hidden="true" /></button>
+        </header>
+
+        <div className="cart-drawer-body">
+          {detailedItems.length ? (
+            <div className="cart-line-list">
               {detailedItems.map((item) => (
-                <article
-                  key={item.variantId}
-                  className="grid grid-cols-[74px_1fr] gap-4 rounded-[8px] border border-[#d4af37]/16 bg-white/[0.035] p-3"
-                >
-                  <div className="relative h-[74px] overflow-hidden rounded-[8px] border border-[#d4af37]/18 bg-black">
-                    <Image
-                      src={item.variant.image}
-                      alt=""
-                      fill
-                      className={cn(
-                        isPsaGuardVariant(item.variant) ? "object-contain p-1.5" : "object-cover"
-                      )}
-                      sizes="74px"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-sm font-semibold text-white">{item.variant.label}</h3>
-                        <p className="mt-1 text-xs text-[#b8b0a0]">{item.variant.familyName}</p>
-                        {isPsaGuardVariant(item.variant) ? (
-                          <p className="mt-1 text-xs text-[#d4af37]">
-                            {formatStorefrontCurrency(item.unitPriceCents)} each
-                            {item.hasDiscount ? " bulk discount applied" : ""}
-                          </p>
-                        ) : null}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(item.variantId)}
-                        className="grid h-8 w-8 shrink-0 place-items-center rounded-[6px] text-[#8d866f] transition hover:bg-white/5 hover:text-[#d4af37] focus-ring"
-                        aria-label={`Remove ${item.variant.label}`}
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <div className="inline-flex items-center rounded-[8px] border border-[#d4af37]/18">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                          className="grid h-9 w-9 place-items-center text-[#d4af37] focus-ring"
-                          aria-label={`Decrease ${item.variant.label} quantity`}
-                        >
-                          <Minus size={14} />
-                        </button>
-                        <span className="grid h-9 min-w-10 place-items-center text-sm font-semibold">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                          className="grid h-9 w-9 place-items-center text-[#d4af37] focus-ring"
-                          aria-label={`Increase ${item.variant.label} quantity`}
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>
-                      <p className="text-sm font-semibold text-white">
-                        {formatStorefrontCurrency(item.lineTotalCents)}
-                      </p>
+                <article className="cart-line" key={item.variantId}>
+                  <Link className="cart-line-image" href={`/products/${item.productSlug}`} onClick={onClose}>
+                    <Image src={item.productImage} alt="" fill sizes="84px" />
+                  </Link>
+                  <div className="cart-line-copy">
+                    <div className="cart-line-title"><div><h3>{item.productName}</h3><p>{item.variantName}</p></div><button type="button" onClick={() => removeItem(item.variantId)} aria-label={`Remove ${item.productName} — ${item.variantName}`}><Trash2 size={16} aria-hidden="true" /></button></div>
+                    <div className="cart-line-price"><span>{formatCurrency(item.unitPriceCents)} each{item.discountCents ? " · bulk price" : ""}</span><strong>{formatCurrency(item.lineTotalCents)}</strong></div>
+                    <div className="quantity-control cart-line-quantity" aria-label={`${item.productName} quantity`}>
+                      <button type="button" onClick={() => updateQuantity(item.variantId, item.quantity - 1)} aria-label={`Decrease ${item.productName} quantity`}><Minus size={14} aria-hidden="true" /></button>
+                      <span>{item.quantity}</span>
+                      <button type="button" onClick={() => updateQuantity(item.variantId, item.quantity + 1)} aria-label={`Increase ${item.productName} quantity`}><Plus size={14} aria-hidden="true" /></button>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
           ) : (
-            <div className="grid min-h-80 place-items-center rounded-[8px] border border-dashed border-[#d4af37]/20 bg-white/[0.025] p-8 text-center">
-              <div>
-                <ShoppingBag className="mx-auto text-[#d4af37]" size={30} />
-                <p className="mt-5 font-pixel text-[0.7rem] uppercase text-[#d4af37]">Cart is empty</p>
-                <p className="mt-3 text-sm leading-6 text-[#b8b0a0]">
-                  Add acrylic cases, PSA guards, or binders to start checkout.
-                </p>
-              </div>
-            </div>
+            <div className="cart-empty-state"><ShoppingBag size={30} aria-hidden="true" /><h3>Your Loot is empty.</h3><p>Add a case, Guard mix, or binder to start.</p><Link className="button button-primary" href="/shop" onClick={onClose}>Shop supplies</Link></div>
           )}
-        </div>
 
-        <div className="border-t border-[#d4af37]/18 px-5 py-5">
-          <div className="grid gap-2 text-xs text-[#b8b0a0]">
-            <div className="flex items-center gap-2">
-              <ShieldCheck size={15} className="text-[#d4af37]" />
-              Secure Stripe checkout
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin size={15} className="text-[#d4af37]" />
-              Local pickup details confirmed after purchase
-            </div>
-          </div>
-
-          <div className="mt-5 flex items-center justify-between text-sm">
-            <span className="uppercase tracking-[0.18em] text-[#8d866f]">Subtotal</span>
-            <strong className="text-lg text-white">{formatStorefrontCurrency(subtotalCents)}</strong>
-          </div>
-          <p className="mt-2 text-xs leading-5 text-[#8d866f]">
-            Taxes, pickup notes, and custom engraving details are handled during checkout or follow-up.
-          </p>
-          {psaGuardCount > 0 ? (
-            <p className="mt-2 text-xs leading-5 text-[#d4af37]">
-              PSA Guard discount applied automatically from {psaGuardCount} guard
-              {psaGuardCount === 1 ? "" : "s"} in cart.
-            </p>
-          ) : null}
-
-          {error ? (
-            <div className="mt-4 rounded-[8px] border border-[#d4af37]/24 bg-[#d4af37]/10 p-3 text-xs leading-5 text-[#f4df91]">
-              {error}
+          {pricing.guardQuantity > 0 ? (
+            <div className="cart-tier-card">
+              <div><strong>{pricing.guardQuantity} PSA Guard{pricing.guardQuantity === 1 ? "" : "s"}</strong><span>{formatCurrency(detailedItems.find((item) => item.productId === "psa-guards")?.unitPriceCents ?? 700)} each</span></div>
+              <div className="tier-progress-track"><span style={{ width: `${tierProgress}%` }} /></div>
+              <p>{getGuardPricingMessage(pricing.guardQuantity)}</p>
             </div>
           ) : null}
 
-          <div className="mt-5 grid gap-3">
-            <button
-              type="button"
-              onClick={checkout}
-              disabled={checkingOut || detailedItems.length === 0}
-              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-5 py-3 font-pixel text-[0.62rem] uppercase text-black shadow-[0_10px_26px_rgba(212,175,55,0.22)] transition hover:bg-[#fff4bd] disabled:cursor-not-allowed disabled:opacity-55 focus-ring"
-            >
-              {checkingOut ? <Loader2 className="animate-spin" size={17} /> : <ShoppingBag size={17} />}
-              Checkout
-            </button>
-            <a
-              href={inquiryHref}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/32 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
-            >
-              <Mail size={16} />
-              Ask about Your Loot
-            </a>
-            {detailedItems.length > 0 ? (
-              <button
-                type="button"
-                onClick={clearCart}
-                className="text-xs uppercase tracking-[0.16em] text-[#8d866f] transition hover:text-[#d4af37] focus-ring"
-              >
-                Clear cart
-              </button>
-            ) : null}
-          </div>
+          <fieldset className="pickup-selector">
+            <legend>Choose pickup</legend>
+            <label><input type="radio" name="pickup-method" value="richmond" checked={pickupMethod === "richmond"} onChange={() => setPickupMethod("richmond")} /><span><MapPin size={18} aria-hidden="true" /><strong>Richmond / Houston area</strong><small>Exact private details after payment.</small></span></label>
+            <label className="is-disabled"><input type="radio" name="pickup-method" value="event" disabled checked={pickupMethod === "event"} onChange={() => setPickupMethod("event")} /><span><MapPin size={18} aria-hidden="true" /><strong>Event pickup</strong><small>Available only when a verified future event is eligible.</small></span></label>
+          </fieldset>
         </div>
+
+        <footer className="cart-drawer-foot">
+          {pricing.discountCents ? <div className="cart-discount-row"><span>Bulk savings</span><strong>−{formatCurrency(pricing.discountCents)}</strong></div> : null}
+          <div className="cart-subtotal-row"><span>Subtotal</span><strong>{formatCurrency(pricing.subtotalCents)}</strong></div>
+          <p>Tax handling is finalized in secure checkout. Pickup has no shipping charge.</p>
+          {error ? <div className="cart-error" role="alert">{error}</div> : null}
+          <button className="button button-primary cart-checkout" type="button" disabled={!detailedItems.length || checkingOut} onClick={checkout}>
+            {checkingOut ? <Loader2 className="spin" size={17} aria-hidden="true" /> : <Check size={17} aria-hidden="true" />} Secure checkout
+          </button>
+          <Link className="cart-contact-link" href="/contact?topic=cart" onClick={onClose}>Ask about Your Loot <ArrowRight size={15} aria-hidden="true" /></Link>
+          {detailedItems.length ? <button className="cart-clear" type="button" onClick={clearCart}>Clear Your Loot</button> : null}
+        </footer>
       </aside>
     </div>
   );
 }
 
-function sanitizeCartItems(items: CartItem[]) {
-  if (!Array.isArray(items)) {
-    return [];
+function mergeCartItems(current: ReadonlyArray<CartItem>, incoming: ReadonlyArray<CartItem>) {
+  const quantities = new Map(current.map((item) => [item.variantId, item.quantity]));
+  for (const item of incoming) {
+    const resolved = getVariantById(item.variantId);
+    const maximum = getVariantMaximum(item.variantId);
+    if (!maximum || !resolved) continue;
+    const existing = quantities.get(item.variantId) ?? 0;
+    const next = existing + Math.max(1, Math.floor(item.quantity));
+
+    if (resolved.product.id === "psa-guards") {
+      const guardTotal = Array.from(quantities).reduce((total, [variantId, quantity]) => {
+        return total + (getVariantById(variantId)?.product.id === "psa-guards" ? quantity : 0);
+      }, 0);
+      const otherGuardQuantity = guardTotal - existing;
+      quantities.set(
+        item.variantId,
+        Math.min(next, maximum, Math.max(0, resolved.product.maxPerOrder - otherGuardQuantity))
+      );
+    } else {
+      quantities.set(item.variantId, Math.min(next, maximum));
+    }
   }
+  return Array.from(quantities, ([variantId, quantity]) => ({ variantId, quantity })).filter(
+    (item) => item.quantity > 0
+  );
+}
 
-  return items
-    .map((item) => {
-      const variant = getStorefrontVariant(item.variantId);
-      if (!variant) {
-        return null;
-      }
+function getVariantMaximum(variantId: string) {
+  const resolved = getVariantById(variantId);
+  if (!resolved || !isVariantPurchasable(resolved.product, resolved.variant)) return 0;
+  return Math.min(
+    resolved.product.maxPerOrder,
+    resolved.variant.stockQuantity ?? resolved.product.stockQuantity ?? resolved.product.maxPerOrder
+  );
+}
 
-      return {
-        variantId: item.variantId,
-        quantity: Math.min(Math.max(Number(item.quantity) || 1, 1), variant.maxQuantity)
-      };
-    })
-    .filter(Boolean) as CartItem[];
+function sanitizeCartItems(items: ReadonlyArray<CartItem>) {
+  if (!Array.isArray(items)) return [];
+  const sanitized = items.flatMap((item) => {
+    const maximum = getVariantMaximum(item.variantId);
+    const quantity = Math.floor(Number(item.quantity));
+    if (!maximum || !Number.isFinite(quantity) || quantity < 1) return [];
+    return [{ variantId: item.variantId, quantity: Math.min(quantity, maximum) }];
+  });
+  return mergeCartItems([], sanitized);
 }

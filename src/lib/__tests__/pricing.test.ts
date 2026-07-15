@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateCartPricing,
   calculateCheckoutAmountCents,
+  getGuardPricingMessage,
   getGuardUnitPriceCents
 } from "@/lib/pricing";
 
@@ -37,6 +38,25 @@ describe("PSA Guard bulk pricing", () => {
     expect(pricing.lines.every((line) => line.unitPriceCents === 400)).toBe(true);
     expect(pricing.discountCents).toBe(7500);
     expect(pricing.subtotalCents).toBe(10000);
+  });
+
+  it("enforces the aggregate Guard maximum across mixed colors", () => {
+    expect(() =>
+      calculateCartPricing([
+        { variantId: "psa-guards-arctic", quantity: 50 },
+        { variantId: "psa-guards-emerald", quantity: 50 }
+      ])
+    ).toThrow("PSA Guard quantity exceeds the allowed cart maximum");
+  });
+
+  it.each([
+    [1, "Add 9 more guards to unlock $6 each."],
+    [9, "Add 1 more guards to unlock $6 each."],
+    [10, "$6 pricing unlocked. Add 15 more to unlock $4 each."],
+    [24, "$6 pricing unlocked. Add 1 more to unlock $4 each."],
+    [25, "Best bulk price unlocked: $4 each."]
+  ])("returns the required tier progress message at %i", (quantity, expected) => {
+    expect(getGuardPricingMessage(quantity)).toBe(expected);
   });
 });
 
