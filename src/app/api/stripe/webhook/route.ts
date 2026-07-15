@@ -95,6 +95,7 @@ async function recordPaidCheckoutSession(session: Stripe.Checkout.Session) {
         customer_email: session.customer_details?.email ?? session.customer_email ?? null,
         customer_name: session.customer_details?.name ?? null,
         pickup_method: decoded.pickupMethod,
+        pickup_event_id: decoded.pickupEventId,
         pickup_notes: pickupNotes ?? null,
         checkout_items: decoded.items,
         pricing_snapshot: pricing,

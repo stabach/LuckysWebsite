@@ -44,7 +44,7 @@ export function SiteFooter() {
       </div>
       <div className="section-shell footer-bottom">
         <p>© {new Date().getFullYear()} Lucky’s Loot. All rights reserved.</p>
-        <p>Secure online checkout with Houston-area and event pickup options.</p>
+        <p>Secure online checkout with Houston-area pickup and eligible event pickup.</p>
       </div>
     </footer>
   );

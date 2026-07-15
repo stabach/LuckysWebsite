@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Stripe from "stripe";
 import { ClearCartAfterCheckout } from "@/components/checkout/clear-cart-after-checkout";
+import { storeEvents } from "@/data/events";
 import { decodeCheckoutMetadata } from "@/lib/checkout-metadata";
 import { formatCurrency } from "@/lib/catalog";
+import { getEventById } from "@/lib/events";
 
 export const metadata: Metadata = {
   title: "Order Confirmed",
@@ -20,9 +22,12 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
   const session = await getCheckoutSession(sessionId);
   const paid = session?.payment_status === "paid";
   const checkout = decodeCheckoutMetadata(session?.metadata);
+  const pickupEvent = checkout?.pickupEventId
+    ? getEventById(storeEvents, checkout.pickupEventId)
+    : undefined;
   const pickupLabel =
     checkout?.pickupMethod === "event"
-      ? "Eligible event pickup"
+      ? pickupEvent?.title ?? "Verified event pickup"
       : checkout?.pickupMethod === "richmond"
         ? "Richmond / Houston-area pickup"
         : "Not verified";

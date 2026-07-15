@@ -28,16 +28,25 @@ export function AccountPageShell({ children }: { children: ReactNode }) {
 }
 
 export function AuthSetupNotice() {
+  const isDevelopment = process.env.NODE_ENV !== "production";
+
   return (
     <AccountPageShell>
       <section className="account-setup-notice">
         <ShieldCheck aria-hidden="true" size={34} />
         <p className="eyebrow">Customer account</p>
-        <h1>Account access is being configured.</h1>
-        <p>
-          Shopping and secure checkout remain available. Account login and protected order history
-          will appear here once the storefront’s account service is connected.
-        </p>
+        <h1>{isDevelopment ? "Account setup is incomplete." : "Account access is temporarily unavailable."}</h1>
+        {isDevelopment ? (
+          <p>
+            Add <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+            to enable customer login and protected order history in this environment.
+          </p>
+        ) : (
+          <p>
+            Shopping and secure guest checkout remain available. Contact Lucky’s Loot if you need
+            help locating an existing paid order.
+          </p>
+        )}
         <div className="button-row">
           <Link className="button button-primary" href="/shop">
             Shop supplies

@@ -59,6 +59,7 @@ export type AccountOrder = {
   email: string | null;
   customerName: string | null;
   pickupMethod: string | null;
+  pickupEventId: string | null;
   pickupNotes: string | null;
   shippingAddress: AccountAddress | null;
   billingAddress: AccountAddress | null;
@@ -250,6 +251,7 @@ function normalizeOrder(raw: Record<string, unknown>): AccountOrder {
     email: stringValue(raw.customer_email),
     customerName: stringValue(raw.customer_name),
     pickupMethod: stringValue(raw.pickup_method),
+    pickupEventId: stringValue(raw.pickup_event_id),
     pickupNotes: stringValue(raw.pickup_notes),
     shippingAddress: addressValue(raw.shipping_address),
     billingAddress: addressValue(raw.billing_address),

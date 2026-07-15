@@ -3,6 +3,7 @@
 
 alter table public.orders
   add column if not exists pickup_method text not null default 'richmond',
+  add column if not exists pickup_event_id text,
   add column if not exists pricing_snapshot jsonb not null default '{}'::jsonb;
 
 alter table public.orders
@@ -11,6 +12,13 @@ alter table public.orders
 alter table public.orders
   add constraint orders_pickup_method_check
   check (pickup_method in ('richmond', 'event'));
+
+alter table public.orders
+  drop constraint if exists orders_pickup_event_check;
+
+alter table public.orders
+  add constraint orders_pickup_event_check
+  check (pickup_method <> 'event' or pickup_event_id is not null);
 
 alter table public.order_items
   add column if not exists catalog_product_id text;

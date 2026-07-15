@@ -13,8 +13,10 @@ import {
   formatDate
 } from "@/components/account/account-ui";
 import { SignOutButton } from "@/components/account/sign-out-button";
+import { storeEvents } from "@/data/events";
 import { getCustomerOrderById, getRequiredAccountSession } from "@/lib/account";
 import { formatCurrency } from "@/lib/catalog";
+import { getEventById } from "@/lib/events";
 
 export const metadata: Metadata = {
   title: "Order Details",
@@ -58,6 +60,10 @@ export default async function AccountOrderDetailPage({ params }: OrderDetailPage
     );
   }
 
+  const pickupEvent = order.pickupEventId
+    ? getEventById(storeEvents, order.pickupEventId)
+    : undefined;
+
   return (
     <AccountPageShell>
       <AccountHero
@@ -96,7 +102,7 @@ export default async function AccountOrderDetailPage({ params }: OrderDetailPage
               label="Pickup"
               value={
                 order.pickupMethod === "event"
-                  ? "Eligible event pickup"
+                  ? pickupEvent?.title ?? "Verified event pickup"
                   : "Richmond / Houston area"
               }
             />

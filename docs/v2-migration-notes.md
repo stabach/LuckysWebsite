@@ -64,6 +64,6 @@ patterns but validates missing configuration safely and documents the exact requ
 ## V2 order migration
 
 Before enabling V2 checkout in production, apply `supabase/v2_storefront_migration.sql` after the
-existing schema. It adds the server-verified pickup method, immutable pricing snapshot, canonical
-catalog product identifier, and order-history indexes used by the V2 webhook and account routes.
+existing schema. It adds the server-verified pickup method and eligible event identifier, immutable
+pricing snapshot, canonical catalog product identifier, and order-history indexes used by the V2 webhook and account routes.
 The migration is additive and safe to rerun; it does not delete legacy order data.

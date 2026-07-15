@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { storeEvents } from "@/data/events";
 import { encodeCheckoutMetadata, type CheckoutPickupMethod } from "@/lib/checkout-metadata";
 import { getVariantById } from "@/lib/catalog";
+import { getEventById, isEventPickupEligible } from "@/lib/events";
 import { calculateCartPricing, type CartLineInput } from "@/lib/pricing";
 import { createSupabaseServerClient, hasSupabaseServerEnv } from "@/lib/supabase/server";
 
@@ -14,12 +16,13 @@ type CheckoutItemInput = {
 };
 
 export async function POST(request: Request) {
-  let payload: { items?: CheckoutItemInput[]; pickupMethod?: unknown };
+  let payload: { items?: CheckoutItemInput[]; pickupMethod?: unknown; pickupEventId?: unknown };
 
   try {
     payload = (await request.json()) as {
       items?: CheckoutItemInput[];
       pickupMethod?: unknown;
+      pickupEventId?: unknown;
     };
   } catch {
     return NextResponse.json({ error: "Invalid checkout payload." }, { status: 400 });
@@ -38,7 +41,10 @@ export async function POST(request: Request) {
   if (!pickupMethod) {
     return NextResponse.json({ error: "Choose an available pickup method." }, { status: 400 });
   }
-  if (pickupMethod === "event") {
+  const pickupEventId =
+    typeof payload.pickupEventId === "string" ? payload.pickupEventId.trim() : "";
+  const pickupEvent = pickupEventId ? getEventById(storeEvents, pickupEventId) : undefined;
+  if (pickupMethod === "event" && (!pickupEvent || !isEventPickupEligible(pickupEvent))) {
     return NextResponse.json(
       { error: "Event pickup is not available without an eligible verified event." },
       { status: 400 }
@@ -70,7 +76,7 @@ export async function POST(request: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const checkoutCustomer = await getCheckoutCustomer();
   const checkoutMetadata = {
-    ...encodeCheckoutMetadata(pricing.lines, pickupMethod),
+    ...encodeCheckoutMetadata(pricing.lines, pickupMethod, pickupEvent?.id),
     ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
   };
 

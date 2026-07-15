@@ -1,102 +1,103 @@
 import { NextResponse } from "next/server";
+import { ContactPayloadSchema } from "@/lib/contact-schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const contactCategories = ["General Inquiry", "Order Problem", "Other"] as const;
 const contactEmail = "LuckysLootSupplies@gmail.com";
-
-type ContactCategory = (typeof contactCategories)[number];
-
-type ContactPayload = {
-  category?: unknown;
-  name?: unknown;
-  email?: unknown;
-  orderNumber?: unknown;
-  subject?: unknown;
-  message?: unknown;
-};
+const rateLimit = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
 
 export async function POST(request: Request) {
-  let payload: ContactPayload;
-
+  let rawPayload: unknown;
   try {
-    payload = (await request.json()) as ContactPayload;
+    rawPayload = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid contact form payload." }, { status: 400 });
   }
 
-  const category = sanitize(payload.category);
-  const name = sanitize(payload.name);
-  const email = sanitize(payload.email);
-  const orderNumber = sanitize(payload.orderNumber);
-  const subject = sanitize(payload.subject);
-  const message = sanitize(payload.message);
-
-  if (!isContactCategory(category)) {
-    return NextResponse.json({ error: "Please choose a valid category." }, { status: 400 });
+  const parsed = ContactPayloadSchema.safeParse(rawPayload);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message || "Check the highlighted contact details." },
+      { status: 400 }
+    );
   }
 
-  if (!name || !email || !subject || !message) {
-    return NextResponse.json({ error: "Please fill out every required field." }, { status: 400 });
+  if (parsed.data.website) {
+    return NextResponse.json({ ok: true });
   }
 
-  if (!isValidEmail(email)) {
-    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+  const clientKey = getClientKey(request);
+  if (!consumeRateLimit(clientKey, Date.now())) {
+    return NextResponse.json(
+      { error: "Too many messages were sent. Please wait before trying again." },
+      { status: 429 }
+    );
   }
 
   if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
-      {
-        error:
-          "Email is not configured yet. Add RESEND_API_KEY to .env.local before using the contact form."
-      },
+      { error: "Message delivery is temporarily unavailable. Please try again later." },
       { status: 503 }
     );
   }
 
-  const emailSubject = `[${category}] ${subject}`;
+  const payload = parsed.data;
+  const safeSubject = stripControlCharacters(payload.subject);
+  const emailSubject = `[${payload.category}] ${safeSubject}`;
   const text = [
-    `Category: ${category}`,
-    `Name: ${name}`,
-    `Email: ${email}`,
-    `Order Number: ${orderNumber || "N/A"}`,
+    `Category: ${payload.category}`,
+    `Name: ${payload.name}`,
+    `Email: ${payload.email}`,
+    `Order Number: ${payload.orderNumber || "N/A"}`,
+    `Product: ${payload.product || "N/A"}`,
+    `Subject: ${safeSubject}`,
     "",
     "Message:",
-    message
+    payload.message
   ].join("\n");
   const html = `
     <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.55;">
       <h2>Lucky's Loot Contact Form</h2>
-      <p><strong>Category:</strong> ${escapeHtml(category)}</p>
-      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-      <p><strong>Order Number:</strong> ${escapeHtml(orderNumber || "N/A")}</p>
-      <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+      <p><strong>Category:</strong> ${escapeHtml(payload.category)}</p>
+      <p><strong>Name:</strong> ${escapeHtml(payload.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(payload.email)}</p>
+      <p><strong>Order Number:</strong> ${escapeHtml(payload.orderNumber || "N/A")}</p>
+      <p><strong>Product:</strong> ${escapeHtml(payload.product || "N/A")}</p>
+      <p><strong>Subject:</strong> ${escapeHtml(safeSubject)}</p>
       <hr />
-      <p>${escapeHtml(message).replace(/\n/g, "<br />")}</p>
+      <p>${escapeHtml(payload.message).replace(/\n/g, "<br />")}</p>
     </div>
   `;
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: process.env.CONTACT_FROM_EMAIL || "Lucky's Loot Contact <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO_EMAIL || contactEmail],
-      reply_to: email,
-      subject: emailSubject,
-      text,
-      html
-    })
-  });
+  try {
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        from: process.env.CONTACT_FROM_EMAIL || "Lucky's Loot Contact <onboarding@resend.dev>",
+        to: [process.env.CONTACT_TO_EMAIL || contactEmail],
+        reply_to: payload.email,
+        subject: emailSubject,
+        text,
+        html
+      })
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: "Message could not be delivered. Please try again later." },
+        { status: 502 }
+      );
+    }
+  } catch {
     return NextResponse.json(
-      { error: "Message could not be sent. Please try again." },
+      { error: "Message could not be delivered. Please try again later." },
       { status: 502 }
     );
   }
@@ -104,16 +105,21 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-function sanitize(value: unknown) {
-  return typeof value === "string" ? value.trim().slice(0, 4000) : "";
+function consumeRateLimit(key: string, now: number) {
+  const recent = (rateLimit.get(key) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT_MAX) return false;
+  rateLimit.set(key, [...recent, now]);
+  return true;
 }
 
-function isContactCategory(value: string): value is ContactCategory {
-  return contactCategories.includes(value as ContactCategory);
+function getClientKey(request: Request) {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "local";
 }
 
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+function stripControlCharacters(value: string) {
+  return value.replace(/[\r\n\t]+/g, " ").trim();
 }
 
 function escapeHtml(value: string) {

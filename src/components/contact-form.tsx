@@ -3,33 +3,40 @@
 import { CheckCircle2, Loader2, Mail, Send } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-
-type ContactCategory = "General Inquiry" | "Order Problem" | "Other";
+import { contactCategories, type ContactCategory } from "@/lib/contact-schema";
 
 type ContactFormState = {
   category: ContactCategory;
   name: string;
   email: string;
   orderNumber: string;
+  product: string;
   subject: string;
   message: string;
+  website: string;
 };
 
-const initialFormState: ContactFormState = {
-  category: "General Inquiry",
-  name: "",
-  email: "",
-  orderNumber: "",
-  subject: "",
-  message: ""
-};
-
-const contactCategories: ContactCategory[] = ["General Inquiry", "Order Problem", "Other"];
-
-export function ContactForm() {
-  const [form, setForm] = useState<ContactFormState>(initialFormState);
+export function ContactForm({
+  initialCategory,
+  products
+}: {
+  initialCategory: ContactCategory;
+  products: Array<{ id: string; name: string }>;
+}) {
+  const [form, setForm] = useState<ContactFormState>({
+    category: initialCategory,
+    name: "",
+    email: "",
+    orderNumber: "",
+    product: "",
+    subject: "",
+    message: "",
+    website: ""
+  });
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const needsOrder = form.category === "Existing Order";
+  const needsProduct = ["Product Fit Question", "Custom Engraving"].includes(form.category);
 
   function updateField<Key extends keyof ContactFormState>(field: Key, value: ContactFormState[Key]) {
     setForm((current) => ({ ...current, [field]: value }));
@@ -43,19 +50,12 @@ export function ContactForm() {
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
       });
       const result = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(result.error || "Message could not be sent.");
-      }
-
+      if (!response.ok) throw new Error(result.error || "Message could not be sent.");
       setStatus("success");
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (submitError) {
       setStatus("error");
       setError(submitError instanceof Error ? submitError.message : "Message could not be sent.");
@@ -64,144 +64,195 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <section className="min-h-screen bg-[#050505] px-4 pb-16 pt-28 text-[#e7e0cf] sm:px-6 sm:pt-32">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[30rem] category-star-fade opacity-60" />
-        <div className="relative mx-auto grid max-w-3xl justify-items-center rounded-[8px] border border-[#d4af37]/24 bg-[#111111]/88 p-8 text-center shadow-[0_18px_60px_rgba(0,0,0,0.36)] sm:p-12">
-          <CheckCircle2 className="text-[#d4af37]" size={54} />
-          <p className="mt-6 font-pixel text-[0.72rem] uppercase leading-6 text-[#d4af37]">
-            Message Sent
-          </p>
-          <h1 className="mt-4 text-3xl font-bold text-white sm:text-5xl">
-            Thanks for reaching out.
-          </h1>
-          <p className="mt-5 max-w-xl text-sm leading-7 text-[#b8b0a0] sm:text-base">
-            Your message was sent to Lucky&apos;s Loot. We&apos;ll review it and get back to you as soon as possible.
-          </p>
-          <Link
-            href="/"
-            className="mt-8 inline-flex min-h-12 items-center justify-center rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-6 text-sm font-semibold uppercase tracking-[0.14em] text-black transition hover:bg-[#f3d65c] focus-ring"
-          >
-            Back Home
-          </Link>
-        </div>
-      </section>
+      <div className="info-page">
+        <section className="contact-success section-shell">
+          <CheckCircle2 aria-hidden="true" size={48} />
+          <p className="eyebrow">Message sent</p>
+          <h1>Thanks for reaching out.</h1>
+          <p>Your message was delivered to Lucky’s Loot with your email set as the reply address.</p>
+          <div className="button-row">
+            <Link className="button button-primary" href="/shop">
+              Return to shop
+            </Link>
+            <button className="button button-secondary" type="button" onClick={() => setStatus("idle")}>
+              Send another message
+            </button>
+          </div>
+        </section>
+      </div>
     );
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[#050505] px-4 pb-16 pt-28 text-[#e7e0cf] sm:px-6 sm:pt-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[34rem] category-star-fade opacity-70" />
-      <div className="relative mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-        <div>
-          <p className="font-pixel text-[0.7rem] uppercase leading-6 text-[#d4af37]">
-            Contact Lucky&apos;s Loot
-          </p>
-          <h1 className="gold-glow mt-5 text-4xl font-bold leading-tight text-[#d4af37] sm:text-6xl">
-            Send us a message.
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-8 text-[#b8b0a0]">
-            Choose the closest category and include the details we&apos;ll need to help with products, orders, or pickup questions.
-          </p>
-          <div className="mt-8 rounded-[8px] border border-[#d4af37]/18 bg-black/42 p-5">
-            <Mail className="text-[#d4af37]" size={21} />
-            <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-white">
-              Messages send to
-            </p>
-            <p className="mt-2 text-sm text-[#b8b0a0]">LuckysLootSupplies@gmail.com</p>
-          </div>
-        </div>
+    <div className="info-page contact-page">
+      <header className="info-hero section-shell">
+        <p className="eyebrow">Contact Lucky’s Loot</p>
+        <h1>Send the details. We’ll route the question.</h1>
+        <p>
+          Use the closest category so product-fit, order, pickup, bulk, or engraving questions arrive
+          with the context needed to help.
+        </p>
+      </header>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid gap-5 rounded-[8px] border border-[#d4af37]/24 bg-[#111111]/88 p-5 shadow-[0_18px_60px_rgba(0,0,0,0.34)] sm:p-7"
-        >
-          <label className="grid gap-2">
-            <span className="text-sm font-semibold text-white">Category</span>
-            <select
-              className="h-12 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
-              value={form.category}
-              onChange={(event) => updateField("category", event.target.value as ContactCategory)}
+      <section className="contact-layout section-shell">
+        <aside className="contact-aside">
+          <Mail aria-hidden="true" size={22} />
+          <h2>Before you send</h2>
+          <ul>
+            <li>Include measurements for specialty boxes or non-PSA slabs.</li>
+            <li>Use the order number from your receipt for paid-order questions.</li>
+            <li>Do not send payment card details through this form.</li>
+          </ul>
+          <p>No response-time promise is published until the owner confirms one.</p>
+        </aside>
+
+        <form className="contact-form" onSubmit={handleSubmit} noValidate>
+          <ContactSelect
+            label="Category"
+            value={form.category}
+            onChange={(value) => updateField("category", value as ContactCategory)}
+            options={contactCategories.map((category) => ({ value: category, label: category }))}
+            required
+          />
+
+          <div className="contact-field-row">
+            <ContactInput
+              label="Name"
+              value={form.name}
+              onChange={(value) => updateField("name", value)}
+              autoComplete="name"
               required
-            >
-              {contactCategories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-white">Name</span>
-              <input
-                className="h-12 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
-                value={form.name}
-                onChange={(event) => updateField("name", event.target.value)}
-                autoComplete="name"
-                required
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-white">Email</span>
-              <input
-                className="h-12 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
-                value={form.email}
-                onChange={(event) => updateField("email", event.target.value)}
-                autoComplete="email"
-                type="email"
-                required
-              />
-            </label>
+            />
+            <ContactInput
+              label="Email"
+              value={form.email}
+              onChange={(value) => updateField("email", value)}
+              autoComplete="email"
+              type="email"
+              required
+            />
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-white">Order Number <span className="text-[#8d866f]">(If applicable)</span></span>
-              <input
-                className="h-12 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
-                value={form.orderNumber}
-                onChange={(event) => updateField("orderNumber", event.target.value)}
-                autoComplete="off"
-              />
-            </label>
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold text-white">Subject</span>
-              <input
-                className="h-12 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
-                value={form.subject}
-                onChange={(event) => updateField("subject", event.target.value)}
-                required
-              />
-            </label>
-          </div>
+          {needsOrder ? (
+            <ContactInput
+              label="Order number"
+              value={form.orderNumber}
+              onChange={(value) => updateField("orderNumber", value)}
+              autoComplete="off"
+              required
+            />
+          ) : null}
 
-          <label className="grid gap-2">
-            <span className="text-sm font-semibold text-white">Message</span>
+          {needsProduct ? (
+            <ContactSelect
+              label="Product"
+              value={form.product}
+              onChange={(value) => updateField("product", value)}
+              options={[
+                { value: "", label: "Choose a product" },
+                ...products.map((product) => ({ value: product.name, label: product.name })),
+                { value: "Not sure", label: "I’m not sure" }
+              ]}
+              required
+            />
+          ) : null}
+
+          <ContactInput
+            label="Subject"
+            value={form.subject}
+            onChange={(value) => updateField("subject", value)}
+            required
+          />
+
+          <label className="contact-field">
+            <span>Message</span>
             <textarea
-              className="min-h-40 rounded-[8px] border border-[#d4af37]/22 bg-black px-3 py-3 text-[#e7e0cf] outline-none transition focus:border-[#d4af37]"
               value={form.message}
               onChange={(event) => updateField("message", event.target.value)}
+              minLength={10}
+              maxLength={4000}
               required
             />
           </label>
 
-          {status === "error" ? (
-            <p className="rounded-[8px] border border-red-400/30 bg-red-950/30 px-3 py-2 text-sm text-red-100">
-              {error}
-            </p>
-          ) : null}
+          <label className="contact-honeypot" aria-hidden="true">
+            Website
+            <input
+              value={form.website}
+              onChange={(event) => updateField("website", event.target.value)}
+              autoComplete="off"
+              tabIndex={-1}
+            />
+          </label>
 
-          <button
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-5 text-sm font-semibold uppercase tracking-[0.14em] text-black transition hover:bg-[#f3d65c] disabled:cursor-not-allowed disabled:opacity-60 focus-ring"
-            type="submit"
-            disabled={status === "submitting"}
-          >
-            {status === "submitting" ? <Loader2 className="animate-spin" size={17} /> : <Send size={17} />}
-            Submit
+          {status === "error" ? <p className="contact-error" role="alert">{error}</p> : null}
+
+          <button className="button button-primary contact-submit" type="submit" disabled={status === "submitting"}>
+            {status === "submitting" ? (
+              <Loader2 className="spin" aria-hidden="true" size={17} />
+            ) : (
+              <Send aria-hidden="true" size={17} />
+            )}
+            Send message
           </button>
         </form>
-      </div>
-    </section>
+      </section>
+    </div>
+  );
+}
+
+function ContactInput({
+  label,
+  value,
+  onChange,
+  type = "text",
+  autoComplete,
+  required
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  autoComplete?: string;
+  required?: boolean;
+}) {
+  return (
+    <label className="contact-field">
+      <span>{label}</span>
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        type={type}
+        autoComplete={autoComplete}
+        required={required}
+      />
+    </label>
+  );
+}
+
+function ContactSelect({
+  label,
+  value,
+  onChange,
+  options,
+  required
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+  required?: boolean;
+}) {
+  return (
+    <label className="contact-field">
+      <span>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)} required={required}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

@@ -20,6 +20,7 @@ Unverified values stay in this record and are omitted from customer-facing claim
 - [ ] VERIFY: supplied interactive acrylic video depicts the launch Crystal Slab Acrylic Case SKU.
 - [ ] VERIFY: replace the supplied interactive acrylic video with a clean export or approve its visible Runway watermark for launch.
 - [ ] VERIFY: Richmond/Houston-area pickup wording and event-pickup operating rules.
+- [ ] VERIFY: year, timezone-aware start/end times, venue, directions, flyer permission, and pickup cutoff for each legacy event flyer before publishing it.
 - [ ] VERIFY: legal business name for footer and policy pages.
 - [ ] VERIFY: Instagram profile URL.
 - [ ] VERIFY: privacy-policy and terms-of-sale language with the owner or counsel.
@@ -30,4 +31,5 @@ Numeric binder capacity for the 4-pocket binder, unverified acrylic dimensions, 
 fitment, UV percentages, PVC-free/acid-free wording, universal 8 mm wording, magnet counts, pickup
 timing, return promises, tax-included wording, fixed engraving prices, review counts, and private
 pickup addresses. The supplied acrylic video is treated as an interactive preview, not a seamless
-360° claim, until the product match and clean export are verified.
+360° claim, until the product match and clean export are verified. Legacy event flyers remain
+unpublished because their month/day labels do not provide a verified year or pickup cutoff.

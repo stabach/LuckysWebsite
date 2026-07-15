@@ -23,8 +23,10 @@ import {
   useRef,
   useState
 } from "react";
+import { storeEvents, type StoreEvent } from "@/data/events";
 import { useDialogFocus } from "@/hooks/use-dialog-focus";
 import { getVariantById, formatCurrency } from "@/lib/catalog";
+import { getEligiblePickupEvents } from "@/lib/events";
 import { isVariantPurchasable } from "@/lib/inventory";
 import {
   calculateCartPricing,
@@ -45,7 +47,10 @@ type CartContextValue = {
   psaGuardCount: number;
   subtotalCents: number;
   pickupMethod: PickupMethod;
+  pickupEventId: string | null;
+  eligiblePickupEvents: StoreEvent[];
   setPickupMethod: (method: PickupMethod) => void;
+  setPickupEventId: (eventId: string | null) => void;
   openCart: () => void;
   closeCart: () => void;
   addItem: (variantId: string, quantity?: number) => void;
@@ -63,17 +68,30 @@ const emptyPricing = calculateCartPricing([]);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [pickupMethod, setPickupMethod] = useState<PickupMethod>("richmond");
+  const [pickupEventId, setPickupEventId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const eligiblePickupEvents = useMemo(() => getEligiblePickupEvents(storeEvents), []);
 
   useEffect(() => {
     setMounted(true);
     try {
       const saved = window.localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as { items?: CartItem[]; pickupMethod?: PickupMethod };
+        const parsed = JSON.parse(saved) as {
+          items?: CartItem[];
+          pickupMethod?: PickupMethod;
+          pickupEventId?: string | null;
+        };
         setItems(sanitizeCartItems(parsed.items ?? []));
-        setPickupMethod("richmond");
+        const savedEvent = eligiblePickupEvents.find((event) => event.id === parsed.pickupEventId);
+        if (parsed.pickupMethod === "event" && savedEvent) {
+          setPickupMethod("event");
+          setPickupEventId(savedEvent.id);
+        } else {
+          setPickupMethod("richmond");
+          setPickupEventId(null);
+        }
         return;
       }
 
@@ -82,12 +100,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {
       setItems([]);
     }
-  }, []);
+  }, [eligiblePickupEvents]);
 
   useEffect(() => {
     if (!mounted) return;
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items, pickupMethod }));
-  }, [items, mounted, pickupMethod]);
+    window.localStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({ items, pickupMethod, pickupEventId })
+    );
+  }, [items, mounted, pickupEventId, pickupMethod]);
+
+  useEffect(() => {
+    if (pickupMethod === "event" && !eligiblePickupEvents.some((event) => event.id === pickupEventId)) {
+      setPickupMethod("richmond");
+      setPickupEventId(null);
+    }
+  }, [eligiblePickupEvents, pickupEventId, pickupMethod]);
 
   const pricing = useMemo(() => {
     try {
@@ -137,7 +165,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       psaGuardCount: pricing.guardQuantity,
       subtotalCents: pricing.subtotalCents,
       pickupMethod,
+      pickupEventId,
+      eligiblePickupEvents,
       setPickupMethod,
+      setPickupEventId,
       openCart,
       closeCart,
       addItem,
@@ -146,7 +177,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       clearCart
     }),
-    [addItem, addItems, clearCart, closeCart, items, openCart, pickupMethod, pricing, removeItem, updateQuantity]
+    [addItem, addItems, clearCart, closeCart, eligiblePickupEvents, items, openCart, pickupEventId, pickupMethod, pricing, removeItem, updateQuantity]
   );
 
   return (
@@ -183,7 +214,10 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
     detailedItems,
     pricing,
     pickupMethod,
+    pickupEventId,
+    eligiblePickupEvents,
     setPickupMethod,
+    setPickupEventId,
     updateQuantity,
     removeItem,
     clearCart
@@ -204,7 +238,8 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: detailedItems.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
-          pickupMethod
+          pickupMethod,
+          pickupEventId
         })
       });
       const payload = (await response.json()) as { url?: string; error?: string };
@@ -268,8 +303,16 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
 
           <fieldset className="pickup-selector">
             <legend>Choose pickup</legend>
-            <label><input type="radio" name="pickup-method" value="richmond" checked={pickupMethod === "richmond"} onChange={() => setPickupMethod("richmond")} /><span><MapPin size={18} aria-hidden="true" /><strong>Richmond / Houston area</strong><small>Exact private details after payment.</small></span></label>
-            <label className="is-disabled"><input type="radio" name="pickup-method" value="event" disabled checked={pickupMethod === "event"} onChange={() => setPickupMethod("event")} /><span><MapPin size={18} aria-hidden="true" /><strong>Event pickup</strong><small>Available only when a verified future event is eligible.</small></span></label>
+            <label><input type="radio" name="pickup-method" value="richmond" checked={pickupMethod === "richmond"} onChange={() => { setPickupMethod("richmond"); setPickupEventId(null); }} /><span><MapPin size={18} aria-hidden="true" /><strong>Richmond / Houston area</strong><small>Exact private details after payment.</small></span></label>
+            <label className={eligiblePickupEvents.length ? "" : "is-disabled"}><input type="radio" name="pickup-method" value="event" disabled={!eligiblePickupEvents.length} checked={pickupMethod === "event"} onChange={() => { const firstEvent = eligiblePickupEvents[0]; if (firstEvent) { setPickupMethod("event"); setPickupEventId(firstEvent.id); } }} /><span><MapPin size={18} aria-hidden="true" /><strong>Event pickup</strong><small>{eligiblePickupEvents.length ? "Choose an eligible published event." : "Available only when a verified future event is eligible."}</small></span></label>
+            {pickupMethod === "event" && eligiblePickupEvents.length ? (
+              <label className="pickup-event-select">
+                <span className="sr-only">Pickup event</span>
+                <select value={pickupEventId ?? ""} onChange={(event) => setPickupEventId(event.target.value)}>
+                  {eligiblePickupEvents.map((event) => <option value={event.id} key={event.id}>{event.title}</option>)}
+                </select>
+              </label>
+            ) : null}
           </fieldset>
         </div>
 

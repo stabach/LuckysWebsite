@@ -46,7 +46,6 @@ export default async function AccountProfilePage() {
         </section>
 
         <DetailPanel title="Account overview">
-          <DetailLine label="Customer ID" value={session.profile.id.slice(0, 8).toUpperCase()} />
           <DetailLine label="Email" value={session.profile.email} />
           <DetailLine label="Created" value={session.profile.createdAt?.slice(0, 10)} />
         </DetailPanel>

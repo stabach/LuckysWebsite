@@ -22,8 +22,18 @@ describe("checkout metadata", () => {
         quantity: line.quantity,
         unitPriceCents: line.unitPriceCents
       })),
-      pickupMethod: "richmond"
+      pickupMethod: "richmond",
+      pickupEventId: null
     });
+  });
+
+  it("requires and preserves an event id for event pickup", () => {
+    const pricing = calculateCartPricing([
+      { variantId: "psa-guards-arctic", quantity: 1 }
+    ]);
+    expect(() => encodeCheckoutMetadata(pricing.lines, "event")).toThrow(/event id/i);
+    expect(decodeCheckoutMetadata(encodeCheckoutMetadata(pricing.lines, "event", "event-123")))
+      .toMatchObject({ pickupMethod: "event", pickupEventId: "event-123" });
   });
 
   it("rejects incomplete, malformed, and unsupported metadata", () => {

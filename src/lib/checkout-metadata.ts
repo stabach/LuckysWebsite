@@ -9,6 +9,7 @@ export type CheckoutMetadataLine = CartLineInput & {
 export type DecodedCheckoutMetadata = {
   items: CheckoutMetadataLine[];
   pickupMethod: CheckoutPickupMethod;
+  pickupEventId: string | null;
 };
 
 const CART_CHUNK_PREFIX = "cart_";
@@ -17,7 +18,8 @@ const MAX_CART_CHUNKS = 20;
 
 export function encodeCheckoutMetadata(
   lines: ReadonlyArray<Pick<PricedCartLine, "variantId" | "quantity" | "unitPriceCents">>,
-  pickupMethod: CheckoutPickupMethod
+  pickupMethod: CheckoutPickupMethod,
+  pickupEventId?: string | null
 ) {
   const serialized = JSON.stringify(
     lines.map((line) => [line.variantId, line.quantity, line.unitPriceCents])
@@ -28,6 +30,10 @@ export function encodeCheckoutMetadata(
     throw new Error("Cart metadata exceeds the supported checkout size.");
   }
 
+  if (pickupMethod === "event" && !pickupEventId) {
+    throw new Error("Event pickup metadata requires an eligible event id.");
+  }
+
   return chunks.reduce<Record<string, string>>(
     (metadata, chunk, index) => {
       metadata[`${CART_CHUNK_PREFIX}${index}`] = chunk;
@@ -36,6 +42,7 @@ export function encodeCheckoutMetadata(
     {
       cart_chunks: String(chunks.length),
       pickup_method: pickupMethod,
+      ...(pickupMethod === "event" && pickupEventId ? { pickup_event_id: pickupEventId } : {}),
       pricing_version: "v2"
     }
   );
@@ -53,6 +60,11 @@ export function decodeCheckoutMetadata(
 
   const pickupMethod = metadata.pickup_method;
   if (pickupMethod !== "richmond" && pickupMethod !== "event") {
+    return null;
+  }
+
+  const pickupEventId = metadata.pickup_event_id;
+  if (pickupMethod === "event" && (typeof pickupEventId !== "string" || !pickupEventId)) {
     return null;
   }
 
@@ -87,7 +99,13 @@ export function decodeCheckoutMetadata(
       return [{ variantId, quantity, unitPriceCents }];
     });
 
-    return items.length === parsed.length ? { items, pickupMethod } : null;
+    return items.length === parsed.length
+      ? {
+          items,
+          pickupMethod,
+          pickupEventId: pickupMethod === "event" ? pickupEventId ?? null : null
+        }
+      : null;
   } catch {
     return null;
   }

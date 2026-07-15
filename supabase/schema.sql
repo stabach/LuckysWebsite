@@ -85,6 +85,7 @@ create table public.orders (
   customer_email text,
   customer_name text,
   pickup_method text not null default 'richmond' check (pickup_method in ('richmond', 'event')),
+  pickup_event_id text check (pickup_method <> 'event' or pickup_event_id is not null),
   pickup_notes text,
   checkout_items jsonb not null default '[]'::jsonb,
   pricing_snapshot jsonb not null default '{}'::jsonb,
