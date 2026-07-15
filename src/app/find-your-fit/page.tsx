@@ -4,7 +4,8 @@ import { FitFinder } from "@/components/fit-finder";
 
 export const metadata: Metadata = {
   title: "Find Your Fit",
-  description: "Use verified fitment guidance to choose a Lucky's Loot display or protection product."
+  description: "Use verified fitment guidance to choose a Lucky's Loot display or protection product.",
+  alternates: { canonical: "/find-your-fit" }
 };
 
 export default function FindYourFitPage() {

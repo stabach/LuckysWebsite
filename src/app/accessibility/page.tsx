@@ -4,7 +4,8 @@ import { ContentPage, ContentSection } from "@/components/info/content-page";
 
 export const metadata: Metadata = {
   title: "Accessibility",
-  description: "Accessibility features and support for the Lucky's Loot storefront."
+  description: "Accessibility features and support for the Lucky's Loot storefront.",
+  alternates: { canonical: "/accessibility" }
 };
 
 export default function AccessibilityPage() {

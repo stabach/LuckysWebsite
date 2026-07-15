@@ -5,6 +5,7 @@ import { ClearCartAfterCheckout } from "@/components/checkout/clear-cart-after-c
 import { storeEvents } from "@/data/events";
 import { decodeCheckoutMetadata } from "@/lib/checkout-metadata";
 import { formatCurrency } from "@/lib/catalog";
+import { getE2ECheckoutSession } from "@/lib/e2e-checkout";
 import { getEventById } from "@/lib/events";
 
 export const metadata: Metadata = {
@@ -91,9 +92,13 @@ function OrderLine({ label, value }: { label: string; value: string }) {
 }
 
 async function getCheckoutSession(sessionId: string | undefined) {
-  if (!sessionId || !sessionId.startsWith("cs_") || !process.env.STRIPE_SECRET_KEY) {
+  if (!sessionId || !sessionId.startsWith("cs_")) {
     return null;
   }
+
+  const mockSession = getE2ECheckoutSession(sessionId);
+  if (mockSession) return mockSession;
+  if (!process.env.STRIPE_SECRET_KEY) return null;
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);

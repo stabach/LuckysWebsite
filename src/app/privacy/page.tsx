@@ -3,7 +3,8 @@ import { ContentPage, ContentSection } from "@/components/info/content-page";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "How the Lucky's Loot storefront handles account, checkout, and contact information."
+  description: "How the Lucky's Loot storefront handles account, checkout, and contact information.",
+  alternates: { canonical: "/privacy" }
 };
 
 export default function PrivacyPage() {

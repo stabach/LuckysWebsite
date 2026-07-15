@@ -4,7 +4,8 @@ import { ContentPage, ContentSection } from "@/components/info/content-page";
 
 export const metadata: Metadata = {
   title: "Pickup & Returns",
-  description: "How Lucky's Loot local and event pickup works, plus current return-policy status."
+  description: "How Lucky's Loot local and event pickup works, plus current return-policy status.",
+  alternates: { canonical: "/pickup-and-returns" }
 };
 
 export default function PickupAndReturnsPage() {

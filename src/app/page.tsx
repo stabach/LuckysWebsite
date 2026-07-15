@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   ArrowRight,
   CalendarDays,
@@ -17,8 +18,14 @@ import { GuardColorShowcase } from "@/components/home/guard-color-showcase";
 import { HeroMedia } from "@/components/home/hero-media";
 import { HomeCartAction } from "@/components/home/cart-action";
 import { HomeProductCard } from "@/components/home/product-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import { ButtonLink } from "@/components/ui/button";
 import { activeProducts, getDefaultVariant, getProductById } from "@/lib/catalog";
+import { absoluteUrl } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" }
+};
 
 const collectionCards = [
   {
@@ -105,6 +112,28 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Lucky’s Loot",
+            url: absoluteUrl("/"),
+            logo: absoluteUrl("/brand/luckys-loot-mark-512.png")
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Lucky’s Loot",
+            url: absoluteUrl("/"),
+            potentialAction: {
+              "@type": "SearchAction",
+              target: `${absoluteUrl("/shop")}?q={search_term_string}`,
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]}
+      />
       <section className="home-hero section-shell" aria-labelledby="home-title">
         <div className="home-hero-copy">
           <p className="eyebrow">Collector display and protection</p>

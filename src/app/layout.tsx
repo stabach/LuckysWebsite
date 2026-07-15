@@ -26,6 +26,39 @@ export const metadata: Metadata = {
     "Acrylic display cases, colorful slab protection, and Toploader binders for collectors, with Houston-area pickup.",
   applicationName: "Lucky’s Loot",
   category: "shopping",
+  keywords: [
+    "collector supplies",
+    "acrylic display cases",
+    "PSA slab guards",
+    "Toploader binders",
+    "Houston card show supplies"
+  ],
+  creator: "Lucky’s Loot",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "Lucky’s Loot",
+    title: "Lucky’s Loot | Collector Display & Protection",
+    description:
+      "Acrylic display cases, colorful slab protection, and Toploader binders for collectors.",
+    images: [
+      {
+        url: "/brand/luckys-loot-social-card.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Lucky’s Loot collector display and protection supplies"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lucky’s Loot | Collector Display & Protection",
+    description:
+      "Acrylic display cases, colorful slab protection, and Toploader binders for collectors.",
+    images: ["/brand/luckys-loot-social-card.jpg"]
+  },
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: [
       { url: "/brand/luckys-loot-mark-192.png", sizes: "192x192", type: "image/png" },

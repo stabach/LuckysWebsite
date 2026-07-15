@@ -6,7 +6,8 @@ import { storeReviews } from "@/data/reviews";
 
 export const metadata: Metadata = {
   title: "Collector Displays",
-  description: "Lucky's Loot customer display stories and review publication policy."
+  description: "Lucky's Loot customer display stories and review publication policy.",
+  alternates: { canonical: "/reviews" }
 };
 
 export default function ReviewsPage() {

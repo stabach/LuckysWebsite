@@ -6,7 +6,8 @@ import { getCurrentUser, getSafeRedirectTarget } from "@/lib/account";
 
 export const metadata: Metadata = {
   title: "Create Account",
-  description: "Create a Lucky's Loot customer account."
+  description: "Create a Lucky's Loot customer account.",
+  robots: { index: false, follow: false }
 };
 
 export const dynamic = "force-dynamic";

@@ -35,3 +35,10 @@
 
 Final verification adds the complete unit suite, Playwright/axe flows at 390 x 844, 768 x 1024,
 and 1440 x 900, manual keyboard checks, responsive screenshots, and `npm run build`.
+
+## Delivery status
+
+All ten phases are implemented on `codex/redesign/luckys-loot-v2`. The final command evidence,
+route inventory, screenshot inventory, deployment variables, and launch-only checks are recorded in
+`docs/final-verification.md`; unresolved owner facts remain isolated in
+`docs/content-verification.md` and are omitted from customer-facing claims.

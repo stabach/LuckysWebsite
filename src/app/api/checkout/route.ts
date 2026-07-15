@@ -1,46 +1,58 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { z } from "zod";
 import { storeEvents } from "@/data/events";
-import { encodeCheckoutMetadata, type CheckoutPickupMethod } from "@/lib/checkout-metadata";
+import { encodeCheckoutMetadata } from "@/lib/checkout-metadata";
 import { getVariantById } from "@/lib/catalog";
+import { createE2ECheckoutSession, isE2ECheckoutEnabled } from "@/lib/e2e-checkout";
 import { getEventById, isEventPickupEligible } from "@/lib/events";
 import { calculateCartPricing, type CartLineInput } from "@/lib/pricing";
+import { consumeRateLimit, getRequestClientKey } from "@/lib/rate-limit";
 import { createSupabaseServerClient, hasSupabaseServerEnv } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type CheckoutItemInput = {
-  variantId?: unknown;
-  quantity?: unknown;
-};
+const CheckoutPayloadSchema = z.object({
+  items: z
+    .array(
+      z.object({
+        variantId: z.string().min(1).max(128),
+        quantity: z.number().int().positive()
+      })
+    )
+    .min(1)
+    .max(50),
+  pickupMethod: z.enum(["richmond", "event"]),
+  pickupEventId: z.string().max(128).nullable().optional()
+});
 
 export async function POST(request: Request) {
-  let payload: { items?: CheckoutItemInput[]; pickupMethod?: unknown; pickupEventId?: unknown };
+  let rawPayload: unknown;
 
   try {
-    payload = (await request.json()) as {
-      items?: CheckoutItemInput[];
-      pickupMethod?: unknown;
-      pickupEventId?: unknown;
-    };
+    rawPayload = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid checkout payload." }, { status: 400 });
   }
 
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const parsed = CheckoutPayloadSchema.safeParse(rawPayload);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Check the items and pickup method in Your Loot." }, { status: 400 });
+  }
+
+  if (!consumeRateLimit("checkout", getRequestClientKey(request), Date.now(), {
+    maximum: 12,
+    windowMs: 60_000
+  })) {
     return NextResponse.json(
-      {
-        error: "Secure checkout is temporarily unavailable. Please try again or contact Lucky’s Loot."
-      },
-      { status: 503 }
+      { error: "Too many checkout attempts. Please wait a moment and try again." },
+      { status: 429 }
     );
   }
 
-  const pickupMethod = parsePickupMethod(payload.pickupMethod);
-  if (!pickupMethod) {
-    return NextResponse.json({ error: "Choose an available pickup method." }, { status: 400 });
-  }
+  const payload = parsed.data;
+  const pickupMethod = payload.pickupMethod;
   const pickupEventId =
     typeof payload.pickupEventId === "string" ? payload.pickupEventId.trim() : "";
   const pickupEvent = pickupEventId ? getEventById(storeEvents, pickupEventId) : undefined;
@@ -51,17 +63,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const rawItems = Array.isArray(payload.items) ? payload.items : [];
-  if (rawItems.length === 0) {
-    return NextResponse.json({ error: "Your cart is empty." }, { status: 400 });
-  }
-
   let pricing: ReturnType<typeof calculateCartPricing>;
   try {
     pricing = calculateCartPricing(
-      rawItems.map<CartLineInput>((item) => ({
-        variantId: typeof item.variantId === "string" ? item.variantId : "",
-        quantity: Math.floor(Number(item.quantity))
+      payload.items.map<CartLineInput>((item) => ({
+        variantId: item.variantId,
+        quantity: item.quantity
       }))
     );
   } catch {
@@ -73,12 +80,29 @@ export async function POST(request: Request) {
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const includeStripeImages = origin.startsWith("https://");
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const checkoutCustomer = await getCheckoutCustomer();
   const checkoutMetadata = {
     ...encodeCheckoutMetadata(pricing.lines, pickupMethod, pickupEvent?.id),
     ...(checkoutCustomer?.id ? { customer_id: checkoutCustomer.id } : {})
   };
+
+  if (isE2ECheckoutEnabled()) {
+    const mockSession = createE2ECheckoutSession(pricing.subtotalCents, checkoutMetadata);
+    return NextResponse.json({
+      url: `${origin}/checkout/success?session_id=${mockSession?.id}`
+    });
+  }
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json(
+      {
+        error: "Secure checkout is temporarily unavailable. Please try again or contact Lucky’s Loot."
+      },
+      { status: 503 }
+    );
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -142,10 +166,6 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-function parsePickupMethod(value: unknown): CheckoutPickupMethod | null {
-  return value === "richmond" || value === "event" ? value : null;
 }
 
 async function getCheckoutCustomer() {

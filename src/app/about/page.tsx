@@ -5,7 +5,8 @@ import { Eye, MapPin, Ruler } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Lucky's Loot display and protection supplies for collectors in the Houston area."
+  description: "Lucky's Loot display and protection supplies for collectors in the Houston area.",
+  alternates: { canonical: "/about" }
 };
 
 export default function AboutPage() {

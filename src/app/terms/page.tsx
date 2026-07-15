@@ -3,7 +3,8 @@ import { ContentPage, ContentSection } from "@/components/info/content-page";
 
 export const metadata: Metadata = {
   title: "Terms",
-  description: "Operational terms for using the Lucky's Loot storefront."
+  description: "Operational terms for using the Lucky's Loot storefront.",
+  alternates: { canonical: "/terms" }
 };
 
 export default function TermsPage() {

@@ -25,19 +25,28 @@ import {
 } from "react";
 import { storeEvents, type StoreEvent } from "@/data/events";
 import { useDialogFocus } from "@/hooks/use-dialog-focus";
-import { getVariantById, formatCurrency } from "@/lib/catalog";
+import {
+  CART_STORAGE_KEY,
+  LEGACY_CART_STORAGE_KEY,
+  mergeCartItems,
+  parsePersistedCart,
+  removeCartItem,
+  sanitizeCartItems,
+  serializeCart,
+  updateCartQuantity,
+  type CartItem,
+  type PickupMethod
+} from "@/lib/cart";
+import { formatCurrency } from "@/lib/catalog";
 import { getEligiblePickupEvents } from "@/lib/events";
-import { isVariantPurchasable } from "@/lib/inventory";
 import {
   calculateCartPricing,
   getGuardPricingMessage,
-  type CartLineInput,
   type CartPricing
 } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 
-export type CartItem = CartLineInput;
-export type PickupMethod = "richmond" | "event";
+export type { CartItem, PickupMethod } from "@/lib/cart";
 
 type CartContextValue = {
   items: CartItem[];
@@ -61,8 +70,6 @@ type CartContextValue = {
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
-const CART_STORAGE_KEY = "luckys-loot-cart-v2";
-const LEGACY_CART_STORAGE_KEY = "luckys-loot-cart-v1";
 const emptyPricing = calculateCartPricing([]);
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -78,20 +85,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const saved = window.localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as {
-          items?: CartItem[];
-          pickupMethod?: PickupMethod;
-          pickupEventId?: string | null;
-        };
-        setItems(sanitizeCartItems(parsed.items ?? []));
-        const savedEvent = eligiblePickupEvents.find((event) => event.id === parsed.pickupEventId);
-        if (parsed.pickupMethod === "event" && savedEvent) {
-          setPickupMethod("event");
-          setPickupEventId(savedEvent.id);
-        } else {
-          setPickupMethod("richmond");
-          setPickupEventId(null);
-        }
+        const parsed = parsePersistedCart(saved, eligiblePickupEvents.map((event) => event.id));
+        setItems(parsed.items);
+        setPickupMethod(parsed.pickupMethod);
+        setPickupEventId(parsed.pickupEventId);
         return;
       }
 
@@ -106,7 +103,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!mounted) return;
     window.localStorage.setItem(
       CART_STORAGE_KEY,
-      JSON.stringify({ items, pickupMethod, pickupEventId })
+      serializeCart({ items, pickupMethod, pickupEventId })
     );
   }, [items, mounted, pickupEventId, pickupMethod]);
 
@@ -136,20 +133,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   const updateQuantity = useCallback((variantId: string, quantity: number) => {
-    const maximum = getVariantMaximum(variantId);
-    setItems((current) =>
-      current
-        .map((item) =>
-          item.variantId === variantId
-            ? { ...item, quantity: Math.min(Math.max(Math.floor(quantity), 0), maximum) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+    setItems((current) => updateCartQuantity(current, variantId, quantity));
   }, []);
 
   const removeItem = useCallback((variantId: string) => {
-    setItems((current) => current.filter((item) => item.variantId !== variantId));
+    setItems((current) => removeCartItem(current, variantId));
   }, []);
 
   const clearCart = useCallback(() => setItems([]), []);
@@ -330,51 +318,4 @@ function CartDrawer({ onClose }: { onClose: () => void }) {
       </aside>
     </div>
   );
-}
-
-function mergeCartItems(current: ReadonlyArray<CartItem>, incoming: ReadonlyArray<CartItem>) {
-  const quantities = new Map(current.map((item) => [item.variantId, item.quantity]));
-  for (const item of incoming) {
-    const resolved = getVariantById(item.variantId);
-    const maximum = getVariantMaximum(item.variantId);
-    if (!maximum || !resolved) continue;
-    const existing = quantities.get(item.variantId) ?? 0;
-    const next = existing + Math.max(1, Math.floor(item.quantity));
-
-    if (resolved.product.id === "psa-guards") {
-      const guardTotal = Array.from(quantities).reduce((total, [variantId, quantity]) => {
-        return total + (getVariantById(variantId)?.product.id === "psa-guards" ? quantity : 0);
-      }, 0);
-      const otherGuardQuantity = guardTotal - existing;
-      quantities.set(
-        item.variantId,
-        Math.min(next, maximum, Math.max(0, resolved.product.maxPerOrder - otherGuardQuantity))
-      );
-    } else {
-      quantities.set(item.variantId, Math.min(next, maximum));
-    }
-  }
-  return Array.from(quantities, ([variantId, quantity]) => ({ variantId, quantity })).filter(
-    (item) => item.quantity > 0
-  );
-}
-
-function getVariantMaximum(variantId: string) {
-  const resolved = getVariantById(variantId);
-  if (!resolved || !isVariantPurchasable(resolved.product, resolved.variant)) return 0;
-  return Math.min(
-    resolved.product.maxPerOrder,
-    resolved.variant.stockQuantity ?? resolved.product.stockQuantity ?? resolved.product.maxPerOrder
-  );
-}
-
-function sanitizeCartItems(items: ReadonlyArray<CartItem>) {
-  if (!Array.isArray(items)) return [];
-  const sanitized = items.flatMap((item) => {
-    const maximum = getVariantMaximum(item.variantId);
-    const quantity = Math.floor(Number(item.quantity));
-    if (!maximum || !Number.isFinite(quantity) || quantity < 1) return [];
-    return [{ variantId: item.variantId, quantity: Math.min(quantity, maximum) }];
-  });
-  return mergeCartItems([], sanitized);
 }

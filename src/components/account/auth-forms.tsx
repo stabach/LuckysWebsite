@@ -15,6 +15,11 @@ type Message = {
   text: string;
 };
 
+const accountUnavailableMessage =
+  process.env.NODE_ENV === "production"
+    ? "Account access is temporarily unavailable. Guest checkout remains available."
+    : "Supabase is not configured for this storefront yet.";
+
 export function LoginForm({ redirectTo = "/account" }: AuthFormProps) {
   const router = useRouter();
   const supabase = useSupabaseClient();
@@ -28,7 +33,7 @@ export function LoginForm({ redirectTo = "/account" }: AuthFormProps) {
     setMessage(null);
 
     if (!supabase) {
-      setMessage({ tone: "error", text: "Supabase is not configured for this storefront yet." });
+      setMessage({ tone: "error", text: accountUnavailableMessage });
       return;
     }
 
@@ -78,10 +83,10 @@ export function LoginForm({ redirectTo = "/account" }: AuthFormProps) {
           autoComplete="current-password"
         />
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-          <Link className="text-[#d4af37] transition hover:text-[#fff4bd] focus-ring" href="/forgot-password">
+          <Link className="text-[#f4c451] transition hover:text-[#fff3d6] focus-ring" href="/forgot-password">
             Forgot password?
           </Link>
-          <Link className="text-[#b8b0a0] transition hover:text-white focus-ring" href="/sign-up">
+          <Link className="text-[#a9b2aa] transition hover:text-white focus-ring" href="/sign-up">
             Create account
           </Link>
         </div>
@@ -108,7 +113,7 @@ export function SignUpForm({ redirectTo = "/account" }: AuthFormProps) {
     setMessage(null);
 
     if (!supabase) {
-      setMessage({ tone: "error", text: "Supabase is not configured for this storefront yet." });
+      setMessage({ tone: "error", text: accountUnavailableMessage });
       return;
     }
 
@@ -207,14 +212,14 @@ export function SignUpForm({ redirectTo = "/account" }: AuthFormProps) {
           type="password"
           autoComplete="new-password"
         />
-        <p className="text-xs leading-5 text-[#8d866f]">
+        <p className="text-xs leading-5 text-[#a9b2aa]">
           Use at least 8 characters with letters and numbers.
         </p>
         <AuthMessage message={message} />
         <AuthSubmitButton busy={submitting} label="Sign up" />
-        <p className="text-center text-sm text-[#b8b0a0]">
+        <p className="text-center text-sm text-[#a9b2aa]">
           Already have an account?{" "}
-          <Link className="text-[#d4af37] transition hover:text-[#fff4bd] focus-ring" href="/login">
+          <Link className="text-[#f4c451] transition hover:text-[#fff3d6] focus-ring" href="/login">
             Log in
           </Link>
         </p>
@@ -234,7 +239,7 @@ export function ForgotPasswordForm() {
     setMessage(null);
 
     if (!supabase) {
-      setMessage({ tone: "error", text: "Supabase is not configured for this storefront yet." });
+      setMessage({ tone: "error", text: accountUnavailableMessage });
       return;
     }
 
@@ -273,7 +278,7 @@ export function ForgotPasswordForm() {
         />
         <AuthMessage message={message} />
         <AuthSubmitButton busy={submitting} label="Send reset link" />
-        <Link className="text-center text-sm text-[#d4af37] transition hover:text-[#fff4bd] focus-ring" href="/login">
+        <Link className="text-center text-sm text-[#f4c451] transition hover:text-[#fff3d6] focus-ring" href="/login">
           Back to login
         </Link>
       </form>
@@ -294,7 +299,7 @@ export function ResetPasswordForm() {
     setMessage(null);
 
     if (!supabase) {
-      setMessage({ tone: "error", text: "Supabase is not configured for this storefront yet." });
+      setMessage({ tone: "error", text: accountUnavailableMessage });
       return;
     }
 
@@ -361,10 +366,10 @@ function AuthCard({
   children: ReactNode;
 }) {
   return (
-    <section className="mx-auto w-full max-w-xl rounded-[8px] border border-[#d4af37]/24 bg-[#111111] p-6 shadow-[0_18px_60px_rgba(0,0,0,0.42)] sm:p-8">
-      <p className="font-pixel text-[0.68rem] uppercase leading-6 text-[#d4af37]">{eyebrow}</p>
-      <h1 className="gold-glow mt-4 text-3xl font-bold text-[#d4af37] sm:text-4xl">{title}</h1>
-      <p className="mt-4 text-sm leading-6 text-[#b8b0a0]">
+    <section className="mx-auto w-full max-w-xl rounded-[24px] border border-[rgba(255,244,215,0.13)] bg-[#0d1712] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.34)] sm:p-8">
+      <p className="text-[0.68rem] font-bold uppercase leading-6 tracking-[0.14em] text-[#f4c451]">{eyebrow}</p>
+      <h1 className="mt-4 text-3xl font-bold tracking-[-0.04em] text-[#fffaf0] sm:text-4xl">{title}</h1>
+      <p className="mt-4 text-sm leading-6 text-[#a9b2aa]">
         Access orders, pickup details, and account updates from one customer dashboard.
       </p>
       {children}
@@ -388,12 +393,12 @@ function AuthInput({
   autoComplete?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm text-[#e7e0cf]">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8d866f]">{label}</span>
-      <span className="flex min-h-12 items-center gap-3 rounded-[8px] border border-[#d4af37]/18 bg-black/30 px-3 transition-within">
-        <Icon className="shrink-0 text-[#d4af37]" size={17} />
+    <label className="grid gap-2 text-sm text-[#fff3d6]">
+      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a9b2aa]">{label}</span>
+      <span className="flex min-h-12 items-center gap-3 rounded-[10px] border border-[rgba(255,244,215,0.13)] bg-[#09110d] px-3 transition-within">
+        <Icon className="shrink-0 text-[#f4c451]" size={17} />
         <input
-          className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#615b4d]"
+          className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#68736b]"
           value={value}
           onChange={(event) => onChange(event.target.value)}
           type={type}
@@ -417,7 +422,7 @@ function AuthMessage({ message }: { message: Message | null }) {
       className={
         message.tone === "success"
           ? "flex gap-2 rounded-[8px] border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-6 text-emerald-100"
-          : "flex gap-2 rounded-[8px] border border-[#d4af37]/24 bg-[#d4af37]/10 p-3 text-sm leading-6 text-[#f4df91]"
+          : "flex gap-2 rounded-[10px] border border-[#fa6873]/30 bg-[#de4e53]/10 p-3 text-sm leading-6 text-[#fee9c9]"
       }
     >
       <Icon className="mt-0.5 shrink-0" size={16} />
@@ -429,7 +434,7 @@ function AuthMessage({ message }: { message: Message | null }) {
 function AuthSubmitButton({ busy, label }: { busy: boolean; label: string }) {
   return (
     <button
-      className="inline-flex min-h-12 items-center justify-center gap-3 rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-5 py-3 font-pixel text-[0.62rem] uppercase text-black shadow-[0_10px_26px_rgba(212,175,55,0.22)] transition hover:bg-[#fff4bd] disabled:cursor-not-allowed disabled:opacity-55 focus-ring"
+      className="button button-primary w-full disabled:cursor-not-allowed disabled:opacity-55"
       disabled={busy}
       type="submit"
     >

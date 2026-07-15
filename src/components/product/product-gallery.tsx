@@ -3,7 +3,7 @@
 import { Maximize2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { InteractiveMediaViewer } from "@/components/product/interactive-media-viewer";
+import { SpinViewer } from "@/components/media/spin-viewer";
 import type { ProductMedia } from "@/lib/catalog-schema";
 
 export function ProductGallery({ media, productName }: { media: ReadonlyArray<ProductMedia>; productName: string }) {
@@ -23,7 +23,7 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
             sizes="(max-width: 900px) 94vw, 56vw"
           />
         ) : selected.type === "spin" ? (
-          <InteractiveMediaViewer media={selected} />
+          <SpinViewer media={selected} />
         ) : (
           <video muted playsInline controls preload="metadata" poster={selected.poster} aria-label={selected.alt}>
             {selected.webm ? <source src={selected.webm} type="video/webm" /> : null}

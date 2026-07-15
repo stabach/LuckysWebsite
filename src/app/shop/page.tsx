@@ -4,7 +4,8 @@ import { activeProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Shop Collector Supplies",
-  description: "Shop Lucky’s Loot acrylic cases, PSA Guards, and Toploader binders."
+  description: "Shop Lucky’s Loot acrylic cases, PSA Guards, and Toploader binders.",
+  alternates: { canonical: "/shop" }
 };
 
 export default async function ShopPage({

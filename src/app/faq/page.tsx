@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContentPage } from "@/components/info/content-page";
+import { JsonLd } from "@/components/seo/json-ld";
 import { storeFaqs } from "@/data/faqs";
+import { getFaqStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "FAQ",
-  description: "Answers about Lucky's Loot fitment, PSA Guard pricing, pickup, and orders."
+  description: "Answers about Lucky's Loot fitment, PSA Guard pricing, pickup, and orders.",
+  alternates: { canonical: "/faq" }
 };
 
 export default function FaqPage() {
@@ -15,6 +18,7 @@ export default function FaqPage() {
       title="Straight answers before you add to Loot."
       intro="Fitment and operating details are stated only where they are verified. When a policy or measurement is still pending, the answer says so."
     >
+      <JsonLd data={getFaqStructuredData(storeFaqs)} />
       <section className="faq-page-list" aria-label="Frequently asked questions">
         {storeFaqs.map((faq) => (
           <details key={faq.id} id={faq.id}>

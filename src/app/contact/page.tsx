@@ -5,7 +5,8 @@ import { getContactCategoryFromTopic } from "@/lib/contact-schema";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact Lucky's Loot for product support, order help, and collector display questions."
+  description: "Contact Lucky's Loot for product support, order help, and collector display questions.",
+  alternates: { canonical: "/contact" }
 };
 
 type ContactPageProps = {

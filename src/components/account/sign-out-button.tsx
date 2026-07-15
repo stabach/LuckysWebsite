@@ -27,7 +27,7 @@ export function SignOutButton({ className }: { className?: string }) {
   return (
     <button
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/32 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 disabled:cursor-not-allowed disabled:opacity-60 focus-ring",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-[#f4c451]/32 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#f4c451] transition hover:border-[#f4c451] hover:bg-[#f4c451]/10 disabled:cursor-not-allowed disabled:opacity-60 focus-ring",
         className
       )}
       disabled={signingOut}

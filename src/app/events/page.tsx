@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CalendarDays, Clock, Download, MapPin, Navigation } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { JsonLd } from "@/components/seo/json-ld";
 import { storeEvents, type StoreEvent } from "@/data/events";
 import {
   formatEventDateRange,
@@ -11,10 +12,12 @@ import {
   getPublishedEvents,
   isEventPickupEligible
 } from "@/lib/events";
+import { getEventStructuredData } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Events",
-  description: "Verified Lucky's Loot event dates and event-pickup availability."
+  description: "Verified Lucky's Loot event dates and event-pickup availability.",
+  alternates: { canonical: "/events" }
 };
 
 export const dynamic = "force-dynamic";
@@ -29,6 +32,9 @@ export default function EventsPage() {
 
   return (
     <div className="info-page">
+      {publishedEvents.length ? (
+        <JsonLd data={publishedEvents.map(getEventStructuredData)} />
+      ) : null}
       <header className="info-hero section-shell">
         <p className="eyebrow">On the show floor</p>
         <h1>Meet Lucky’s Loot in person.</h1>

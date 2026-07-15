@@ -3331,7 +3331,8 @@ html[data-intro="ending"] .site-header {
   cursor: grabbing;
 }
 
-.interactive-viewer-stage video {
+.interactive-viewer-stage video,
+.interactive-sequence-frame {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -3417,7 +3418,7 @@ html[data-intro="ending"] .site-header {
 
 .product-benefit-grid article > span {
   margin-bottom: auto;
-  color: #68736b;
+  color: #8d9a91;
   font-family: var(--font-display), sans-serif;
   font-size: 0.7rem;
 }

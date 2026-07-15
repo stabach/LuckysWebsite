@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampScrubTime, getScrubTimeFromDrag } from "@/lib/media";
+import { clampScrubTime, getScrubTimeFromDrag, getSequenceFrameUrl } from "@/lib/media";
 
 describe("interactive media scrubbing", () => {
   it("clamps time to the video duration", () => {
@@ -15,5 +15,14 @@ describe("interactive media scrubbing", () => {
 
   it("handles missing metadata safely", () => {
     expect(clampScrubTime(2, 0)).toBe(0);
+  });
+
+  it("resolves zero-padded image-sequence frame patterns", () => {
+    expect(getSequenceFrameUrl("/spin/frame-{frame}.webp", 8)).toBe(
+      "/spin/frame-0009.webp"
+    );
+    expect(getSequenceFrameUrl("/spin/frame-%04d.webp", 0)).toBe(
+      "/spin/frame-0001.webp"
+    );
   });
 });

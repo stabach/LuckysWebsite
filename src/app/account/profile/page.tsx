@@ -13,7 +13,8 @@ import { getRequiredAccountSession } from "@/lib/account";
 
 export const metadata: Metadata = {
   title: "Profile",
-  description: "Manage your Lucky's Loot customer profile."
+  description: "Manage your Lucky's Loot customer profile.",
+  robots: { index: false, follow: false }
 };
 
 export const dynamic = "force-dynamic";
@@ -38,7 +39,7 @@ export default async function AccountProfilePage() {
       <AccountTabs current="profile" />
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <section className="rounded-[8px] border border-[#d4af37]/16 bg-[#111111] p-5">
+        <section className="rounded-[16px] border border-[rgba(255,244,215,0.13)] bg-[#0d1712] p-5">
           <h2 className="text-xl font-semibold text-white">Basic information</h2>
           <div className="mt-5">
             <ProfileForm profile={session.profile} />

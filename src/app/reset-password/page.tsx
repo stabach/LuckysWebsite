@@ -4,7 +4,8 @@ import { AccountPageShell } from "@/components/account/account-ui";
 
 export const metadata: Metadata = {
   title: "New Password",
-  description: "Set a new Lucky's Loot customer account password."
+  description: "Set a new Lucky's Loot customer account password.",
+  robots: { index: false, follow: false }
 };
 
 export const dynamic = "force-dynamic";

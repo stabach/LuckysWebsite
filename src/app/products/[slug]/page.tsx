@@ -6,6 +6,7 @@ import { HomeProductCard } from "@/components/home/product-card";
 import { GuardBundleBuilder } from "@/components/product/guard-bundle-builder";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   activeProducts,
   formatCurrency,
@@ -15,6 +16,11 @@ import {
   getVerifiedFeatures,
   getVerifiedSpecifications
 } from "@/lib/catalog";
+import {
+  getBreadcrumbStructuredData,
+  getFaqStructuredData,
+  getProductStructuredData
+} from "@/lib/seo";
 
 export function generateStaticParams() {
   return activeProducts.map((product) => ({ slug: product.slug }));
@@ -56,6 +62,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   return (
     <article className="product-page">
+      <JsonLd
+        data={[
+          getProductStructuredData(product),
+          getBreadcrumbStructuredData([
+            { name: "Home", path: "/" },
+            { name: "Shop", path: "/shop" },
+            { name: product.name, path: `/products/${product.slug}` }
+          ]),
+          getFaqStructuredData(product.faq)
+        ]}
+      />
       <div className="section-shell product-breadcrumb-wrap">
         <nav className="breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link><ChevronRight size={14} aria-hidden="true" />

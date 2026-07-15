@@ -17,3 +17,8 @@ export function getScrubTimeFromDrag({
   if (pixelsForFullDuration <= 0) return clampScrubTime(startTime, duration);
   return clampScrubTime(startTime + (deltaX / pixelsForFullDuration) * duration, duration);
 }
+
+export function getSequenceFrameUrl(pattern: string, zeroBasedFrame: number) {
+  const frame = String(Math.max(0, Math.floor(zeroBasedFrame)) + 1).padStart(4, "0");
+  return pattern.replace("{frame}", frame).replace("%04d", frame);
+}

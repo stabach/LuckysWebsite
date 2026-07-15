@@ -11,6 +11,11 @@ type ProfileMessage = {
   text: string;
 };
 
+const accountUnavailableMessage =
+  process.env.NODE_ENV === "production"
+    ? "Account access is temporarily unavailable. Please try again later."
+    : "Supabase is not configured for this storefront yet.";
+
 export function ProfileForm({ profile }: { profile: AccountProfile }) {
   const router = useRouter();
   const supabase = useMemo(() => (hasSupabaseEnv() ? createSupabaseBrowserClient() : null), []);
@@ -25,7 +30,7 @@ export function ProfileForm({ profile }: { profile: AccountProfile }) {
     setMessage(null);
 
     if (!supabase) {
-      setMessage({ tone: "error", text: "Supabase is not configured for this storefront yet." });
+      setMessage({ tone: "error", text: accountUnavailableMessage });
       return;
     }
 
@@ -112,12 +117,12 @@ export function ProfileForm({ profile }: { profile: AccountProfile }) {
         type="email"
         autoComplete="email"
       />
-      <p className="text-xs leading-5 text-[#8d866f]">
+      <p className="text-xs leading-5 text-[#a9b2aa]">
         Email changes may require confirmation before they appear across your account.
       </p>
       <ProfileMessage message={message} />
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-[8px] border border-[#d4af37] bg-[#d4af37] px-5 py-3 font-pixel text-[0.62rem] uppercase text-black shadow-[0_10px_26px_rgba(212,175,55,0.22)] transition hover:bg-[#fff4bd] disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto focus-ring"
+        className="button button-primary w-full disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto"
         disabled={submitting}
         type="submit"
       >
@@ -144,10 +149,10 @@ function ProfileField({
   autoComplete?: string;
 }) {
   return (
-    <label className="grid gap-2 text-sm text-[#e7e0cf]">
-      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8d866f]">{label}</span>
-      <span className="flex min-h-12 items-center gap-3 rounded-[8px] border border-[#d4af37]/18 bg-black/30 px-3">
-        <Icon className="shrink-0 text-[#d4af37]" size={17} />
+    <label className="grid gap-2 text-sm text-[#fff3d6]">
+      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a9b2aa]">{label}</span>
+      <span className="flex min-h-12 items-center gap-3 rounded-[10px] border border-[rgba(255,244,215,0.13)] bg-[#09110d] px-3">
+        <Icon className="shrink-0 text-[#f4c451]" size={17} />
         <input
           className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none"
           value={value}
@@ -173,7 +178,7 @@ function ProfileMessage({ message }: { message: ProfileMessage | null }) {
       className={
         message.tone === "success"
           ? "flex gap-2 rounded-[8px] border border-emerald-400/25 bg-emerald-400/10 p-3 text-sm leading-6 text-emerald-100"
-          : "flex gap-2 rounded-[8px] border border-[#d4af37]/24 bg-[#d4af37]/10 p-3 text-sm leading-6 text-[#f4df91]"
+          : "flex gap-2 rounded-[10px] border border-[#fa6873]/30 bg-[#de4e53]/10 p-3 text-sm leading-6 text-[#fee9c9]"
       }
     >
       <Icon className="mt-0.5 shrink-0" size={16} />

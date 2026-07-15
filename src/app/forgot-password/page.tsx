@@ -4,7 +4,8 @@ import { AccountPageShell } from "@/components/account/account-ui";
 
 export const metadata: Metadata = {
   title: "Reset Password",
-  description: "Send a Lucky's Loot password reset link."
+  description: "Send a Lucky's Loot password reset link.",
+  robots: { index: false, follow: false }
 };
 
 export default function ForgotPasswordPage() {

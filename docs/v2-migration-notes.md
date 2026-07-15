@@ -26,7 +26,8 @@ The following will not remain customer-facing:
 
 - Legacy green/cream product detail presentation and pixel-heavy storefront architecture.
 - Phantom Display product names, product photography, image-source links, reviews, and claims.
-- Copied Phantom-branded files under `public/product-images/phantom-*`.
+- Copied Phantom-branded files formerly under `public/product-images/phantom-*`; these are archived
+  outside public delivery under `design-source/legacy-public/` and are never referenced by V2.
 - Stale event strings without machine-readable dates.
 - Unverified UV-resistance, acid-free, PVC-free, drop-protection, and universal-fit claims.
 - Third-party binder product images that show conflicting brands or capacities.
@@ -39,6 +40,14 @@ Supplied originals are stored outside public delivery under `design-source/`. Op
 are delivered from `public/brand/` and `public/media/`. Existing source assets are retained until
 replacement provenance and launch approval are documented. No original source media is deleted as
 part of the V2 rebuild.
+
+Legacy public asset trees were moved intact to `design-source/legacy-public/` during final cleanup.
+This preserves source history while preventing stale imagery, Phantom-branded files, and old event
+flyers from being served by the V2 application.
+
+Unreferenced raw acrylic and PSA Guard PNG directories plus the retired Pokémon opener and legacy
+mascot composites were archived there as well. Their optimized canonical WebP derivatives remain
+under `public/products/`; the active public asset tree is about 9.3 MB instead of about 55 MB.
 
 ### Supplied media findings
 

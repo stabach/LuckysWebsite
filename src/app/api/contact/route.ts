@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { ContactPayloadSchema } from "@/lib/contact-schema";
+import { consumeRateLimit, getRequestClientKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const contactEmail = "LuckysLootSupplies@gmail.com";
-const rateLimit = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
 
@@ -29,8 +29,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const clientKey = getClientKey(request);
-  if (!consumeRateLimit(clientKey, Date.now())) {
+  const clientKey = getRequestClientKey(request);
+  if (!consumeRateLimit("contact", clientKey, Date.now(), {
+    maximum: RATE_LIMIT_MAX,
+    windowMs: RATE_LIMIT_WINDOW_MS
+  })) {
     return NextResponse.json(
       { error: "Too many messages were sent. Please wait before trying again." },
       { status: 429 }
@@ -103,19 +106,6 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true });
-}
-
-function consumeRateLimit(key: string, now: number) {
-  const recent = (rateLimit.get(key) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
-  if (recent.length >= RATE_LIMIT_MAX) return false;
-  rateLimit.set(key, [...recent, now]);
-  return true;
-}
-
-function getClientKey(request: Request) {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "local";
 }
 
 function stripControlCharacters(value: string) {

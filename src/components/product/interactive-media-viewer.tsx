@@ -12,6 +12,8 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
   const shellRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const dragRef = useRef<{ x: number; time: number } | null>(null);
+  const pendingTimeRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const [active, setActive] = useState(false);
   const [duration, setDuration] = useState(0);
   const [time, setTime] = useState(0);
@@ -39,11 +41,30 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(
+    () => () => {
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    },
+    []
+  );
+
   function setVideoTime(nextTime: number) {
     const video = videoRef.current;
     const next = clampScrubTime(nextTime, duration);
     if (video) video.currentTime = next;
     setTime(next);
+  }
+
+  function scheduleVideoTime(nextTime: number) {
+    pendingTimeRef.current = nextTime;
+    if (animationFrameRef.current !== null) return;
+    animationFrameRef.current = window.requestAnimationFrame(() => {
+      if (pendingTimeRef.current !== null) setVideoTime(pendingTimeRef.current);
+      pendingTimeRef.current = null;
+      animationFrameRef.current = null;
+    });
   }
 
   async function togglePlayback() {
@@ -74,7 +95,7 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
   function onPointerMove(event: PointerEvent<HTMLDivElement>) {
     const drag = dragRef.current;
     if (!drag || !duration) return;
-    setVideoTime(
+    scheduleVideoTime(
       getScrubTimeFromDrag({
         startTime: drag.time,
         deltaX: event.clientX - drag.x,
@@ -94,7 +115,7 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (!duration) return;
-    const step = Math.max(duration / 40, 0.1);
+    const step = Math.max(duration / 40, 0.1) * (event.shiftKey ? 4 : 1);
     if (event.key === "ArrowRight") {
       event.preventDefault();
       setVideoTime(time + step);
@@ -114,6 +135,14 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
   }
 
   const percent = duration ? Math.round((time / duration) * 100) : 0;
+
+  function retry() {
+    const video = videoRef.current;
+    if (!video) return;
+    setFailed(false);
+    setActive(true);
+    video.load();
+  }
 
   return (
     <div ref={shellRef} className="interactive-viewer">
@@ -155,8 +184,8 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
         <span className="interactive-viewer-progress">{failed ? "Static preview" : `${percent}%`}</span>
       </div>
       <div className="interactive-viewer-controls">
-        <button className="icon-button" type="button" onClick={togglePlayback} disabled={failed} aria-label={playing ? "Pause interactive view" : "Play interactive view"}>
-          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+        <button className="icon-button" type="button" onClick={failed ? retry : togglePlayback} aria-label={failed ? "Retry interactive view" : playing ? "Pause interactive view" : "Play interactive view"}>
+          {failed ? <RotateCcw size={18} aria-hidden="true" /> : playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
         </button>
         <label>
           <span className="sr-only">Scrub interactive product view</span>

@@ -12,7 +12,8 @@ import { getCustomerOrders, getRequiredAccountSession, type AccountOrder } from 
 
 export const metadata: Metadata = {
   title: "Order History",
-  description: "View your Lucky's Loot order history."
+  description: "View your Lucky's Loot order history.",
+  robots: { index: false, follow: false }
 };
 
 export const dynamic = "force-dynamic";
@@ -47,7 +48,7 @@ export default async function AccountOrdersPage() {
 
       <section className="mt-8">
         {orderError ? (
-          <div className="rounded-[8px] border border-[#d4af37]/24 bg-[#d4af37]/10 p-4 text-sm leading-6 text-[#f4df91]">
+          <div className="rounded-[10px] border border-[#fa6873]/30 bg-[#de4e53]/10 p-4 text-sm leading-6 text-[#fee9c9]">
             {orderError}
           </div>
         ) : orders.length > 0 ? (
