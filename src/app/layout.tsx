@@ -1,49 +1,46 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Manrope, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
-import { CartProvider } from "@/components/cart-provider";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteNavigation } from "@/components/site-navigation";
+import { FoundationShell } from "@/components/layout/foundation-shell";
 import "./globals.css";
 
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap"
+});
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap"
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Lucky's Loot - TCG Supplies",
-    template: "%s | Lucky's Loot"
+    default: "Lucky’s Loot | Collector Display & Protection",
+    template: "%s | Lucky’s Loot"
   },
   description:
-    "Pokemon trading card supplies, acrylic cases, PSA guards, and toploader binders available for local pickup.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/old-site/luckysloot-icon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/old-site/luckysloot-icon-192.png", sizes: "192x192", type: "image/png" }
-    ],
-    apple: [{ url: "/old-site/luckysloot-icon-180.png", sizes: "180x180", type: "image/png" }]
-  },
-  openGraph: {
-    title: "Lucky's Loot",
-    description:
-      "A simple local storefront for Pokemon trading card supplies, acrylic cases, PSA guards, and toploader binders.",
-    type: "website"
-  }
+    "Acrylic display cases, colorful slab protection, and Toploader binders for collectors, with Houston-area pickup.",
+  applicationName: "Lucky’s Loot",
+  category: "shopping"
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: ReactNode;
-}>) {
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#040806"
+};
+
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${bodyFont.variable} ${displayFont.variable}`}>
       <body>
-        <CartProvider>
-          <div className="luxury-page">
-            <SiteNavigation />
-            <main>{children}</main>
-            <SiteFooter />
-          </div>
-        </CartProvider>
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
+        <FoundationShell>{children}</FoundationShell>
       </body>
     </html>
   );
