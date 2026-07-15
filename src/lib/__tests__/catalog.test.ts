@@ -47,6 +47,18 @@ describe("canonical catalog", () => {
     }
   });
 
+  it("ships the interactive slab media without an unsupported 360 claim", () => {
+    const product = getProductById("acrylic-crystal-slab-case");
+    const spin = product?.images.find((media) => media.type === "spin");
+    expect(spin?.type).toBe("spin");
+    if (spin?.type === "spin") {
+      expect(spin.isFullRotation).toBe(false);
+      expect(spin.mp4).toBeDefined();
+      expect(existsSync(`public${spin.poster}`)).toBe(true);
+      expect(existsSync(`public${spin.mp4}`)).toBe(true);
+    }
+  });
+
   it("uses the same canonical price on product pages and checkout", () => {
     for (const product of activeProducts) {
       const variant = getDefaultVariant(product);

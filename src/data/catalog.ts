@@ -189,6 +189,15 @@ const rawCatalog = [
         alt: "Clear vertical acrylic slab display case on a dark studio background",
         width: 1280,
         height: 720
+      },
+      {
+        id: "crystal-slab-interactive",
+        type: "spin",
+        mode: "video-scrub",
+        mp4: "/media/crystal-slab-interactive.mp4",
+        poster: "/media/crystal-slab-interactive-poster.webp",
+        alt: "Interactive rotating view of a clear vertical acrylic case",
+        isFullRotation: false
       }
     ],
     variants: [
