@@ -1,15 +1,5 @@
-import type { Metadata } from "next";
-import { InspirationSection } from "@/components/inspiration-section";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Display Your Collection",
-  description: "Premium collector shelf, display room, and graded card inspiration from Lucky's Loot."
-};
-
-export default function InspirationPage() {
-  return (
-    <div className="pt-16">
-      <InspirationSection full />
-    </div>
-  );
+export default function LegacyInspirationPage() {
+  redirect("/");
 }
