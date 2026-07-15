@@ -305,7 +305,10 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
         : "I would like to ask about Lucky's Loot products.";
     const body = encodeURIComponent(`${cartSummary}\n\nSubtotal: ${formatStorefrontCurrency(subtotalCents)}`);
 
-    return `mailto:LuckysLootSupplies@gmail.com?subject=${subject}&body=${body}`;
+    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
+    return supportEmail
+      ? `mailto:${supportEmail}?subject=${subject}&body=${body}`
+      : "/contact?topic=cart";
   }, [detailedItems, subtotalCents]);
 
   async function checkout() {
@@ -518,7 +521,7 @@ function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#d4af37]/32 px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#d4af37] transition hover:border-[#d4af37] hover:bg-[#d4af37]/10 focus-ring"
             >
               <Mail size={16} />
-              Send Cart Inquiry
+              Ask about Your Loot
             </a>
             {detailedItems.length > 0 ? (
               <button

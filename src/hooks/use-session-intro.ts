@@ -27,6 +27,7 @@ export function useSessionIntro() {
   const complete = useCallback(() => {
     setPhase("complete");
     document.documentElement.dataset.intro = "complete";
+    window.dispatchEvent(new CustomEvent("luckys:intro-complete"));
   }, []);
 
   useEffect(() => {

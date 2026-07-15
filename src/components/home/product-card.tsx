@@ -1,0 +1,43 @@
+import { ArrowUpRight, Check } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { HomeCartAction } from "@/components/home/cart-action";
+import type { Product } from "@/lib/catalog-schema";
+import { formatCurrency, getDefaultVariant, getPrimaryImage } from "@/lib/catalog";
+
+export function HomeProductCard({ product }: { product: Product }) {
+  const image = getPrimaryImage(product);
+  const defaultVariant = getDefaultVariant(product);
+  const needsOptions = product.id === "psa-guards" || product.categoryId === "toploader-binders";
+  const optionLabel = product.id === "psa-guards" ? "Choose colors" : "Choose options";
+
+  return (
+    <article className="home-product-card">
+      <Link className="home-product-media" href={`/products/${product.slug}`} tabIndex={-1} aria-hidden="true">
+        <Image
+          src={image.src}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
+          className={product.id === "psa-guards" ? "contain-media" : undefined}
+        />
+        {product.badges?.[0] ? <span className="product-badge">{product.badges[0]}</span> : null}
+      </Link>
+      <div className="home-product-copy">
+        <p className="product-fit"><Check size={14} aria-hidden="true" /> {product.fitment[0]}</p>
+        <h3><Link href={`/products/${product.slug}`}>{product.name}</Link></h3>
+        <div className="product-price-row">
+          <strong>{product.bulkPricing ? `From ${formatCurrency(product.bulkPricing.at(-1)?.unitPriceCents ?? product.priceCents)}` : formatCurrency(product.priceCents)}</strong>
+          <span>{product.stockStatus === "in_stock" ? "In stock" : "Check availability"}</span>
+        </div>
+        {needsOptions ? (
+          <Link className="button button-secondary product-card-action" href={`/products/${product.slug}`}>
+            {optionLabel} <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        ) : defaultVariant ? (
+          <HomeCartAction variantId={defaultVariant.id} className="product-card-action" />
+        ) : null}
+      </div>
+    </article>
+  );
+}
