@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LegacyPsaGuardsPage() {
-  redirect("/shop");
+  redirect("/collections/slab-protection");
 }

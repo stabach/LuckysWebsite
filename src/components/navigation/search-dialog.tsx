@@ -60,7 +60,7 @@ export function SearchDialog({ open, onClose, triggerRef }: SearchDialogProps) {
             data-dialog-initial-focus
             type="search"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onInput={(event) => setQuery(event.currentTarget.value)}
             placeholder="Try ETB, slab, guard, or binder"
           />
         </label>

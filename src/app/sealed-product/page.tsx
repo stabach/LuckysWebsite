@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LegacySealedProductPage() {
-  redirect("/shop");
+  redirect("/collections/protect-sealed-product");
 }
