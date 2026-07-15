@@ -40,6 +40,21 @@ are delivered from `public/brand/` and `public/media/`. Existing source assets a
 replacement provenance and launch approval are documented. No original source media is deleted as
 part of the V2 rebuild.
 
+### Supplied media findings
+
+- Neon mascot sign: 1254 × 1254 RGB PNG. A full-image WebP, poster, and dimmed off-state were
+  generated. Separate color segmentation was intentionally skipped because the full composite
+  preserves the supplied character and tube edges more cleanly.
+- Flat mascot mark: 1024 × 1024 RGBA PNG. Transparent WebP and 192/512 PNG application marks were
+  generated.
+- Acrylic media: 720 × 1280, 10.084 seconds, H.264, no audio. The MP4 was copied with fast-start
+  metadata and paired with an extracted poster. The rotation is useful for scrubbing but is not
+  confidently seamless, so V2 labels it `Interactive View`, never `360°`.
+- The supplied video contains a Runway watermark near the lower-right edge. A clean launch export
+  remains a verification item.
+- Canonical acrylic, binder, and all 15 PSA Guard images were converted to stable WebP derivatives
+  under `public/products/` while their existing source files remain preserved.
+
 ## Environment baseline
 
 The production clone expects Supabase, Stripe, and Resend configuration. V2 keeps those integration

@@ -35,7 +35,7 @@ export const psaGuardColors = psaGuardColorData.map(([name, colorHex]) => ({
   name,
   colorHex,
   slug: slugify(name),
-  image: `/psa-guards/${name}.png`
+  image: `/products/psa-guards/${slugify(name)}.webp`
 }));
 
 const psaGuardVariants = psaGuardColors.map(
@@ -103,10 +103,10 @@ const rawCatalog = [
       {
         id: "etb-case-main",
         type: "image",
-        src: "/product-images/acrylic-etb.png",
+        src: "/products/acrylic/etb-case.webp",
         alt: "Clear ETB acrylic display case on a dark studio background",
-        width: 1600,
-        height: 900
+        width: 1280,
+        height: 720
       }
     ],
     variants: [
@@ -185,10 +185,10 @@ const rawCatalog = [
       {
         id: "crystal-slab-main",
         type: "image",
-        src: "/product-images/acrylic-psa-guard.png",
+        src: "/products/acrylic/crystal-slab-case.webp",
         alt: "Clear vertical acrylic slab display case on a dark studio background",
-        width: 1600,
-        height: 900
+        width: 1280,
+        height: 720
       }
     ],
     variants: [
@@ -260,10 +260,10 @@ const rawCatalog = [
       {
         id: "booster-box-main",
         type: "image",
-        src: "/product-images/acrylic-booster-box.png",
+        src: "/products/acrylic/booster-box-case.webp",
         alt: "Clear booster box acrylic display case on a dark studio background",
-        width: 1600,
-        height: 900
+        width: 1280,
+        height: 720
       }
     ],
     variants: [
@@ -330,7 +330,7 @@ const rawCatalog = [
       {
         id: "booster-bundle-main",
         type: "image",
-        src: "/product-images/acrylic-booster-bundle.png",
+        src: "/products/acrylic/booster-bundle-case.webp",
         alt: "Clear booster bundle acrylic display case on a dark studio background",
         width: 1254,
         height: 1254
@@ -398,8 +398,8 @@ const rawCatalog = [
       type: "image" as const,
       src: color.image,
       alt: `${color.name} Lucky’s Loot PSA Guard with clear backplate`,
-      width: index === 8 || index === 11 || index === 13 ? 1023 : 1024,
-      height: index === 8 || index === 11 || index === 13 ? 1537 : 1536
+      width: 720,
+      height: index === 8 || index === 11 || index === 13 ? 1082 : 1080
     })),
     variants: psaGuardVariants,
     bulkPricing: [...guardPricingTiers],
@@ -458,10 +458,10 @@ const rawCatalog = [
       {
         id: "binder-4-main",
         type: "image",
-        src: "/old-site/binders.png",
-        alt: "Zippered Toploader binders displayed in several colors",
-        width: 1024,
-        height: 1024
+        src: "/products/binders/4-pocket.webp",
+        alt: "Lineup of zippered collector binders on a dark studio background",
+        width: 1000,
+        height: 1000
       }
     ],
     variants: createBinderVariants("4", 1200),
@@ -526,10 +526,10 @@ const rawCatalog = [
       {
         id: "binder-9-main",
         type: "image",
-        src: "/old-site/binders3.png",
-        alt: "Open nine-pocket Toploader binder showing side-loading card pockets",
-        width: 1024,
-        height: 1024
+        src: "/products/binders/9-pocket.webp",
+        alt: "Nine-pocket zippered Toploader binder",
+        width: 1000,
+        height: 1000
       }
     ],
     variants: createBinderVariants("9", 1500),

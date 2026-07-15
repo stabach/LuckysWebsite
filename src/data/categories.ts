@@ -6,7 +6,7 @@ const rawCategories = [
     slug: "acrylic-cases",
     name: "Acrylic Cases",
     description: "Clear display protection for sealed products and graded-card setups.",
-    image: "/product-images/acrylic-etb.png",
+    image: "/products/acrylic/etb-case.webp",
     alt: "Clear acrylic display case on a dark studio background",
     sortOrder: 0
   },
@@ -15,7 +15,7 @@ const rawCategories = [
     slug: "slab-protection",
     name: "Slab Protection",
     description: "Colorful edge protection and clear backplates for standard PSA-style slabs.",
-    image: "/psa-guards/psa-guards-tile-display.png",
+    image: "/products/psa-guards/color-lineup.webp",
     alt: "A selection of colorful Lucky’s Loot PSA Guards",
     sortOrder: 1
   },
@@ -24,8 +24,8 @@ const rawCategories = [
     slug: "toploader-binders",
     name: "Toploader Binders",
     description: "Zippered, side-loading storage for cards already protected in Toploaders.",
-    image: "/old-site/binders.png",
-    alt: "A lineup of zippered Toploader binders",
+    image: "/products/binders/4-pocket.webp",
+    alt: "A lineup of zippered collector binders",
     sortOrder: 2
   }
 ] satisfies Category[];
