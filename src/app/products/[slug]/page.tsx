@@ -82,18 +82,20 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </nav>
       </div>
 
-      <section className="section-shell product-hero" aria-labelledby="product-title">
-        <ProductGallery media={product.images} productName={product.name} />
-        <div className="product-hero-copy">
-          <p className="eyebrow">{product.eyebrow}</p>
-          <h1 id="product-title">{product.name}</h1>
-          <p className="product-summary">{product.summary}</p>
-          <p className="product-description">{product.description}</p>
-          <ProductPurchasePanel product={product} />
-        </div>
-      </section>
-
-      {product.id === "psa-guards" ? <GuardBundleBuilder /> : null}
+      {product.id === "psa-guards" ? (
+        <GuardBundleBuilder />
+      ) : (
+        <section className="section-shell product-hero" aria-labelledby="product-title">
+          <ProductGallery media={product.images} productName={product.name} />
+          <div className="product-hero-copy">
+            <p className="eyebrow">{product.eyebrow}</p>
+            <h1 id="product-title">{product.name}</h1>
+            <p className="product-summary">{product.summary}</p>
+            <p className="product-description">{product.description}</p>
+            <ProductPurchasePanel product={product} />
+          </div>
+        </section>
+      )}
 
       <section className="product-benefits section-pad" aria-labelledby="benefits-title">
         <div className="section-shell">

@@ -3853,7 +3853,7 @@ html[data-intro="ending"] .site-header {
   border-radius: 50%;
 }
 
-.guard-builder-controls h2 {
+.guard-builder-controls h1 {
   max-width: 12ch;
   margin: 0.55rem 0 0;
   color: var(--color-text-strong);

@@ -61,7 +61,7 @@ export function GuardBundleBuilder() {
         </div>
         <div className="guard-builder-controls">
           <p className="eyebrow">Mix colors, share one tier</p>
-          <h2 id="guard-builder-title">Build your PSA Guard bundle.</h2>
+          <h1 id="guard-builder-title">Build your PSA Guard bundle.</h1>
           <p className="section-lede">Set a quantity for every color you want. Existing Guards in Your Loot count toward the projected price shown here.</p>
           <div className="guard-builder-summary" aria-live="polite">
             <span><small>Selected</small><strong>{total}</strong></span>
