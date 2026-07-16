@@ -46,7 +46,7 @@ export function HeroMedia() {
   return (
     <div className="hero-media-card">
       <Image
-        src="/media/crystal-slab-interactive-poster.webp"
+        src="/media/homepage-acrylic-poster.webp"
         alt="Crystal Slab Acrylic Case shown in an interactive product preview"
         fill
         priority
@@ -62,11 +62,11 @@ export function HeroMedia() {
           playsInline
           loop
           preload="metadata"
-          poster="/media/crystal-slab-interactive-poster.webp"
+          poster="/media/homepage-acrylic-poster.webp"
           onPause={() => setPlaying(false)}
           aria-label="Muted interactive preview of the Crystal Slab Acrylic Case"
         >
-          <source src="/media/crystal-slab-interactive.mp4" type="video/mp4" />
+          <source src="/media/homepage-acrylic-boomerang.mp4" type="video/mp4" />
         </video>
       ) : null}
       <div className="hero-media-vignette" aria-hidden="true" />
