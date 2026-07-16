@@ -60,9 +60,10 @@ export function HeroMedia() {
           className="hero-media-video"
           muted
           playsInline
+          loop
           preload="metadata"
           poster="/media/crystal-slab-interactive-poster.webp"
-          onEnded={() => setPlaying(false)}
+          onPause={() => setPlaying(false)}
           aria-label="Muted interactive preview of the Crystal Slab Acrylic Case"
         >
           <source src="/media/crystal-slab-interactive.mp4" type="video/mp4" />
