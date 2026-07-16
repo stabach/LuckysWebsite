@@ -1169,9 +1169,9 @@ html[data-intro="ending"] .site-header {
 .announcement-bar {
   position: relative;
   z-index: 82;
-  border-bottom: 1px solid rgba(244, 196, 81, 0.18);
-  background: var(--color-cream);
-  color: #163124;
+  border-bottom: 1px solid rgba(244, 196, 81, 0.12);
+  background: linear-gradient(90deg, #09130e, #111d16 50%, #09130e);
+  color: #c9cec7;
 }
 
 .announcement-inner {
@@ -1187,8 +1187,18 @@ html[data-intro="ending"] .site-header {
   margin: 0;
   text-align: center;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.015em;
+}
+
+.announcement-inner p strong {
+  color: #d8b65d;
+  font-weight: 800;
+}
+
+.announcement-inner p span {
+  margin-inline: 0.45rem;
+  color: rgba(216, 182, 93, 0.48);
 }
 
 .announcement-inner button {
