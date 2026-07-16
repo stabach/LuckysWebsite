@@ -16,6 +16,7 @@ function GuardArtwork({ color, sizes, alt }: GuardColorTransitionProps) {
   return (
     <span className="guard-color-artwork">
       <Image className="guard-color-product-image" src={color.image} alt={alt} fill sizes={sizes} />
+      <span className="guard-color-face" aria-hidden="true" />
       <Image
         className="guard-color-reflection-image"
         src={color.image}
