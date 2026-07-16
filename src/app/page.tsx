@@ -133,7 +133,16 @@ export default function HomePage() {
       <section className="home-hero section-shell" aria-labelledby="home-title">
         <div className="home-hero-copy">
           <p className="eyebrow">Collector display and protection</p>
-          <h1 id="home-title">Protect the collection. Show off the chase.</h1>
+          <h1 id="home-title" aria-label="Protect the collection. Show off the chase.">
+            <span className="home-title-opening" aria-hidden="true">
+              <span className="home-title-line is-protect">Protect the</span>
+              <span className="home-title-line">collection.</span>
+            </span>
+            <span className="home-title-closing" aria-hidden="true">
+              <span className="home-title-line">Show off</span>
+              <span className="home-title-line">the chase.</span>
+            </span>
+          </h1>
           <p className="lede">
             Crystal-clear acrylic cases, colorful slab protection, and Toploader binders built for collectors who care how their setup looks.
           </p>

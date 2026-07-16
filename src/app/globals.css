@@ -1875,6 +1875,26 @@ html[data-intro="ending"] .site-header {
   text-wrap: balance;
 }
 
+.home-title-opening,
+.home-title-closing,
+.home-title-line {
+  display: block;
+}
+
+.home-title-opening {
+  color: color-mix(in srgb, var(--color-text-strong) 72%, var(--color-muted));
+}
+
+.home-title-closing {
+  margin-top: 0.12em;
+  color: var(--color-text-strong);
+}
+
+.home-title-line.is-protect {
+  font-size: 0.88em;
+  white-space: nowrap;
+}
+
 .home-hero-copy .lede {
   max-width: 580px;
 }
