@@ -14,7 +14,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type CSSProperties, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/cart-provider";
 import { GuardColorTransition } from "@/components/guard-color-transition";
 import { psaGuardColors } from "@/data/catalog";
@@ -66,7 +66,7 @@ const popularSearches = [
   "Evolving Skies Booster Box"
 ];
 
-const fitFinderGuardColor = psaGuardColors.find((color) => color.slug === "emerald") ?? psaGuardColors[0]!;
+const fitFinderGuardColor = psaGuardColors.find((color) => color.slug === "diamond") ?? psaGuardColors[0]!;
 
 export function FitFinder() {
   const router = useRouter();
@@ -493,11 +493,7 @@ function RecommendationMode({
           return (
             <article key={product.id} className="fit-recommendation-card">
               {isGuard ? (
-                <div
-                  className="fit-recommendation-image fit-recommendation-guard guard-platform-stage"
-                  style={{ "--guard-glow": fitFinderGuardColor.colorHex } as CSSProperties}
-                >
-                  <div className="guard-orbit" aria-hidden="true" />
+                <div className="fit-recommendation-image fit-recommendation-guard">
                   <GuardColorTransition
                     color={fitFinderGuardColor}
                     alt={`${fitFinderGuardColor.name} Lucky’s Loot PSA Guard`}

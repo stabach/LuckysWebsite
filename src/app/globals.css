@@ -5849,17 +5849,15 @@ html[data-intro="ending"] .site-header {
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: rgba(3, 10, 7, 0.72);
+  background: rgba(4, 4, 4, 0.82);
 }
 
 .fit-recommendation-image {
   position: relative;
-  min-height: 320px;
+  height: 370px;
   overflow: hidden;
   isolation: isolate;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(42, 212, 78, 0.11), transparent 54%),
-    var(--color-surface-strong);
+  background: transparent;
 }
 
 .fit-recommendation-image > img {
@@ -5869,24 +5867,7 @@ html[data-intro="ending"] .site-header {
 
 .fit-recommendation-guard {
   --guard-preview-padding: 0.55rem;
-  min-height: 370px;
-  background:
-    radial-gradient(
-      circle at 50% 48%,
-      color-mix(in srgb, var(--guard-glow) 24%, transparent),
-      transparent 15rem
-    ),
-    var(--color-surface-strong);
-}
-
-.fit-recommendation-guard .guard-orbit {
-  width: min(72%, 310px);
-}
-
-.fit-recommendation-acrylic {
-  background:
-    radial-gradient(circle at 58% 46%, rgba(244, 196, 81, 0.08), transparent 14rem),
-    var(--color-surface-strong);
+  background: transparent;
 }
 
 .fit-recommendation-acrylic > img {
@@ -5894,7 +5875,8 @@ html[data-intro="ending"] .site-header {
   object-position: center;
   padding: 0;
   mix-blend-mode: screen;
-  filter: contrast(1.08) brightness(1.03);
+  filter: contrast(1.5) brightness(1.05) saturate(0.2);
+  transform: scale(1.22);
   -webkit-mask-image: radial-gradient(
     ellipse 35% 90% at 50% 50%,
     #000 0 58%,
