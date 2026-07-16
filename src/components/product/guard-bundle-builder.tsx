@@ -1,9 +1,9 @@
 "use client";
 
 import { Minus, Plus, ShoppingBag } from "lucide-react";
-import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useCart } from "@/components/cart-provider";
+import { GuardColorTransition } from "@/components/guard-color-transition";
 import { psaGuardColors } from "@/data/catalog";
 import { formatCurrency } from "@/lib/catalog";
 import { getGuardPricingMessage, getGuardUnitPriceCents } from "@/lib/pricing";
@@ -52,7 +52,7 @@ export function GuardBundleBuilder() {
       <div className="section-shell guard-builder-layout">
         <div className="guard-builder-preview">
           <div className="guard-builder-image">
-            <Image key={selected.slug} src={selected.image} alt={`${selected.name} Lucky’s Loot PSA Guard`} fill sizes="(max-width: 900px) 90vw, 42vw" />
+            <GuardColorTransition color={selected} alt={`${selected.name} Lucky’s Loot PSA Guard`} sizes="(max-width: 900px) 90vw, 42vw" />
           </div>
           <span><i style={{ backgroundColor: selected.colorHex }} /> {selected.name}</span>
         </div>

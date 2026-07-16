@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { GuardColorTransition } from "@/components/guard-color-transition";
 import { psaGuardColors } from "@/data/catalog";
 
 export function GuardColorShowcase() {
@@ -15,11 +15,9 @@ export function GuardColorShowcase() {
       <div className="section-shell guard-showcase-grid">
         <div className="guard-showcase-media">
           <div className="guard-orbit" aria-hidden="true" />
-          <Image
-            key={selected.slug}
-            src={selected.image}
+          <GuardColorTransition
+            color={selected}
             alt={`${selected.name} Lucky’s Loot PSA Guard`}
-            fill
             sizes="(max-width: 840px) 82vw, 42vw"
           />
           <span className="selected-color-label"><i style={{ backgroundColor: selected.colorHex }} /> {selected.name}</span>

@@ -1,0 +1,49 @@
+"use client";
+
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { psaGuardColors } from "@/data/catalog";
+
+type GuardColor = (typeof psaGuardColors)[number];
+
+type GuardColorTransitionProps = {
+  color: GuardColor;
+  sizes: string;
+  alt: string;
+};
+
+export function GuardColorTransition({ color, sizes, alt }: GuardColorTransitionProps) {
+  const [renderedColor, setRenderedColor] = useState(color);
+  const [previousColor, setPreviousColor] = useState<GuardColor | null>(null);
+  const [transitionKey, setTransitionKey] = useState(0);
+
+  useEffect(() => {
+    if (color.slug === renderedColor.slug) return;
+
+    setPreviousColor(renderedColor);
+    setRenderedColor(color);
+    setTransitionKey((current) => current + 1);
+  }, [color, renderedColor]);
+
+  return (
+    <div className="guard-color-transition">
+      {previousColor ? (
+        <span className="guard-color-frame guard-color-frame-previous" aria-hidden="true">
+          <Image src={previousColor.image} alt="" fill sizes={sizes} />
+        </span>
+      ) : null}
+
+      <span
+        key={`${renderedColor.slug}-${transitionKey}`}
+        className={`guard-color-frame${previousColor ? " is-revealing" : ""}`}
+        onAnimationEnd={(event) => {
+          if (event.target === event.currentTarget) setPreviousColor(null);
+        }}
+      >
+        <Image src={renderedColor.image} alt={alt} fill sizes={sizes} />
+      </span>
+
+      {previousColor ? <span key={`sweep-${transitionKey}`} className="guard-color-sweep" aria-hidden="true" /> : null}
+    </div>
+  );
+}
