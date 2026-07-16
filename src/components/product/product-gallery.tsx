@@ -11,10 +11,12 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
   const selected = media.find((item) => item.id === selectedId) ?? media[0];
   if (!selected) return null;
   const isLoopingPreview = selected.type === "video" && selected.autoplayPreview === true;
+  const isBinderImage =
+    (selected.type === "image" || selected.type === "diagram") && selected.src.startsWith("/products/binders/");
 
   return (
     <div className="product-gallery">
-      <div className={`product-gallery-main product-gallery-${selected.type}${isLoopingPreview ? " is-looping-preview" : ""}`}>
+      <div className={`product-gallery-main product-gallery-${selected.type}${isLoopingPreview ? " is-looping-preview" : ""}${isBinderImage ? " product-gallery-binder" : ""}`}>
         {selected.type === "image" || selected.type === "diagram" ? (
           <Image
             src={selected.src}

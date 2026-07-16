@@ -14,13 +14,14 @@ export function HomeProductCard({ product }: { product: Product }) {
   const defaultVariant = getDefaultVariant(product);
   const isGuard = product.id === "psa-guards";
   const isAcrylic = product.categoryId === "acrylic-cases";
+  const isBinder = product.categoryId === "toploader-binders";
   const needsOptions = isGuard || product.categoryId === "toploader-binders";
   const optionLabel = isGuard ? "Choose colors" : "Choose options";
 
   return (
-    <article className={`home-product-card${isGuard || isAcrylic ? " home-product-card-neutral" : ""}`}>
+    <article className={`home-product-card${isGuard || isAcrylic || isBinder ? " home-product-card-neutral" : ""}`}>
       <Link
-        className={`home-product-media${isGuard ? " home-product-media-guard" : ""}${isAcrylic ? ` home-product-media-acrylic is-${product.id}` : ""}`}
+        className={`home-product-media${isGuard ? " home-product-media-guard" : ""}${isAcrylic ? ` home-product-media-acrylic is-${product.id}` : ""}${isBinder ? " home-product-media-binder" : ""}`}
         href={`/products/${product.slug}`}
         tabIndex={-1}
         aria-hidden="true"

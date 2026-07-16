@@ -490,6 +490,7 @@ function RecommendationMode({
           const image = getPrimaryImage(product);
           const isGuard = product.id === "psa-guards";
           const isAcrylicCase = product.id === "acrylic-crystal-slab-case";
+          const isBinder = product.categoryId === "toploader-binders";
           return (
             <article key={product.id} className="fit-recommendation-card">
               {isGuard ? (
@@ -501,7 +502,7 @@ function RecommendationMode({
                   />
                 </div>
               ) : (
-                <div className={`fit-recommendation-image${isAcrylicCase ? " fit-recommendation-acrylic" : ""}`}>
+                <div className={`fit-recommendation-image${isAcrylicCase ? " fit-recommendation-acrylic" : ""}${isBinder ? " fit-recommendation-binder" : ""}`}>
                   <Image src={image.src} alt={image.alt} fill sizes="(max-width: 760px) 100vw, 42vw" />
                 </div>
               )}

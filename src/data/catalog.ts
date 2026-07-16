@@ -466,10 +466,10 @@ const rawCatalog = [
       {
         id: "binder-4-main",
         type: "image",
-        src: "/products/binders/4-pocket.webp",
-        alt: "Lineup of zippered collector binders on a dark studio background",
-        width: 1000,
-        height: 1000
+        src: "/products/binders/4-pocket-cutout.png",
+        alt: "Lineup of six zippered collector binders",
+        width: 1254,
+        height: 1254
       }
     ],
     variants: createBinderVariants("4", 1200),
@@ -534,10 +534,10 @@ const rawCatalog = [
       {
         id: "binder-9-main",
         type: "image",
-        src: "/products/binders/9-pocket.webp",
-        alt: "Nine-pocket zippered Toploader binder",
-        width: 1000,
-        height: 1000
+        src: "/products/binders/9-pocket-cutout.png",
+        alt: "Open nine-pocket zippered Toploader binder",
+        width: 1254,
+        height: 1254
       }
     ],
     variants: createBinderVariants("9", 1500),
