@@ -22,14 +22,17 @@ export function NeonSign({ className, eager = false, reducedMotion = false }: Ne
         sizes="(max-width: 720px) 84vw, 680px"
         className="neon-sign-layer neon-sign-off"
       />
-      <Image
-        src="/brand/luckys-loot-neon.webp"
-        alt=""
-        fill
-        priority={eager}
-        sizes="(max-width: 720px) 84vw, 680px"
-        className="neon-sign-layer neon-sign-on"
-      />
+      <span className="neon-sign-liquid">
+        <Image
+          src="/brand/luckys-loot-neon.webp"
+          alt=""
+          fill
+          priority={eager}
+          sizes="(max-width: 720px) 84vw, 680px"
+          className="neon-sign-layer neon-sign-on"
+        />
+      </span>
+      <span className="neon-liquid-surface" />
     </div>
   );
 }

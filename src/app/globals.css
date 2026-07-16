@@ -966,6 +966,8 @@ video {
 
 .neon-sign-layer {
   object-fit: contain;
+  clip-path: circle(49% at 50% 50%);
+  mix-blend-mode: screen;
 }
 
 .neon-sign-off {
@@ -975,10 +977,68 @@ video {
 }
 
 .neon-sign-on {
-  z-index: 2;
-  opacity: 0;
+  opacity: 1;
   filter: brightness(1.04) saturate(1.05) drop-shadow(0 0 22px rgba(42, 212, 78, 0.24));
-  animation: neon-ignite 1.25s steps(1, end) 80ms forwards;
+  animation: neon-liquid-light 1.25s ease-out 80ms both;
+}
+
+.neon-sign-liquid {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+  animation: neon-liquid-fill 1.3s cubic-bezier(0.22, 0.8, 0.28, 1) 60ms forwards;
+  will-change: clip-path;
+}
+
+.neon-sign-liquid::before,
+.neon-sign-liquid::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.58);
+  filter: blur(5px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: neon-goo-bubble 1.15s ease-out 130ms both;
+}
+
+.neon-sign-liquid::before {
+  width: 8%;
+  aspect-ratio: 1;
+  right: 23%;
+  bottom: 7%;
+}
+
+.neon-sign-liquid::after {
+  width: 5%;
+  aspect-ratio: 1;
+  left: 29%;
+  bottom: 3%;
+  animation-delay: 260ms;
+}
+
+.neon-liquid-surface {
+  position: absolute;
+  z-index: 3;
+  top: 96%;
+  right: 5%;
+  left: 5%;
+  height: 10%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 22% 54%, rgba(250, 104, 115, 0.9), transparent 18%),
+    radial-gradient(circle at 70% 38%, rgba(244, 196, 81, 0.9), transparent 16%),
+    linear-gradient(90deg, rgba(42, 212, 78, 0.1), rgba(42, 212, 78, 0.92), rgba(250, 104, 115, 0.25));
+  box-shadow:
+    0 0 18px rgba(42, 212, 78, 0.48),
+    0 0 34px rgba(250, 104, 115, 0.3);
+  filter: blur(7px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+  animation: neon-liquid-surface-rise 1.3s cubic-bezier(0.22, 0.8, 0.28, 1) 60ms both;
 }
 
 .neon-sign-halo {
@@ -995,9 +1055,14 @@ video {
 }
 
 .neon-sign-reduced,
+.neon-sign-reduced .neon-sign-liquid,
 .neon-sign-reduced .neon-sign-on,
 .neon-sign-reduced .neon-sign-halo {
   animation: none;
+}
+
+.neon-sign-reduced .neon-sign-liquid {
+  clip-path: none;
 }
 
 .neon-sign-reduced .neon-sign-on {
@@ -1006,6 +1071,10 @@ video {
 
 .neon-sign-reduced .neon-sign-halo {
   opacity: 0.9;
+}
+
+.neon-sign-reduced .neon-liquid-surface {
+  display: none;
 }
 
 .neon-opener-ending {
@@ -1052,13 +1121,42 @@ html[data-intro="ending"] .site-header {
   100% { opacity: 1; scale: 1; filter: blur(0); }
 }
 
-@keyframes neon-ignite {
-  0%, 12% { opacity: 0.04; }
-  13%, 21% { opacity: 0.72; }
-  22%, 31% { opacity: 0.16; }
-  32%, 42% { opacity: 0.92; }
-  43%, 51% { opacity: 0.42; }
-  52%, 100% { opacity: 1; }
+@keyframes neon-liquid-fill {
+  0% {
+    clip-path: polygon(0 100%, 16% 100%, 34% 100%, 52% 100%, 70% 100%, 86% 100%, 100% 100%, 100% 100%, 0 100%);
+  }
+  24% {
+    clip-path: polygon(0 83%, 14% 79%, 31% 84%, 48% 80%, 67% 85%, 84% 79%, 100% 82%, 100% 100%, 0 100%);
+  }
+  52% {
+    clip-path: polygon(0 56%, 15% 61%, 34% 55%, 51% 59%, 68% 54%, 85% 60%, 100% 55%, 100% 100%, 0 100%);
+  }
+  76% {
+    clip-path: polygon(0 29%, 16% 24%, 34% 30%, 52% 25%, 69% 29%, 86% 23%, 100% 27%, 100% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(0 0, 16% 0, 34% 0, 52% 0, 70% 0, 86% 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes neon-liquid-light {
+  0% { filter: brightness(0.74) saturate(0.86) drop-shadow(0 0 4px rgba(42, 212, 78, 0.08)); }
+  62% { filter: brightness(1.16) saturate(1.18) drop-shadow(0 0 28px rgba(42, 212, 78, 0.34)); }
+  100% { filter: brightness(1.04) saturate(1.05) drop-shadow(0 0 22px rgba(42, 212, 78, 0.24)); }
+}
+
+@keyframes neon-liquid-surface-rise {
+  0% { top: 96%; opacity: 0; scale: 0.88 0.52; }
+  12% { opacity: 0.72; }
+  48% { opacity: 0.94; scale: 1.04 0.78; }
+  86% { opacity: 0.56; }
+  100% { top: -6%; opacity: 0; scale: 0.9 0.45; }
+}
+
+@keyframes neon-goo-bubble {
+  0% { opacity: 0; translate: 0 0; scale: 0.5; }
+  18% { opacity: 0.72; }
+  100% { opacity: 0; translate: 0 -720%; scale: 1.25; }
 }
 
 @keyframes neon-halo {

@@ -97,27 +97,29 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      <section className="product-benefits section-pad" aria-labelledby="benefits-title">
-        <div className="section-shell">
-          <div className="section-heading-row">
-            <div>
-              <p className="eyebrow">Verified product details</p>
-              <h2 id="benefits-title">Designed for the display, explained plainly.</h2>
+      {product.id !== "psa-guards" ? (
+        <section className="product-benefits section-pad" aria-labelledby="benefits-title">
+          <div className="section-shell">
+            <div className="section-heading-row">
+              <div>
+                <p className="eyebrow">Verified product details</p>
+                <h2 id="benefits-title">Designed for the display, explained plainly.</h2>
+              </div>
+              <p className="section-lede">Only launch-catalog claims marked as verified are shown here.</p>
             </div>
-            <p className="section-lede">Only launch-catalog claims marked as verified are shown here.</p>
+            <div className="product-benefit-grid">
+              {verifiedFeatures.map((feature, index) => (
+                <article key={feature.title}>
+                  <span>0{index + 1}</span>
+                  <Check size={21} aria-hidden="true" />
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="product-benefit-grid">
-            {verifiedFeatures.map((feature, index) => (
-              <article key={feature.title}>
-                <span>0{index + 1}</span>
-                <Check size={21} aria-hidden="true" />
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className="product-detail-section section-pad" aria-labelledby="fit-spec-title">
         <div className="section-shell product-detail-grid">
