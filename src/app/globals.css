@@ -2444,26 +2444,6 @@ html[data-intro="ending"] .site-header {
   padding: var(--guard-preview-padding, 1.5rem);
 }
 
-.guard-color-frame .guard-color-product-image {
-  clip-path: polygon(
-    24% 12%,
-    66% 15%,
-    70.5% 18%,
-    70.5% 80.5%,
-    68.5% 85.5%,
-    26% 89%,
-    23.5% 85%,
-    23.5% 16%
-  );
-}
-
-.guard-color-frame .guard-color-reflection-image {
-  clip-path: inset(85% 22% 0 22%);
-  opacity: 0.72;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.74) 42%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.74) 42%, transparent 100%);
-}
-
 .guard-color-frame.is-revealing {
   z-index: 2;
   opacity: 1;

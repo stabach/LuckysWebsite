@@ -12,22 +12,6 @@ type GuardColorTransitionProps = {
   alt: string;
 };
 
-function GuardArtwork({ color, sizes, alt }: GuardColorTransitionProps) {
-  return (
-    <>
-      <Image className="guard-color-product-image" src={color.image} alt={alt} fill sizes={sizes} />
-      <Image
-        className="guard-color-reflection-image"
-        src={color.image}
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes={sizes}
-      />
-    </>
-  );
-}
-
 export function GuardColorTransition({ color, sizes, alt }: GuardColorTransitionProps) {
   const [renderedColor, setRenderedColor] = useState(color);
   const [previousColor, setPreviousColor] = useState<GuardColor | null>(null);
@@ -45,7 +29,7 @@ export function GuardColorTransition({ color, sizes, alt }: GuardColorTransition
     <div className="guard-color-transition">
       {previousColor ? (
         <span className="guard-color-frame guard-color-frame-previous" aria-hidden="true">
-          <GuardArtwork color={previousColor} alt="" sizes={sizes} />
+          <Image src={previousColor.image} alt="" fill sizes={sizes} />
         </span>
       ) : null}
 
@@ -56,7 +40,7 @@ export function GuardColorTransition({ color, sizes, alt }: GuardColorTransition
           if (event.target === event.currentTarget) setPreviousColor(null);
         }}
       >
-        <GuardArtwork color={renderedColor} alt={alt} sizes={sizes} />
+        <Image src={renderedColor.image} alt={alt} fill sizes={sizes} />
       </span>
 
       {previousColor ? <span key={`sweep-${transitionKey}`} className="guard-color-sweep" aria-hidden="true" /> : null}
