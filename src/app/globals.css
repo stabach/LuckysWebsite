@@ -2368,7 +2368,66 @@ html[data-intro="ending"] .site-header {
   z-index: 2;
   inset: 0;
   overflow: hidden;
-  contain: layout paint;
+  mix-blend-mode: screen;
+}
+
+@property --guard-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0a8b61;
+}
+
+.guard-platform-stage {
+  --guard-glow: #0a8b61;
+  transition: --guard-glow 680ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.guard-platform-stage::before,
+.guard-platform-stage::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.guard-platform-stage::before {
+  z-index: 1;
+  right: 18%;
+  bottom: 11%;
+  left: 18%;
+  height: 10%;
+  border: 1px solid color-mix(in srgb, var(--guard-glow) 72%, white 28%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 36%, rgba(255, 255, 255, 0.46) 0 4%, transparent 25%),
+    radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--guard-glow) 66%, white 34%) 0%,
+      color-mix(in srgb, var(--guard-glow) 48%, transparent) 36%,
+      rgba(4, 8, 6, 0.92) 74%
+    );
+  box-shadow:
+    0 0 12px color-mix(in srgb, var(--guard-glow) 70%, transparent),
+    0 0 38px color-mix(in srgb, var(--guard-glow) 46%, transparent),
+    0 12px 62px color-mix(in srgb, var(--guard-glow) 34%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--guard-glow) 62%, transparent);
+  transform: perspective(260px) rotateX(64deg);
+}
+
+.guard-platform-stage::after {
+  z-index: 0;
+  right: 10%;
+  bottom: 0;
+  left: 10%;
+  height: 30%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--guard-glow) 36%, transparent) 0%,
+    color-mix(in srgb, var(--guard-glow) 16%, transparent) 38%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  opacity: 0.9;
 }
 
 .guard-color-frame {

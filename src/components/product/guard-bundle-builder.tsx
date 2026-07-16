@@ -51,7 +51,10 @@ export function GuardBundleBuilder() {
     <section id="bundle-builder" className="guard-builder-section section-pad" aria-labelledby="guard-builder-title">
       <div className="section-shell guard-builder-layout">
         <div className="guard-builder-preview">
-          <div className="guard-builder-image">
+          <div
+            className="guard-builder-image guard-platform-stage"
+            style={{ "--guard-glow": selected.colorHex } as React.CSSProperties}
+          >
             <GuardColorTransition color={selected} alt={`${selected.name} Lucky’s Loot PSA Guard`} sizes="(max-width: 900px) 90vw, 42vw" />
           </div>
           <span><i style={{ backgroundColor: selected.colorHex }} /> {selected.name}</span>

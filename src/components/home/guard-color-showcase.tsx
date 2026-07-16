@@ -13,7 +13,10 @@ export function GuardColorShowcase() {
   return (
     <section className="guard-showcase section-pad" aria-labelledby="guard-colors-title">
       <div className="section-shell guard-showcase-grid">
-        <div className="guard-showcase-media">
+        <div
+          className="guard-showcase-media guard-platform-stage"
+          style={{ "--guard-glow": selected.colorHex } as React.CSSProperties}
+        >
           <div className="guard-orbit" aria-hidden="true" />
           <GuardColorTransition
             color={selected}
