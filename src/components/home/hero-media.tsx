@@ -1,6 +1,5 @@
 "use client";
 
-import { Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,7 +12,6 @@ export function HeroMedia() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [posterReady, setPosterReady] = useState(false);
   const [videoEnabled, setVideoEnabled] = useState(false);
-  const [playing, setPlaying] = useState(false);
 
   const playPreview = useCallback(async () => {
     const video = videoRef.current;
@@ -21,10 +19,7 @@ export function HeroMedia() {
     try {
       video.currentTime = 0;
       await video.play();
-      setPlaying(true);
-    } catch {
-      setPlaying(false);
-    }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -61,10 +56,10 @@ export function HeroMedia() {
           className="hero-media-video"
           muted
           playsInline
+          autoPlay
           loop
           preload="metadata"
           poster="/media/homepage-acrylic-poster.webp"
-          onPause={() => setPlaying(false)}
           aria-label="Muted rotating preview of the PSA Graded Guard Fit Acrylic Case"
         >
           <source src="/media/homepage-acrylic-boomerang.mp4" type="video/mp4" />
@@ -77,11 +72,6 @@ export function HeroMedia() {
         </Link>
         <span>$13.00</span>
       </div>
-      {videoEnabled && !playing ? (
-        <button className="hero-replay" type="button" onClick={playPreview} aria-label="Replay product preview">
-          <Play size={16} fill="currentColor" aria-hidden="true" /> Replay
-        </button>
-      ) : null}
     </div>
   );
 }

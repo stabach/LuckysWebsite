@@ -1385,7 +1385,7 @@ html[data-intro="ending"] .site-header {
 
 .mega-menu-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(130px, 0.7fr)) minmax(270px, 1.25fr);
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
   gap: clamp(1.5rem, 3vw, 3.5rem);
   padding-block: 2rem;
 }
@@ -1419,49 +1419,6 @@ html[data-intro="ending"] .site-header {
 
 .mega-menu-group a:hover {
   color: var(--color-text-strong);
-}
-
-.mega-feature {
-  min-height: 190px;
-  display: grid;
-  grid-template-columns: 112px 1fr auto;
-  align-items: end;
-  gap: 1rem;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  padding: 0.85rem;
-}
-
-.mega-feature-media {
-  position: relative;
-  align-self: stretch;
-  overflow: hidden;
-  border-radius: 11px;
-  background: #050a07;
-}
-
-.mega-feature-media img {
-  object-fit: cover;
-  object-position: center 38%;
-}
-
-.mega-feature-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-
-.mega-feature-copy strong {
-  color: var(--color-text-strong);
-  font-family: var(--font-display), sans-serif;
-  line-height: 1.2;
-}
-
-.mega-feature-copy > span:last-child {
-  color: var(--color-muted);
-  font-size: 0.75rem;
 }
 
 .micro-badge {
@@ -1998,26 +1955,6 @@ html[data-intro="ending"] .site-header {
 .hero-media-product-link:hover {
   border-color: var(--color-accent);
   color: var(--color-accent);
-}
-
-.hero-replay {
-  position: absolute;
-  z-index: 4;
-  right: 1.2rem;
-  bottom: 1.1rem;
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  border: 1px solid rgba(255, 243, 214, 0.24);
-  border-radius: 999px;
-  background: rgba(4, 8, 6, 0.72);
-  color: var(--color-text);
-  padding: 0.55rem 0.75rem;
-  cursor: pointer;
-  font-size: 0.7rem;
-  font-weight: 800;
-  backdrop-filter: blur(10px);
 }
 
 .trust-strip {

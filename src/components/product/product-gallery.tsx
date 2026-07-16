@@ -59,7 +59,6 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
               >
                 <Image src={src} alt="" fill sizes="80px" />
                 {item.type === "spin" ? <span>View</span> : null}
-                {item.type === "video" && item.autoplayPreview ? <span>Loop</span> : null}
               </button>
             );
           })}
