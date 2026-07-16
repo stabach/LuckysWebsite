@@ -2438,10 +2438,54 @@ html[data-intro="ending"] .site-header {
   transform: translateZ(0);
 }
 
-.guard-color-frame img {
-  object-fit: contain;
+.guard-color-artwork {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: calc(100% - var(--guard-preview-padding, 1.5rem) - var(--guard-preview-padding, 1.5rem));
+  aspect-ratio: 2 / 3;
+  transform: translate(-50%, -50%);
+}
+
+.guard-color-artwork img {
+  object-fit: fill;
   object-position: 50% 50%;
-  padding: var(--guard-preview-padding, 1.5rem);
+}
+
+.guard-color-artwork .guard-color-product-image {
+  clip-path: polygon(
+    15.2% 7%,
+    81.5% 10.5%,
+    87% 12.5%,
+    88.2% 15.5%,
+    88.2% 80.5%,
+    86.6% 84.8%,
+    20% 89.8%,
+    15.2% 88.5%,
+    14.2% 85.5%,
+    14.2% 10.5%
+  );
+}
+
+.guard-color-artwork .guard-color-reflection-image {
+  clip-path: polygon(15.2% 87.5%, 86.8% 83.5%, 87.5% 100%, 15.2% 100%);
+  opacity: 0.72;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 82%,
+    #000 88%,
+    rgba(0, 0, 0, 0.64) 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 82%,
+    #000 88%,
+    rgba(0, 0, 0, 0.64) 94%,
+    transparent 100%
+  );
 }
 
 .guard-color-frame.is-revealing {
