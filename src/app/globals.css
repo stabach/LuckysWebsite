@@ -3917,7 +3917,11 @@ html[data-intro="ending"] .site-header {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background:
-    radial-gradient(circle at 50% 46%, rgba(42, 212, 78, 0.12), transparent 24rem),
+    radial-gradient(
+      circle at 50% 46%,
+      color-mix(in srgb, var(--guard-glow) 22%, transparent),
+      transparent 24rem
+    ),
     var(--color-surface);
 }
 
