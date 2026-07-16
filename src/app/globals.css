@@ -1844,20 +1844,22 @@ html[data-intro="ending"] .site-header {
 
 .home-title-closing {
   margin-top: 0.12em;
-  color: #e9aa96;
+  color: #f4f1e8;
+}
+
+.chase {
+  color: transparent;
   background: linear-gradient(
     180deg,
-    #fff4ef 0%,
-    #e7ad99 23%,
-    #8f5148 43%,
-    #f8c8b7 57%,
-    #a96055 76%,
-    #eeb19c 100%
+    #fff3b0 0%,
+    #f7c948 28%,
+    #b97808 52%,
+    #ffd86a 72%,
+    #d99a16 100%
   );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 6px 16px rgba(185, 102, 82, 0.13));
 }
 
 .home-title-line.is-protect {
@@ -1897,10 +1899,10 @@ html[data-intro="ending"] .site-header {
 }
 
 @media (forced-colors: active) {
-  .home-title-closing {
+  .chase {
     background: none;
+    color: currentColor;
     -webkit-text-fill-color: currentColor;
-    filter: none;
   }
 }
 

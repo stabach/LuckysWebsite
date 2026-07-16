@@ -140,7 +140,7 @@ export default function HomePage() {
             </span>
             <span className="home-title-closing" aria-hidden="true">
               <span className="home-title-line">Show off</span>
-              <span className="home-title-line">the chase.</span>
+              <span className="home-title-line">the <span className="chase">chase.</span></span>
             </span>
           </h1>
           <p className="lede">
