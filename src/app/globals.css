@@ -14,7 +14,8 @@
   --color-emerald-deep: #004a33;
   --color-emerald: #006344;
   --color-neon-green: #2ad44e;
-  --color-peach: #ffab90;
+  --color-peach: #f7b733;
+  --color-peach-hover: #ffd76a;
   --color-coral: #de4e53;
   --color-neon-pink: #fa6873;
   --color-gold: #f4c451;
@@ -53,6 +54,7 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 180ms ease;
 }
 
 button,
@@ -256,6 +258,11 @@ video {
   margin-top: 1rem;
   color: var(--color-peach);
   font-weight: 750;
+  transition: color 180ms ease;
+}
+
+.text-link:hover {
+  color: var(--color-peach-hover);
 }
 
 .foundation-preview {
@@ -2088,6 +2095,11 @@ html[data-intro="ending"] .site-header {
   font-size: 0.78rem;
   font-style: normal;
   font-weight: 850;
+  transition: color 180ms ease;
+}
+
+.collection-card:hover .collection-card-copy em {
+  color: var(--color-peach-hover);
 }
 
 .featured-product-section {
@@ -3121,6 +3133,12 @@ html[data-intro="ending"] .site-header {
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 800;
+  transition: color 180ms ease;
+}
+
+.catalog-result-summary button:hover,
+.filter-heading-row button:hover {
+  color: var(--color-peach-hover);
 }
 
 .catalog-layout {
@@ -3704,6 +3722,10 @@ html[data-intro="ending"] .site-header {
   text-align: center;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.engraving-link:hover {
+  color: var(--color-peach-hover);
 }
 
 .product-fit-question {
@@ -4531,6 +4553,10 @@ html[data-intro="ending"] .site-header {
   color: var(--color-peach);
   font-size: 0.68rem;
   font-weight: 800;
+}
+
+.cart-contact-link:hover {
+  color: var(--color-peach-hover);
 }
 
 .cart-clear {
