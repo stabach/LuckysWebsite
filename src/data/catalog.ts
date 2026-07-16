@@ -191,13 +191,12 @@ const rawCatalog = [
         height: 720
       },
       {
-        id: "crystal-slab-interactive",
-        type: "spin",
-        mode: "video-scrub",
-        mp4: "/media/crystal-slab-interactive.mp4",
-        poster: "/media/crystal-slab-interactive-poster.webp",
-        alt: "Interactive rotating view of a clear vertical acrylic case",
-        isFullRotation: false
+        id: "crystal-slab-boomerang",
+        type: "video",
+        mp4: "/media/homepage-acrylic-boomerang.mp4",
+        poster: "/media/homepage-acrylic-poster.webp",
+        alt: "Looping rotating view of the PSA Graded Guard Fit Acrylic Case",
+        autoplayPreview: true
       }
     ],
     variants: [

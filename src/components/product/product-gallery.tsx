@@ -10,10 +10,11 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
   const [selectedId, setSelectedId] = useState(media[0]?.id ?? "");
   const selected = media.find((item) => item.id === selectedId) ?? media[0];
   if (!selected) return null;
+  const isLoopingPreview = selected.type === "video" && selected.autoplayPreview === true;
 
   return (
     <div className="product-gallery">
-      <div className={`product-gallery-main product-gallery-${selected.type}`}>
+      <div className={`product-gallery-main product-gallery-${selected.type}${isLoopingPreview ? " is-looping-preview" : ""}`}>
         {selected.type === "image" || selected.type === "diagram" ? (
           <Image
             src={selected.src}
@@ -25,7 +26,16 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
         ) : selected.type === "spin" ? (
           <SpinViewer media={selected} />
         ) : (
-          <video muted playsInline controls preload="metadata" poster={selected.poster} aria-label={selected.alt}>
+          <video
+            muted
+            playsInline
+            controls={!selected.autoplayPreview}
+            autoPlay={selected.autoplayPreview}
+            loop={selected.autoplayPreview}
+            preload={selected.autoplayPreview ? "auto" : "metadata"}
+            poster={selected.poster}
+            aria-label={selected.alt}
+          >
             {selected.webm ? <source src={selected.webm} type="video/webm" /> : null}
             <source src={selected.mp4} type="video/mp4" />
           </video>
@@ -47,6 +57,7 @@ export function ProductGallery({ media, productName }: { media: ReadonlyArray<Pr
               >
                 <Image src={src} alt="" fill sizes="80px" />
                 {item.type === "spin" ? <span>View</span> : null}
+                {item.type === "video" && item.autoplayPreview ? <span>Loop</span> : null}
               </button>
             );
           })}

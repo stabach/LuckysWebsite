@@ -14,8 +14,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useCart } from "@/components/cart-provider";
+import { GuardColorTransition } from "@/components/guard-color-transition";
+import { psaGuardColors } from "@/data/catalog";
 import { formatCurrency, getDefaultVariant, getPrimaryImage, getProductById } from "@/lib/catalog";
 import type { Product } from "@/lib/catalog-schema";
 import type { FitFinderResult } from "@/lib/fitment";
@@ -63,6 +65,8 @@ const popularSearches = [
   "151 Booster Bundle",
   "Evolving Skies Booster Box"
 ];
+
+const fitFinderGuardColor = psaGuardColors.find((color) => color.slug === "emerald") ?? psaGuardColors[0]!;
 
 export function FitFinder() {
   const router = useRouter();
@@ -484,11 +488,27 @@ function RecommendationMode({
       <div className="fit-recommendation-grid">
         {products.map((product) => {
           const image = getPrimaryImage(product);
+          const isGuard = product.id === "psa-guards";
+          const isAcrylicCase = product.id === "acrylic-crystal-slab-case";
           return (
             <article key={product.id} className="fit-recommendation-card">
-              <div className="fit-recommendation-image">
-                <Image src={image.src} alt={image.alt} fill sizes="(max-width: 760px) 100vw, 42vw" />
-              </div>
+              {isGuard ? (
+                <div
+                  className="fit-recommendation-image fit-recommendation-guard guard-platform-stage"
+                  style={{ "--guard-glow": fitFinderGuardColor.colorHex } as CSSProperties}
+                >
+                  <div className="guard-orbit" aria-hidden="true" />
+                  <GuardColorTransition
+                    color={fitFinderGuardColor}
+                    alt={`${fitFinderGuardColor.name} Lucky’s Loot PSA Guard`}
+                    sizes="(max-width: 760px) 82vw, 36vw"
+                  />
+                </div>
+              ) : (
+                <div className={`fit-recommendation-image${isAcrylicCase ? " fit-recommendation-acrylic" : ""}`}>
+                  <Image src={image.src} alt={image.alt} fill sizes="(max-width: 760px) 100vw, 42vw" />
+                </div>
+              )}
               <div className="fit-recommendation-copy">
                 <p className="eyebrow">{product.eyebrow}</p>
                 <h3>{product.name}</h3>

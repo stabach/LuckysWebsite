@@ -47,15 +47,15 @@ describe("canonical catalog", () => {
     }
   });
 
-  it("ships the interactive slab media without an unsupported 360 claim", () => {
+  it("ships the acrylic slab homepage boomerang as an autoplaying product preview", () => {
     const product = getProductById("acrylic-crystal-slab-case");
-    const spin = product?.images.find((media) => media.type === "spin");
-    expect(spin?.type).toBe("spin");
-    if (spin?.type === "spin") {
-      expect(spin.isFullRotation).toBe(false);
-      expect(spin.mp4).toBeDefined();
-      expect(existsSync(`public${spin.poster}`)).toBe(true);
-      expect(existsSync(`public${spin.mp4}`)).toBe(true);
+    const video = product?.images.find((media) => media.type === "video");
+    expect(video?.type).toBe("video");
+    if (video?.type === "video") {
+      expect(video.autoplayPreview).toBe(true);
+      expect(video.mp4).toBe("/media/homepage-acrylic-boomerang.mp4");
+      expect(existsSync(`public${video.poster}`)).toBe(true);
+      expect(existsSync(`public${video.mp4}`)).toBe(true);
     }
   });
 

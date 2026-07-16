@@ -3312,6 +3312,16 @@ html[data-intro="ending"] .site-header {
   object-fit: cover;
 }
 
+.product-gallery-main.is-looping-preview {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(0, 99, 68, 0.28), transparent 30rem),
+    #030806;
+}
+
+.product-gallery-main.is-looping-preview > video {
+  object-fit: contain;
+}
+
 .media-type-label {
   position: absolute;
   left: 1rem;
@@ -5828,11 +5838,14 @@ html[data-intro="ending"] .site-header {
 .fit-recommendation-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 1rem;
   margin-top: 2rem;
 }
 
 .fit-recommendation-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -5842,17 +5855,63 @@ html[data-intro="ending"] .site-header {
 .fit-recommendation-image {
   position: relative;
   min-height: 320px;
+  overflow: hidden;
+  isolation: isolate;
   background:
     radial-gradient(circle at 50% 48%, rgba(42, 212, 78, 0.11), transparent 54%),
     var(--color-surface-strong);
 }
 
-.fit-recommendation-image img {
+.fit-recommendation-image > img {
   object-fit: contain;
   padding: 1.1rem;
 }
 
+.fit-recommendation-guard {
+  --guard-preview-padding: 0.55rem;
+  min-height: 370px;
+  background:
+    radial-gradient(
+      circle at 50% 48%,
+      color-mix(in srgb, var(--guard-glow) 24%, transparent),
+      transparent 15rem
+    ),
+    var(--color-surface-strong);
+}
+
+.fit-recommendation-guard .guard-orbit {
+  width: min(72%, 310px);
+}
+
+.fit-recommendation-acrylic {
+  background:
+    radial-gradient(circle at 58% 46%, rgba(244, 196, 81, 0.08), transparent 14rem),
+    var(--color-surface-strong);
+}
+
+.fit-recommendation-acrylic > img {
+  object-fit: cover;
+  object-position: center;
+  padding: 0;
+  mix-blend-mode: screen;
+  filter: contrast(1.08) brightness(1.03);
+  -webkit-mask-image: radial-gradient(
+    ellipse 35% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 35% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+}
+
 .fit-recommendation-copy {
+  display: flex;
+  flex-direction: column;
   padding: 1.25rem;
 }
 
@@ -5897,6 +5956,11 @@ html[data-intro="ending"] .site-header {
 .fit-recommendation-copy li svg {
   flex: 0 0 auto;
   color: var(--color-green);
+}
+
+.fit-recommendation-copy .button {
+  align-self: flex-start;
+  margin-top: auto;
 }
 
 .fit-independence-note {
