@@ -84,14 +84,13 @@ export function DesktopMegaMenu({ open, onOpenChange, triggerRef }: DesktopMegaM
               <span className="mega-feature-media">
                 <Image
                   src="/media/crystal-slab-interactive-poster.webp"
-                  alt="Crystal Slab Acrylic Case interactive product view"
+                  alt="PSA Graded Guard Fit Acrylic Case product view"
                   fill
                   sizes="300px"
                 />
               </span>
               <span className="mega-feature-copy">
-                <span className="micro-badge">Interactive view</span>
-                <strong>Crystal Slab Acrylic Case</strong>
+                <strong>PSA Graded Guard Fit Acrylic Case</strong>
                 <span>$13.00 · Explore the case</span>
               </span>
               <MoveUpRight size={18} aria-hidden="true" />

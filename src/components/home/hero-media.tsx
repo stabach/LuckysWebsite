@@ -2,6 +2,7 @@
 
 import { Play } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type NavigatorWithConnection = Navigator & {
@@ -47,7 +48,7 @@ export function HeroMedia() {
     <div className="hero-media-card">
       <Image
         src="/media/homepage-acrylic-poster.webp"
-        alt="Crystal Slab Acrylic Case shown in an interactive product preview"
+        alt="PSA Graded Guard Fit Acrylic Case shown in a rotating product preview"
         fill
         priority
         sizes="(max-width: 840px) 94vw, 48vw"
@@ -64,15 +65,16 @@ export function HeroMedia() {
           preload="metadata"
           poster="/media/homepage-acrylic-poster.webp"
           onPause={() => setPlaying(false)}
-          aria-label="Muted interactive preview of the Crystal Slab Acrylic Case"
+          aria-label="Muted rotating preview of the PSA Graded Guard Fit Acrylic Case"
         >
           <source src="/media/homepage-acrylic-boomerang.mp4" type="video/mp4" />
         </video>
       ) : null}
       <div className="hero-media-vignette" aria-hidden="true" />
       <div className="hero-media-label">
-        <span className="micro-badge">Interactive view</span>
-        <strong>Crystal Slab Acrylic Case</strong>
+        <Link className="hero-media-product-link" href="/products/crystal-slab-acrylic-case">
+          <strong>PSA Graded Guard Fit Acrylic Case</strong>
+        </Link>
         <span>$13.00</span>
       </div>
       {videoEnabled && !playing ? (

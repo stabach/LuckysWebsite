@@ -58,7 +58,7 @@ under `public/products/`; the active public asset tree is about 9.3 MB instead o
   generated.
 - Acrylic media: 720 × 1280, 10.084 seconds, H.264, no audio. The MP4 was copied with fast-start
   metadata and paired with an extracted poster. The rotation is useful for scrubbing but is not
-  confidently seamless, so V2 labels it `Interactive View`, never `360°`.
+  confidently seamless, so V2 presents it as a video preview, never `360°`.
 - The supplied video contains a Runway watermark near the lower-right edge. A clean launch export
   remains a verification item.
 - Canonical acrylic, binder, and all 15 PSA Guard images were converted to stable WebP derivatives

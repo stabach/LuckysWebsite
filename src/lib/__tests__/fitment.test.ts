@@ -20,7 +20,7 @@ describe("Fit Finder", () => {
     expect(result.warnings.join(" ")).toMatch(/Measure/i);
   });
 
-  it("matches a guarded PSA-style slab to the Crystal Slab case", () => {
+  it("matches a guarded PSA-style slab to the PSA Graded Guard Fit Acrylic Case", () => {
     const result = findFit({ item: "graded-slab", format: "guarded-psa", goal: "display" });
     expect(result.confidence).toBe("exact");
     expect(result.product?.id).toBe("acrylic-crystal-slab-case");

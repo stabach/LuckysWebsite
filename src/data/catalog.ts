@@ -171,8 +171,8 @@ const rawCatalog = [
     status: "active",
     categoryId: "acrylic-cases",
     collectionIds: ["protect-graded-cards", "slab-displays"],
-    name: "Crystal Slab Acrylic Case",
-    shortName: "Crystal Slab Case",
+    name: "PSA Graded Guard Fit Acrylic Case",
+    shortName: "PSA Guard Fit Case",
     eyebrow: "Protect graded cards",
     summary: "A clear acrylic display case for a graded-slab presentation.",
     description:
@@ -244,7 +244,7 @@ const rawCatalog = [
       }
     ],
     relatedProductIds: ["psa-guards"],
-    badges: ["Interactive view"],
+    badges: [],
     keywords: ["slab", "graded card", "PSA", "acrylic case", "display"],
     sortOrder: 1
   },

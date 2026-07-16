@@ -124,7 +124,6 @@ function ImageSequenceViewer({ media }: { media: SpinMedia }) {
           sizes="(max-width: 900px) 94vw, 56vw"
           onError={() => setFailed(true)}
         />
-        <span className="interactive-viewer-badge">Interactive View</span>
         <span className="interactive-viewer-progress">
           {failed ? "Static preview" : `${loadedFrames}/${frameCount}`}
         </span>

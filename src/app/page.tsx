@@ -13,14 +13,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FeaturedProductMedia } from "@/components/home/featured-product-media";
 import { GuardColorShowcase } from "@/components/home/guard-color-showcase";
 import { HeroMedia } from "@/components/home/hero-media";
-import { HomeCartAction } from "@/components/home/cart-action";
 import { HomeProductCard } from "@/components/home/product-card";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ButtonLink } from "@/components/ui/button";
-import { activeProducts, getDefaultVariant, getProductById } from "@/lib/catalog";
+import { activeProducts, getProductById } from "@/lib/catalog";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -104,8 +102,6 @@ const faqs = [
 ] as const;
 
 export default function HomePage() {
-  const featuredProduct = getProductById("acrylic-crystal-slab-case");
-  const featuredVariant = featuredProduct ? getDefaultVariant(featuredProduct) : undefined;
   const bestSellers = bestSellerIds
     .map((id) => getProductById(id))
     .filter((product): product is NonNullable<typeof product> => Boolean(product));
@@ -192,30 +188,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {featuredProduct ? (
-        <section className="featured-product-section section-pad" aria-labelledby="featured-product-title">
-          <div className="section-shell featured-product-grid">
-            <FeaturedProductMedia />
-            <div className="featured-product-copy">
-              <p className="eyebrow">Featured interactive product</p>
-              <h2 id="featured-product-title">{featuredProduct.name}</h2>
-              <p className="featured-price">$13.00</p>
-              <p className="section-lede">{featuredProduct.summary}</p>
-              <ul className="verified-benefits">
-                <li><Check size={18} aria-hidden="true" /> Clear acrylic presentation</li>
-                <li><Check size={18} aria-hidden="true" /> Vertical, shelf-ready format</li>
-                <li><Check size={18} aria-hidden="true" /> Fit for standard PSA-style slabs</li>
-              </ul>
-              <div className="button-row">
-                <ButtonLink href={`/products/${featuredProduct.slug}`} variant="secondary">View product</ButtonLink>
-                {featuredVariant ? <HomeCartAction variantId={featuredVariant.id} /> : null}
-              </div>
-              <p className="fit-warning">Other grading-company slabs vary. Measure before ordering.</p>
-            </div>
-          </div>
-        </section>
-      ) : null}
 
       <section className="best-sellers section-pad" aria-labelledby="best-sellers-title">
         <div className="section-shell">

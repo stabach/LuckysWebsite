@@ -17,7 +17,7 @@ Unverified values stay in this record and are omitted from customer-facing claim
 - [ ] VERIFY: website tax display and Stripe tax configuration—tax included vs added at checkout.
 - [ ] VERIFY: branded support and order email addresses.
 - [ ] VERIFY: real reviews and permission to publish customer photos.
-- [ ] VERIFY: supplied interactive acrylic video depicts the launch Crystal Slab Acrylic Case SKU.
+- [ ] VERIFY: supplied acrylic video depicts the launch PSA Graded Guard Fit Acrylic Case SKU.
 - [ ] VERIFY: replace the supplied interactive acrylic video with a clean export or approve its visible Runway watermark for launch.
 - [ ] VERIFY: Richmond/Houston-area pickup wording and event-pickup operating rules.
 - [ ] VERIFY: year, timezone-aware start/end times, venue, directions, flyer permission, and pickup cutoff for each legacy event flyer before publishing it.

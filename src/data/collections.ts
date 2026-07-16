@@ -13,7 +13,7 @@ const rawCollections = [
     id: "protect-graded-cards",
     slug: "protect-graded-cards",
     name: "Protect Graded Cards",
-    description: "Crystal Slab cases and colorful PSA-style slab guards.",
+    description: "PSA Graded Guard Fit Acrylic Cases and colorful PSA-style slab guards.",
     intent: "Graded-card display and edge protection",
     sortOrder: 1
   },

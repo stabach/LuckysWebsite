@@ -37,7 +37,7 @@ not expose a second catalog.
 | Product | Price |
 | --- | ---: |
 | ETB Acrylic Case | $15.00 |
-| Crystal Slab Acrylic Case | $13.00 |
+| PSA Graded Guard Fit Acrylic Case | $13.00 |
 | Booster Box Acrylic Case | $12.00 |
 | Booster Bundle Acrylic Case | $8.00 |
 | PSA Guards, 1–9 total | $7.00 each |
@@ -50,7 +50,7 @@ not expose a second catalog.
 
 - The supplied 720 × 1280, 10.084-second acrylic MP4 has no audio, carries fast-start metadata,
   and is delivered as a 5.9 MB launch derivative with a 51 KB poster.
-- The footage is labeled `Interactive View`, not `360°`, because a seamless full rotation and exact
+- The footage is presented as a video preview, not `360°`, because a seamless full rotation and exact
   launch-SKU match are not verified.
 - `/src/components/media/spin-viewer.tsx` dispatches reusable `video-scrub` and future
   `image-sequence` modes. The launch view is poster-first and loads its video only after the shopper
@@ -88,7 +88,7 @@ not expose a second catalog.
 - `npm run test`: 10 files and 50 unit tests passed.
 - `npm run test:e2e`: Playwright projects at 390 × 844, 768 × 1024, and 1440 × 900; 14 applicable
   scenarios passed and 16 viewport-specific cases skipped.
-- Axe WCAG A/AA scan: no serious or critical violations on home, shop, Crystal Slab product, Fit
+- Axe WCAG A/AA scan: no serious or critical violations on home, shop, PSA Graded Guard Fit Acrylic Case product, Fit
   Finder result, conditional contact, FAQ, login, and missing-provider account routes at all three
   viewports.
 - `npm run build`: Next.js 15.5.20 production build compiled, typechecked, and generated 40 pages.

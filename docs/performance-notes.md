@@ -5,7 +5,7 @@
 - Marketing and catalog pages are Server Components unless interaction requires client state.
 - Product imagery uses explicit aspect ratios and `next/image` AVIF/WebP negotiation.
 - The homepage headline and actions render independently of product video.
-- The Crystal Slab interactive media starts with a 51 KB poster. Its 5.9 MB, audio-free,
+- The PSA Graded Guard Fit Acrylic Case media starts with a compact poster. Its audio-free,
   fast-start MP4 is requested only after explicit interaction; reduced-motion and Save-Data users
   remain on the poster until they opt in.
 - The neon opener uses optimized 23–166 KB WebP layers, lasts less than two seconds, and never

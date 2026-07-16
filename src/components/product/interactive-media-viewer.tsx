@@ -180,7 +180,6 @@ export function InteractiveMediaViewer({ media }: { media: SpinMedia }) {
           {active && media.webm ? <source src={media.webm} type="video/webm" /> : null}
           {active && media.mp4 ? <source src={media.mp4} type="video/mp4" /> : null}
         </video>
-        <span className="interactive-viewer-badge">Interactive View</span>
         <span className="interactive-viewer-progress">{failed ? "Static preview" : `${percent}%`}</span>
       </div>
       <div className="interactive-viewer-controls">

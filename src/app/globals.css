@@ -1847,6 +1847,20 @@ html[data-intro="ending"] .site-header {
   color: var(--color-text-strong);
 }
 
+.hero-media-product-link {
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.hero-media-product-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
 .hero-replay {
   position: absolute;
   z-index: 4;

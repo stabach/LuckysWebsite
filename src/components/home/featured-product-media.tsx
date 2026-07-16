@@ -50,7 +50,7 @@ export function FeaturedProductMedia() {
           onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
           onTimeUpdate={(event) => setProgress(event.currentTarget.currentTime)}
           onEnded={() => setPlaying(false)}
-          aria-label="Interactive product view of the Crystal Slab Acrylic Case"
+          aria-label="Rotating product view of the PSA Graded Guard Fit Acrylic Case"
         >
           <source src="/media/crystal-slab-interactive.mp4" type="video/mp4" />
         </video>

@@ -17,7 +17,7 @@ export const storeFaqs: ReadonlyArray<StoreFaq> = [
     id: "slab-fit",
     question: "Which slabs are supported?",
     answer:
-      "PSA Guards are listed for standard PSA-style slabs. The Crystal Slab Acrylic Case supports a standard PSA-style slab with or without a Lucky’s Loot Guard. Other grading-company sizes are not verified.",
+      "PSA Guards are listed for standard PSA-style slabs. The PSA Graded Guard Fit Acrylic Case supports a standard PSA-style slab with or without a Lucky’s Loot Guard. Other grading-company sizes are not verified.",
     category: "fit"
   },
   {

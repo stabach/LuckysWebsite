@@ -132,7 +132,7 @@ export function CatalogFilterContent({
             disabled={optionCounts.interactive === 0}
             onChange={(event) => onChange({ ...filters, interactiveOnly: event.target.checked })}
           />
-          <span>Interactive view</span><small>{optionCounts.interactive ?? 0}</small>
+          <span>Video preview</span><small>{optionCounts.interactive ?? 0}</small>
         </label>
       </fieldset>
       <p className="filter-live-count" aria-live="polite">{productCount} product{productCount === 1 ? "" : "s"} match</p>

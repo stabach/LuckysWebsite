@@ -85,8 +85,8 @@ export function findFit(input: FitFinderInput): FitFinderResult {
         "acrylic-crystal-slab-case",
         "exact",
         input.format === "guarded-psa"
-          ? "The Crystal Slab case supports a PSA-style slab wearing a Lucky’s Loot Guard."
-          : "The Crystal Slab case supports a standard PSA-style slab presentation."
+          ? "The PSA Graded Guard Fit Acrylic Case supports a PSA-style slab wearing a Lucky’s Loot Guard."
+          : "The PSA Graded Guard Fit Acrylic Case supports a standard PSA-style slab presentation."
       );
     }
 
