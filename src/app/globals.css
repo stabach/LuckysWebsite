@@ -2270,9 +2270,11 @@ html[data-intro="ending"] .site-header {
   position: absolute;
   width: 74%;
   aspect-ratio: 1;
-  border: 1px solid rgba(250, 104, 115, 0.24);
+  border: 1px solid rgba(244, 196, 81, 0.3);
   border-radius: 50%;
-  box-shadow: 0 0 90px rgba(250, 104, 115, 0.1);
+  box-shadow:
+    0 0 24px rgba(244, 196, 81, 0.12),
+    0 0 90px rgba(244, 196, 81, 0.07);
 }
 
 .selected-color-label {
