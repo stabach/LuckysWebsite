@@ -1,26 +1,44 @@
 import { ArrowUpRight, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { GuardColorTransition } from "@/components/guard-color-transition";
 import { HomeCartAction } from "@/components/home/cart-action";
+import { psaGuardColors } from "@/data/catalog";
 import type { Product } from "@/lib/catalog-schema";
 import { formatCurrency, getDefaultVariant, getPrimaryImage } from "@/lib/catalog";
+
+const catalogGuardColor = psaGuardColors.find((color) => color.slug === "diamond") ?? psaGuardColors[0]!;
 
 export function HomeProductCard({ product }: { product: Product }) {
   const image = getPrimaryImage(product);
   const defaultVariant = getDefaultVariant(product);
-  const needsOptions = product.id === "psa-guards" || product.categoryId === "toploader-binders";
-  const optionLabel = product.id === "psa-guards" ? "Choose colors" : "Choose options";
+  const isGuard = product.id === "psa-guards";
+  const isAcrylic = product.categoryId === "acrylic-cases";
+  const needsOptions = isGuard || product.categoryId === "toploader-binders";
+  const optionLabel = isGuard ? "Choose colors" : "Choose options";
 
   return (
-    <article className="home-product-card">
-      <Link className="home-product-media" href={`/products/${product.slug}`} tabIndex={-1} aria-hidden="true">
-        <Image
-          src={image.src}
-          alt=""
-          fill
-          sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
-          className={product.id === "psa-guards" ? "contain-media" : undefined}
-        />
+    <article className={`home-product-card${isGuard || isAcrylic ? " home-product-card-neutral" : ""}`}>
+      <Link
+        className={`home-product-media${isGuard ? " home-product-media-guard" : ""}${isAcrylic ? ` home-product-media-acrylic is-${product.id}` : ""}`}
+        href={`/products/${product.slug}`}
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        {isGuard ? (
+          <GuardColorTransition
+            color={catalogGuardColor}
+            alt=""
+            sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
+          />
+        ) : (
+          <Image
+            src={image.src}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
+          />
+        )}
         {product.badges?.[0] ? <span className="product-badge">{product.badges[0]}</span> : null}
       </Link>
       <div className="home-product-copy">

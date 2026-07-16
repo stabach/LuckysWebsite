@@ -2242,6 +2242,10 @@ html[data-intro="ending"] .site-header {
   background: var(--color-surface);
 }
 
+.home-product-card-neutral {
+  background: rgba(4, 4, 4, 0.82);
+}
+
 .home-product-media {
   position: relative;
   aspect-ratio: 1;
@@ -2257,9 +2261,65 @@ html[data-intro="ending"] .site-header {
   transition: scale 300ms ease;
 }
 
-.home-product-media img.contain-media {
-  object-fit: contain;
-  padding: 1rem;
+.home-product-media-guard,
+.home-product-media-acrylic {
+  background: transparent;
+}
+
+.home-product-media-guard {
+  --guard-preview-padding: 0.55rem;
+}
+
+.home-product-media-acrylic > img {
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: screen;
+  filter: contrast(1.5) brightness(1.05) saturate(0.2);
+  transform: scale(1.12);
+  -webkit-mask-image: radial-gradient(
+    ellipse 78% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 78% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+}
+
+.home-product-media.is-acrylic-crystal-slab-case > img {
+  transform: scale(1.28);
+  -webkit-mask-image: radial-gradient(
+    ellipse 35% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 35% 90% at 50% 50%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+}
+
+.home-product-media.is-acrylic-booster-bundle-case > img {
+  transform: scale(1.08);
+  -webkit-mask-image: radial-gradient(
+    ellipse 58% 92% at 50% 52%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 58% 92% at 50% 52%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
 }
 
 .home-product-card:hover .home-product-media img {
