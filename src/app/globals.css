@@ -2074,6 +2074,7 @@ html[data-intro="ending"] .site-header {
 .collection-card-binder .collection-card-media img {
   object-fit: contain;
   padding: clamp(1rem, 2.5vw, 2rem);
+  transform: scale(1.15);
   translate: 0 -11%;
 }
 
