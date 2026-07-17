@@ -170,7 +170,7 @@ const rawCatalog = [
     sku: "LL-AC-SLAB",
     status: "active",
     categoryId: "acrylic-cases",
-    collectionIds: ["protect-graded-cards", "slab-displays"],
+    collectionIds: ["protect-sealed-product", "protect-graded-cards", "slab-displays"],
     name: "PSA Graded Guard Fit Acrylic Case",
     shortName: "PSA Guard Fit Case",
     eyebrow: "Protect graded cards",

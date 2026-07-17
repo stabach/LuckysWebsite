@@ -5,8 +5,8 @@ const rawCollections = [
     id: "protect-sealed-product",
     slug: "protect-sealed-product",
     name: "Protect Sealed Product",
-    description: "Acrylic cases for ETBs, booster boxes, and booster bundles.",
-    intent: "Sealed product display protection",
+    description: "Acrylic cases for sealed products and PSA-style graded slabs.",
+    intent: "Acrylic display protection",
     sortOrder: 0
   },
   {

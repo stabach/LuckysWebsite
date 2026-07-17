@@ -28,12 +28,17 @@ export const metadata: Metadata = {
 const collectionCards = [
   {
     title: "Protect Sealed Product",
-    description: "Display-ready acrylic cases for standard ETBs, booster boxes, and booster bundles.",
+    description: "Display-ready acrylic cases for sealed products and PSA-style graded slabs.",
     href: "/collections/protect-sealed-product",
     image: "/products/acrylic/etb-case.webp",
     alt: "Clear ETB acrylic case",
     mediaTreatment: "acrylic",
-    productIds: ["acrylic-etb-case", "acrylic-booster-box-case", "acrylic-booster-bundle-case"]
+    productIds: [
+      "acrylic-etb-case",
+      "acrylic-booster-box-case",
+      "acrylic-booster-bundle-case",
+      "acrylic-crystal-slab-case"
+    ]
   },
   {
     title: "Protect Graded Cards",
