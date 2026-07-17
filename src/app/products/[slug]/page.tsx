@@ -97,7 +97,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {product.id !== "psa-guards" ? (
+      {product.id !== "psa-guards" && product.categoryId !== "toploader-binders" ? (
         <section className="product-benefits section-pad" aria-labelledby="benefits-title">
           <div className="section-shell">
             <div className="section-heading-row">

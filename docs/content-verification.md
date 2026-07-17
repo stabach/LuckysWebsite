@@ -2,7 +2,7 @@
 
 Unverified values stay in this record and are omitted from customer-facing claims until confirmed.
 
-- [ ] VERIFY: 4-pocket binder capacity — 112 vs 128.
+- [x] OWNER VERIFIED (2026-07-17): 4-pocket binder capacity is 128 cards.
 - [ ] VERIFY: internal and external dimensions for every acrylic-case SKU.
 - [ ] VERIFY: exact fitment for Pokémon Center and specialty ETBs.
 - [ ] VERIFY: exact fitment for Japanese and specialty booster boxes.
@@ -29,11 +29,11 @@ Unverified values stay in this record and are omitted from customer-facing claim
 
 ## Omitted until verified
 
-Numeric binder capacity for the 4-pocket binder, unverified acrylic dimensions, specialty-product
-fitment, UV percentages, PVC-free/acid-free wording, universal 8 mm wording, magnet counts, pickup
-timing, return promises, tax-included wording, fixed engraving prices, review counts, and private
-pickup addresses. The supplied acrylic video is treated as an interactive preview, not a seamless
-360° claim, until the product match and clean export are verified. Legacy event flyers remain
-unpublished because their month/day labels do not provide a verified year or pickup cutoff. Sealed
-catalog product names are used to identify a general format only; title-level dimension compatibility
-and a live Collectr-equivalent inventory claim remain omitted.
+Unverified acrylic dimensions, specialty-product fitment, UV percentages, PVC-free/acid-free wording,
+universal 8 mm wording, magnet counts, pickup timing, return promises, tax-included wording, fixed
+engraving prices, review counts, and private pickup addresses. The supplied acrylic video is treated
+as an interactive preview, not a seamless 360° claim, until the product match and clean export are
+verified. Legacy event flyers remain unpublished because their month/day labels do not provide a
+verified year or pickup cutoff. Sealed catalog product names are used to identify a general format
+only; title-level dimension compatibility and a live Collectr-equivalent inventory claim remain
+omitted.

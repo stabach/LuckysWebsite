@@ -455,9 +455,9 @@ const rawCatalog = [
     name: "4-Pocket Toploader Binder",
     shortName: "4-Pocket Binder",
     eyebrow: "Compact collection storage",
-    summary: "A compact, zippered binder with side-loading pockets for cards in Toploaders.",
+    summary: "A 128-card, zippered binder with side-loading pockets for standard Toploaders.",
     description:
-      "Organize a focused collection in a smaller page format without removing cards from their Toploaders.",
+      "Keep a compact Toploader collection together in a four-pocket page layout with a secure zipper closure.",
     priceCents: 1200,
     stockStatus: "in_stock",
     stockQuantity: null,
@@ -474,22 +474,22 @@ const rawCatalog = [
     ],
     variants: createBinderVariants("4", 1200),
     fitment: ["Standard 3 × 4 inch Toploaders"],
-    fitmentWarnings: ["Numeric card capacity is omitted until the 112-versus-128 conflict is resolved."],
+    fitmentWarnings: ["Only active size-and-color combinations can be purchased."],
     specifications: [
       { label: "Page layout", value: "4-pocket", verified: true },
+      { label: "Capacity", value: "128 cards", verified: true },
       { label: "Pocket loading", value: "Side-loading", verified: true },
-      { label: "Closure", value: "Zipper", verified: true },
-      { label: "Capacity", value: "Pending verification", verified: false }
+      { label: "Closure", value: "Zipper", verified: true }
     ],
     features: [
       {
-        title: "Side-loading pockets",
-        description: "Keep standard Toploaders organized in a page layout.",
+        title: "128-card capacity",
+        description: "A compact page layout for organized Toploader storage.",
         verified: true
       },
       {
-        title: "Secure zipper closure",
-        description: "Close the binder before storage or event transport.",
+        title: "Side-loading pockets",
+        description: "Keep standard Toploaders arranged in a four-pocket grid.",
         verified: true
       },
       {
@@ -501,7 +501,7 @@ const rawCatalog = [
     faq: [
       {
         question: "How many cards does it hold?",
-        answer: "Capacity is being verified. The numeric capacity is intentionally omitted until confirmed."
+        answer: "It holds up to 128 cards in standard 3 × 4 inch Toploaders."
       },
       {
         question: "Can I request engraving?",
@@ -509,7 +509,7 @@ const rawCatalog = [
       }
     ],
     relatedProductIds: ["toploader-binder-9-pocket"],
-    keywords: ["binder", "Toploader", "4-pocket", "storage", "compact"],
+    keywords: ["binder", "Toploader", "4-pocket", "128 cards", "storage", "compact"],
     requiresQuote: false,
     sortOrder: 5
   },
