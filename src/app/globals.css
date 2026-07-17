@@ -1865,6 +1865,9 @@ html[data-intro="ending"] .site-header {
 }
 
 .chase {
+  display: inline-block;
+  margin-inline-end: -0.08em;
+  padding-inline-end: 0.08em;
   color: transparent;
   background: linear-gradient(
     180deg,
