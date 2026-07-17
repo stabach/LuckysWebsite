@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { HomeProductCard } from "@/components/home/product-card";
 import { GuardBundleBuilder } from "@/components/product/guard-bundle-builder";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { BinderProductExperience } from "@/components/product/binder-product-experience";
 import { ProductPurchasePanel } from "@/components/product/product-purchase-panel";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
@@ -84,6 +85,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       {product.id === "psa-guards" ? (
         <GuardBundleBuilder />
+      ) : product.categoryId === "toploader-binders" ? (
+        <BinderProductExperience product={product} />
       ) : (
         <section className="section-shell product-hero" aria-labelledby="product-title">
           <ProductGallery media={product.images} productName={product.name} />

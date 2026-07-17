@@ -3423,6 +3423,126 @@ html[data-intro="ending"] .site-header {
   padding: clamp(0.75rem, 2.5vw, 1.75rem);
 }
 
+.binder-product-stage {
+  position: relative;
+  min-height: 650px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--guard-glow) 13%, transparent),
+      transparent 28rem
+    ),
+    rgba(4, 8, 6, 0.34);
+  box-shadow: var(--shadow-soft);
+}
+
+.binder-product-stage::before {
+  right: 16%;
+  bottom: 10%;
+  left: 16%;
+}
+
+.binder-product-stage::after {
+  right: 8%;
+  left: 8%;
+}
+
+.binder-color-transition {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+}
+
+.binder-color-frame {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(0);
+}
+
+.binder-color-artwork {
+  position: absolute;
+  z-index: 2;
+  inset: clamp(1rem, 3vw, 2.25rem) clamp(1.25rem, 4vw, 3rem) 10%;
+}
+
+.binder-color-artwork img {
+  object-fit: contain;
+  object-position: 50% 52%;
+}
+
+.binder-color-product-image {
+  z-index: 2;
+}
+
+.binder-color-reflection-image {
+  z-index: 1;
+  opacity: 0.23;
+  transform: translateY(72%) scaleY(-1);
+  filter: blur(0.6px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 48%, #000 70%, transparent 96%);
+  mask-image: linear-gradient(to bottom, transparent 48%, #000 70%, transparent 96%);
+}
+
+.binder-color-frame.is-revealing {
+  z-index: 3;
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 45%,
+    rgba(0, 0, 0, 0.9) 47%,
+    rgba(0, 0, 0, 0.4) 49%,
+    transparent 52%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 45%,
+    rgba(0, 0, 0, 0.9) 47%,
+    rgba(0, 0, 0, 0.4) 49%,
+    transparent 52%,
+    transparent 100%
+  );
+  -webkit-mask-position: 0 100%;
+  mask-position: 0 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 220%;
+  mask-size: 100% 220%;
+  animation: guard-color-wash-down 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, filter, mask-position;
+}
+
+.binder-color-frame-previous {
+  z-index: 2;
+}
+
+.binder-color-sweep {
+  position: absolute;
+  z-index: 4;
+  top: -12%;
+  right: 8%;
+  left: 8%;
+  height: 12%;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2), transparent);
+  filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  animation: guard-color-sweep-down 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.binder-selected-color {
+  left: 50%;
+  bottom: 1rem;
+  translate: -50% 0;
+}
+
 .product-gallery-image > img[src*="acrylic"] {
   object-fit: cover;
   padding: 0;
@@ -3684,6 +3804,18 @@ html[data-intro="ending"] .site-header {
   height: 14px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
+}
+
+.purchase-variants.is-binder-variants label > span {
+  width: 20px;
+  height: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.purchase-variants.is-binder-variants label:has(input:checked) > span {
+  box-shadow:
+    0 0 0 2px var(--color-bg),
+    0 0 0 4px var(--color-gold);
 }
 
 .purchase-variants > p {
@@ -4768,6 +4900,12 @@ html[data-intro="ending"] .site-header {
     position: static;
   }
 
+  .binder-product-stage {
+    width: min(100%, 620px);
+    min-height: min(650px, 94vw);
+    margin-inline: auto;
+  }
+
   .product-benefit-grid,
   .related-product-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -4980,6 +5118,10 @@ html[data-intro="ending"] .site-header {
   }
 
   .product-gallery-main {
+    min-height: 500px;
+  }
+
+  .binder-product-stage {
     min-height: 500px;
   }
 

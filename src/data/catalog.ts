@@ -53,19 +53,24 @@ const psaGuardVariants = psaGuardColors.map(
 );
 
 const binderColors = [
-  ["Black", "#1b1d1c"],
-  ["Aqua/teal", "#2d9c95"],
-  ["Pink", "#dc7e9b"],
-  ["Red", "#b84343"],
-  ["Yellow", "#ddb741"],
-  ["Purple", "#77569c"],
-  ["Lime green", "#75aa47"]
+  ["Black", "#171918"],
+  ["Pink", "#f19ab5"],
+  ["Red", "#d9423f"],
+  ["Aqua", "#2fb8b6"],
+  ["Purple", "#7850a8"],
+  ["Yellow", "#e5b52b"]
+] as const;
+
+const fourPocketBinderColors = [
+  ...binderColors,
+  ["Lime Green", "#82b944"] as const
 ] as const;
 
 function createBinderVariants(size: "4" | "9", priceCents: number): ProductVariant[] {
-  return binderColors.map(([label, colorHex]) => {
+  const colors = size === "4" ? fourPocketBinderColors : binderColors;
+
+  return colors.map(([label, colorHex]) => {
     const colorSlug = slugify(label);
-    const active = label === "Black";
 
     return {
       id: `toploader-binder-${size}-pocket-${colorSlug}`,
@@ -73,10 +78,11 @@ function createBinderVariants(size: "4" | "9", priceCents: number): ProductVaria
       label,
       color: label,
       colorHex,
+      image: `/products/binders/${size}-pocket/${colorSlug}.webp`,
       priceCents,
-      stockQuantity: active ? null : 0,
-      status: active ? "in_stock" : "out_of_stock",
-      active
+      stockQuantity: null,
+      status: "in_stock",
+      active: true
     };
   });
 }
@@ -466,15 +472,15 @@ const rawCatalog = [
       {
         id: "binder-4-main",
         type: "image",
-        src: "/products/binders/4-pocket-cutout.png",
-        alt: "Lineup of six zippered collector binders",
+        src: "/products/binders/4-pocket/black.webp",
+        alt: "Black four-pocket zippered Toploader binder",
         width: 1254,
         height: 1254
       }
     ],
     variants: createBinderVariants("4", 1200),
     fitment: ["Standard 3 × 4 inch Toploaders"],
-    fitmentWarnings: ["Only active size-and-color combinations can be purchased."],
+    fitmentWarnings: ["Choose from Black, Pink, Red, Aqua, Purple, Yellow, or Lime Green."],
     specifications: [
       { label: "Page layout", value: "4-pocket", verified: true },
       { label: "Capacity", value: "128 cards", verified: true },
@@ -534,15 +540,15 @@ const rawCatalog = [
       {
         id: "binder-9-main",
         type: "image",
-        src: "/products/binders/9-pocket-cutout.png",
-        alt: "Stack of six colorful nine-pocket zippered Toploader binders",
+        src: "/products/binders/9-pocket/black.webp",
+        alt: "Black nine-pocket zippered Toploader binder",
         width: 1254,
         height: 1254
       }
     ],
     variants: createBinderVariants("9", 1500),
     fitment: ["Standard 3 × 4 inch Toploaders"],
-    fitmentWarnings: ["Only active size-and-color combinations can be purchased."],
+    fitmentWarnings: ["Choose from Black, Pink, Red, Aqua, Purple, or Yellow."],
     specifications: [
       { label: "Page layout", value: "9-pocket", verified: true },
       { label: "Capacity", value: "288 cards", verified: true },

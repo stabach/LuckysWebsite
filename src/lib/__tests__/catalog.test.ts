@@ -59,6 +59,36 @@ describe("canonical catalog", () => {
     }
   });
 
+  it("offers the verified binder color sets with matching artwork", () => {
+    const fourPocket = getProductById("toploader-binder-4-pocket");
+    const ninePocket = getProductById("toploader-binder-9-pocket");
+
+    expect(fourPocket?.variants.map((variant) => variant.label)).toEqual([
+      "Black",
+      "Pink",
+      "Red",
+      "Aqua",
+      "Purple",
+      "Yellow",
+      "Lime Green"
+    ]);
+    expect(ninePocket?.variants.map((variant) => variant.label)).toEqual([
+      "Black",
+      "Pink",
+      "Red",
+      "Aqua",
+      "Purple",
+      "Yellow"
+    ]);
+
+    for (const variant of [...(fourPocket?.variants ?? []), ...(ninePocket?.variants ?? [])]) {
+      expect(variant.active).toBe(true);
+      expect(variant.status).toBe("in_stock");
+      expect(variant.image).toMatch(/^\/products\/binders\/[49]-pocket\/.+\.webp$/);
+      expect(existsSync(`public${variant.image}`)).toBe(true);
+    }
+  });
+
   it("uses the same canonical price on product pages and checkout", () => {
     for (const product of activeProducts) {
       const variant = getDefaultVariant(product);

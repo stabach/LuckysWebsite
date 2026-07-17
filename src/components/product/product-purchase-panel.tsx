@@ -7,12 +7,23 @@ import { useCart } from "@/components/cart-provider";
 import type { Product } from "@/lib/catalog-schema";
 import { formatCurrency } from "@/lib/catalog";
 
-export function ProductPurchasePanel({ product }: { product: Product }) {
+type ProductPurchasePanelProps = {
+  product: Product;
+  selectedVariantId?: string;
+  onVariantChange?: (variantId: string) => void;
+};
+
+export function ProductPurchasePanel({
+  product,
+  selectedVariantId,
+  onVariantChange
+}: ProductPurchasePanelProps) {
   const availableVariants = useMemo(
     () => product.variants.filter((variant) => variant.active && variant.status !== "out_of_stock"),
     [product.variants]
   );
-  const [variantId, setVariantId] = useState(availableVariants[0]?.id ?? "");
+  const [internalVariantId, setInternalVariantId] = useState(availableVariants[0]?.id ?? "");
+  const variantId = selectedVariantId ?? internalVariantId;
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCart();
   const selectedVariant = availableVariants.find((variant) => variant.id === variantId);
@@ -22,6 +33,11 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
   function addToCart() {
     if (!selectedVariant) return;
     addItem(selectedVariant.id, quantity);
+  }
+
+  function selectVariant(nextVariantId: string) {
+    setInternalVariantId(nextVariantId);
+    onVariantChange?.(nextVariantId);
   }
 
   return (
@@ -44,17 +60,17 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
       ) : (
         <>
           {availableVariants.length > 1 || product.categoryId === "toploader-binders" ? (
-            <fieldset className="purchase-variants">
-              <legend>Available color</legend>
+            <fieldset className={`purchase-variants${product.categoryId === "toploader-binders" ? " is-binder-variants" : ""}`}>
+              <legend>Choose a color</legend>
               <div>
                 {availableVariants.map((variant) => (
                   <label key={variant.id}>
-                    <input type="radio" name={`${product.id}-variant`} value={variant.id} checked={variant.id === variantId} onChange={() => setVariantId(variant.id)} />
+                    <input type="radio" name={`${product.id}-variant`} value={variant.id} checked={variant.id === variantId} onChange={() => selectVariant(variant.id)} />
                     <span style={{ backgroundColor: variant.colorHex }} aria-hidden="true" /> {variant.label}
                   </label>
                 ))}
               </div>
-              {product.categoryId === "toploader-binders" ? <p>Only active, in-stock size/color combinations are shown.</p> : null}
+              {product.categoryId === "toploader-binders" ? <p>The preview and platform update with your selected binder color.</p> : null}
             </fieldset>
           ) : null}
           <div className="purchase-action-row">
