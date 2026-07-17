@@ -39,8 +39,8 @@ export default function EventsPage() {
         <p className="eyebrow">On the show floor</p>
         <h1>Meet Lucky’s Loot in person.</h1>
         <p>
-          Confirmed shows, machine-readable schedules, directions, and event-pickup eligibility all
-          live here. Dates are published only after the event details are verified.
+          Confirmed shows and event pickup locations are listed here. Please confirm your pickup
+          order in advance so I can bring the correct quantity.
         </p>
       </header>
 
