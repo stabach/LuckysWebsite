@@ -31,7 +31,8 @@ const collectionCards = [
     description: "Display-ready acrylic cases for standard ETBs, booster boxes, and booster bundles.",
     href: "/collections/protect-sealed-product",
     image: "/products/acrylic/etb-case.webp",
-    alt: "Clear ETB acrylic case on a dark studio background",
+    alt: "Clear ETB acrylic case",
+    mediaTreatment: "acrylic",
     productIds: ["acrylic-etb-case", "acrylic-booster-box-case", "acrylic-booster-bundle-case"]
   },
   {
@@ -40,14 +41,16 @@ const collectionCards = [
     href: "/collections/protect-graded-cards",
     image: "/products/psa-guards/color-lineup.webp",
     alt: "Colorful Lucky’s Loot PSA Guards arranged on a dark background",
+    mediaTreatment: "default",
     productIds: ["acrylic-crystal-slab-case", "psa-guards"]
   },
   {
     title: "Store Your Collection",
     description: "Zippered, side-loading binders for cards already protected in Toploaders.",
     href: "/collections/toploader-binders",
-    image: "/products/binders/4-pocket.webp",
+    image: "/products/binders/4-pocket-cutout.png",
     alt: "Lineup of zippered collector binders",
+    mediaTreatment: "binder",
     productIds: ["toploader-binder-4-pocket", "toploader-binder-9-pocket"]
   }
 ] as const;
@@ -144,7 +147,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="lede">
-            Crystal-clear acrylic cases, colorful slab protection, and Toploader binders built for collectors who care how their setup looks.
+            Crystal-clear cases, colorful slab protection, and Toploader binders made to display your collection in style.
           </p>
           <div className="button-row">
             <ButtonLink href="/shop">Shop Supplies</ButtonLink>
@@ -181,7 +184,11 @@ export default function HomePage() {
               const productIds = collection.productIds as ReadonlyArray<string>;
               const count = activeProducts.filter((product) => productIds.includes(product.id)).length;
               return (
-                <Link className="collection-card" href={collection.href} key={collection.title}>
+                <Link
+                  className={`collection-card collection-card-${collection.mediaTreatment}`}
+                  href={collection.href}
+                  key={collection.title}
+                >
                   <span className="collection-card-media">
                     <Image src={collection.image} alt={collection.alt} fill sizes="(max-width: 840px) 94vw, 32vw" />
                   </span>

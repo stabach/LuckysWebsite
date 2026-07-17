@@ -2052,6 +2052,30 @@ html[data-intro="ending"] .site-header {
   transition: scale 450ms cubic-bezier(0.2, 0.8, 0.25, 1), filter 450ms ease;
 }
 
+.collection-card-acrylic .collection-card-media img {
+  object-position: center;
+  mix-blend-mode: screen;
+  filter: contrast(1.5) brightness(1.05) saturate(0.2);
+  transform: scale(1.08);
+  -webkit-mask-image: radial-gradient(
+    ellipse 82% 92% at 50% 48%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 82% 92% at 50% 48%,
+    #000 0 58%,
+    rgba(0, 0, 0, 0.86) 74%,
+    transparent 100%
+  );
+}
+
+.collection-card-binder .collection-card-media img {
+  object-fit: contain;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
 .collection-card:hover .collection-card-media img,
 .collection-card:focus-visible .collection-card-media img {
   scale: 1.035;
