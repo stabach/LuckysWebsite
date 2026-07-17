@@ -80,6 +80,12 @@ describe("canonical catalog", () => {
       "Purple",
       "Yellow"
     ]);
+    expect(fourPocket && getPrimaryImage(fourPocket).src).toBe(
+      "/products/binders/4-pocket-cutout.png"
+    );
+    expect(ninePocket && getPrimaryImage(ninePocket).src).toBe(
+      "/products/binders/9-pocket-cutout.png"
+    );
 
     for (const variant of [...(fourPocket?.variants ?? []), ...(ninePocket?.variants ?? [])]) {
       expect(variant.active).toBe(true);
