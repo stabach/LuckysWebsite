@@ -57,7 +57,13 @@ export function GuardBundleBuilder() {
           >
             <GuardColorTransition color={selected} alt={`${selected.name} Lucky’s Loot PSA Guard`} sizes="(max-width: 900px) 90vw, 42vw" />
           </div>
-          <span><i style={{ backgroundColor: selected.colorHex }} /> {selected.name}</span>
+          <span>
+            <i
+              className={selected.slug === "midnight-gold" ? "midnight-gold-swatch" : undefined}
+              style={selected.slug === "midnight-gold" ? undefined : { backgroundColor: selected.colorHex }}
+            />
+            {selected.name}
+          </span>
         </div>
         <div className="guard-builder-controls">
           <p className="eyebrow">Mix colors, share one tier</p>
@@ -79,7 +85,11 @@ export function GuardBundleBuilder() {
               return (
                 <article className={color.slug === selected.slug ? "is-selected" : undefined} key={color.slug}>
                   <button className="guard-color-preview" type="button" onClick={() => setSelectedSlug(color.slug)} aria-label={`Preview ${color.name}`} aria-pressed={color.slug === selected.slug}>
-                    <span style={{ backgroundColor: color.colorHex }} aria-hidden="true" />
+                    <span
+                      className={color.slug === "midnight-gold" ? "midnight-gold-swatch" : undefined}
+                      style={color.slug === "midnight-gold" ? undefined : { backgroundColor: color.colorHex }}
+                      aria-hidden="true"
+                    />
                     <strong>{color.name}</strong>
                   </button>
                   <div className="guard-color-quantity" aria-label={`${color.name} quantity`}>

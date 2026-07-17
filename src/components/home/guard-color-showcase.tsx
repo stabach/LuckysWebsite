@@ -23,7 +23,13 @@ export function GuardColorShowcase() {
             alt={`${selected.name} Lucky’s Loot PSA Guard`}
             sizes="(max-width: 840px) 82vw, 42vw"
           />
-          <span className="selected-color-label"><i style={{ backgroundColor: selected.colorHex }} /> {selected.name}</span>
+          <span className="selected-color-label">
+            <i
+              className={selected.slug === "midnight-gold" ? "midnight-gold-swatch" : undefined}
+              style={selected.slug === "midnight-gold" ? undefined : { backgroundColor: selected.colorHex }}
+            />
+            {selected.name}
+          </span>
         </div>
         <div className="guard-showcase-copy">
           <p className="eyebrow">15 ways to frame the grade</p>
@@ -41,7 +47,10 @@ export function GuardColorShowcase() {
               <button
                 key={color.slug}
                 type="button"
-                className={color.slug === selected.slug ? "is-selected" : undefined}
+                className={[
+                  color.slug === selected.slug ? "is-selected" : "",
+                  color.slug === "midnight-gold" ? "is-midnight-gold" : ""
+                ].filter(Boolean).join(" ")}
                 style={{ "--swatch-color": color.colorHex } as React.CSSProperties}
                 onClick={() => setSelectedSlug(color.slug)}
                 aria-label={`Show ${color.name}`}

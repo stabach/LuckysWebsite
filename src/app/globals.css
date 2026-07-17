@@ -2555,6 +2555,17 @@ html[data-intro="ending"] .site-header {
   background: var(--swatch-color);
 }
 
+.midnight-gold-swatch,
+.guard-swatches button.is-midnight-gold span {
+  background-color: #050505 !important;
+  background-image:
+    radial-gradient(circle at 24% 25%, #ffd76a 0 5%, transparent 6%),
+    radial-gradient(circle at 68% 18%, #c88812 0 4%, transparent 5%),
+    radial-gradient(circle at 79% 56%, #f7b733 0 5%, transparent 6%),
+    radial-gradient(circle at 36% 72%, #d99a16 0 4%, transparent 5%),
+    radial-gradient(circle at 57% 43%, #fff3b0 0 3%, transparent 4%) !important;
+}
+
 .guard-swatches button.is-selected {
   border-color: var(--color-gold);
   box-shadow: 0 0 0 3px rgba(244, 196, 81, 0.1);

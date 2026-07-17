@@ -535,7 +535,7 @@ const rawCatalog = [
         id: "binder-9-main",
         type: "image",
         src: "/products/binders/9-pocket-cutout.png",
-        alt: "Open nine-pocket zippered Toploader binder",
+        alt: "Stack of six colorful nine-pocket zippered Toploader binders",
         width: 1254,
         height: 1254
       }
