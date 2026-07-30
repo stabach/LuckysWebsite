@@ -53,9 +53,9 @@ const psaGuardVariants = psaGuardColors.map(
 );
 
 const binderColors = [
-  ["Black", "#171918"],
-  ["Pink", "#f19ab5"],
   ["Red", "#d9423f"],
+  ["Pink", "#f19ab5"],
+  ["Black", "#171918"],
   ["Aqua", "#2fb8b6"],
   ["Purple", "#7850a8"],
   ["Yellow", "#e5b52b"]

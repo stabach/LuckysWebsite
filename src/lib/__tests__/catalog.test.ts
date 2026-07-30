@@ -64,22 +64,24 @@ describe("canonical catalog", () => {
     const ninePocket = getProductById("toploader-binder-9-pocket");
 
     expect(fourPocket?.variants.map((variant) => variant.label)).toEqual([
-      "Black",
-      "Pink",
       "Red",
+      "Pink",
+      "Black",
       "Aqua",
       "Purple",
       "Yellow",
       "Lime Green"
     ]);
     expect(ninePocket?.variants.map((variant) => variant.label)).toEqual([
-      "Black",
-      "Pink",
       "Red",
+      "Pink",
+      "Black",
       "Aqua",
       "Purple",
       "Yellow"
     ]);
+    expect(getDefaultVariant(fourPocket!)?.label).toBe("Red");
+    expect(getDefaultVariant(ninePocket!)?.label).toBe("Red");
     expect(fourPocket && getPrimaryImage(fourPocket).src).toBe(
       "/products/binders/4-pocket-cutout.png"
     );
