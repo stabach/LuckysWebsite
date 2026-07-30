@@ -2,11 +2,25 @@
 
 import { ChevronDown, Search, Sparkles, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { RefObject } from "react";
 import { useCallback, useRef } from "react";
 import { LuckyLogo } from "@/components/brand/lucky-logo";
 import { shopNavigationGroups } from "@/data/navigation";
 import { useDialogFocus } from "@/hooks/use-dialog-focus";
+import { cn } from "@/lib/utils";
+
+const phoneNavigation = [
+  { label: "Home", href: "/" },
+  { label: "All Products", href: "/shop" },
+  { label: "Acrylic Cases", href: "/collections/acrylic-cases" },
+  { label: "PSA Guards", href: "/collections/slab-protection" },
+  { label: "Binders", href: "/collections/toploader-binders" },
+  { label: "Sealed Product", href: "/collections/protect-sealed-product" },
+  { label: "Upcoming Events", href: "/events" },
+  { label: "Pickup & Returns", href: "/pickup-and-returns" },
+  { label: "Contact", href: "/contact" }
+] as const;
 
 type MobileMenuProps = {
   open: boolean;
@@ -25,6 +39,7 @@ export function MobileMenu({
   accountHref,
   accountLabel
 }: MobileMenuProps) {
+  const pathname = usePathname();
   const drawerRef = useRef<HTMLDivElement>(null);
   const close = useCallback(() => onClose(), [onClose]);
   useDialogFocus(open, drawerRef, close, menuTriggerRef);
@@ -48,7 +63,11 @@ export function MobileMenu({
         aria-labelledby="mobile-menu-title"
       >
         <div className="mobile-menu-head">
-          <div className="mobile-menu-brand">
+          <Link className="mobile-menu-brand mobile-menu-brand-phone" href="/" onClick={onClose} aria-label="Lucky’s Loot home">
+            <LuckyLogo />
+            <span>Lucky’s Loot</span>
+          </Link>
+          <div className="mobile-menu-brand mobile-menu-brand-legacy">
             <LuckyLogo />
             <span id="mobile-menu-title">Lucky’s Loot</span>
           </div>
@@ -63,7 +82,30 @@ export function MobileMenu({
           <Sparkles size={18} aria-hidden="true" />
           <span><strong>Find Your Fit</strong><small>Match your collectible to the right protection.</small></span>
         </Link>
-        <nav className="mobile-nav" aria-label="Mobile navigation">
+        <nav className="mobile-phone-nav" aria-label="Phone navigation">
+          {phoneNavigation.map((link) => {
+            const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            return (
+              <Link
+                className={cn(active && "is-active")}
+                href={link.href}
+                key={link.href}
+                onClick={onClose}
+                aria-current={active ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+          <Link
+            className={cn(pathname.startsWith(accountHref) && "is-active")}
+            href={accountHref}
+            onClick={onClose}
+          >
+            {accountLabel}
+          </Link>
+        </nav>
+        <nav className="mobile-nav mobile-nav-legacy" aria-label="Mobile navigation">
           <details open>
             <summary>Shop <ChevronDown size={16} aria-hidden="true" /></summary>
             <div>

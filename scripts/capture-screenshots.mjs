@@ -19,7 +19,7 @@ try {
       height: 900
     },
     {
-      path: "/find-your-fit?item=etb&format=standard&goal=display",
+      path: "/find-your-fit?mode=sealed&q=Surging+Sparks+Elite+Trainer+Box&product=tcg-3-565630",
       file: "fit-mobile-390x844.png",
       width: 390,
       height: 844

@@ -1,6 +1,8 @@
 "use client";
 
 import { Filter, Search, SlidersHorizontal, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   CatalogFilterContent,
@@ -19,7 +21,16 @@ type ShopCatalogProps = {
   initialFit?: string;
 };
 
+const mobileCategoryLinks = [
+  { label: "All", href: "/shop" },
+  { label: "Acrylic", href: "/acrylic-cases" },
+  { label: "PSA Guards", href: "/psa-guards" },
+  { label: "Binders", href: "/binders" },
+  { label: "Sealed", href: "/sealed-product" }
+] as const;
+
 export function ShopCatalog({ products, initialQuery = "", initialFit = "" }: ShopCatalogProps) {
+  const pathname = usePathname();
   const [query, setQuery] = useState(initialQuery);
   const [sort, setSort] = useState<SortOption>("featured");
   const [filters, setFilters] = useState<CatalogFilters>({
@@ -94,6 +105,16 @@ export function ShopCatalog({ products, initialQuery = "", initialFit = "" }: Sh
 
   return (
     <div className="catalog-workspace section-shell">
+      <nav className="mobile-category-switcher" aria-label="Shop categories">
+        {mobileCategoryLinks.map((link) => {
+          const active = pathname === link.href ||
+            (link.href === "/acrylic-cases" && pathname === "/collections/acrylic-cases") ||
+            (link.href === "/psa-guards" && pathname === "/collections/slab-protection") ||
+            (link.href === "/binders" && pathname === "/collections/toploader-binders") ||
+            (link.href === "/sealed-product" && pathname === "/collections/protect-sealed-product");
+          return <Link href={link.href} key={link.href} aria-current={active ? "page" : undefined}>{link.label}</Link>;
+        })}
+      </nav>
       <div className="catalog-toolbar">
         <label className="catalog-search">
           <Search size={18} aria-hidden="true" />

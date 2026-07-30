@@ -22,13 +22,25 @@ export function useDialogFocus(
     if (!open) return;
 
     const previousActiveElement = document.activeElement as HTMLElement | null;
-    const returnFocusElement = returnFocusRef?.current ?? previousActiveElement;
+    const preferredReturnFocus = returnFocusRef?.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    const isVisible = (element: HTMLElement | null | undefined): element is HTMLElement => {
+      if (!element || !element.isConnected) return false;
+      const styles = window.getComputedStyle(element);
+      return (
+        !element.hasAttribute("hidden") &&
+        element.getAttribute("aria-hidden") !== "true" &&
+        styles.display !== "none" &&
+        styles.visibility !== "hidden" &&
+        element.getClientRects().length > 0
+      );
+    };
+
     const focusables = () =>
       Array.from(containerRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? []).filter(
-        (element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true"
+        isVisible
       );
 
     requestAnimationFrame(() => {
@@ -62,7 +74,8 @@ export function useDialogFocus(
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
-      returnFocusElement?.focus();
+      const returnTarget = [preferredReturnFocus, previousActiveElement].find(isVisible);
+      returnTarget?.focus();
     };
   }, [containerRef, onClose, open, returnFocusRef]);
 }

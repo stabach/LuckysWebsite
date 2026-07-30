@@ -30,14 +30,14 @@ export function HomeProductCard({ product }: { product: Product }) {
           <GuardColorTransition
             color={catalogGuardColor}
             alt=""
-            sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
+            sizes="(max-width: 767px) 38vw, (max-width: 1080px) 46vw, 23vw"
           />
         ) : (
           <Image
             src={image.src}
             alt=""
             fill
-            sizes="(max-width: 640px) 92vw, (max-width: 1080px) 46vw, 23vw"
+            sizes="(max-width: 767px) 38vw, (max-width: 1080px) 46vw, 23vw"
           />
         )}
         {product.badges?.[0] ? <span className="product-badge">{product.badges[0]}</span> : null}
