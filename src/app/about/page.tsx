@@ -22,7 +22,6 @@ export default function AboutPage() {
           </p>
           <div className="button-row">
             <Link className="button button-primary" href="/shop">Shop supplies</Link>
-            <Link className="button button-secondary" href="/find-your-fit">Find Your Fit</Link>
           </div>
         </div>
         <div className="about-mark">

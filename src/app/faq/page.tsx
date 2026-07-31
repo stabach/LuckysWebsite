@@ -30,13 +30,10 @@ export default function FaqPage() {
       <div className="content-callout">
         <div>
           <h2>Still comparing a fit?</h2>
-          <p>Use the guided tool first, or send measurements with a Product Fit Question.</p>
+          <p>Send your product measurements with a Product Fit Question before ordering.</p>
         </div>
         <div className="button-row">
-          <Link className="button button-primary" href="/find-your-fit">
-            Find Your Fit
-          </Link>
-          <Link className="button button-secondary" href="/contact?topic=product-fit">
+          <Link className="button button-primary" href="/contact?topic=product-fit">
             Ask a fit question
           </Link>
         </div>

@@ -6,8 +6,7 @@ Unverified values stay in this record and are omitted from customer-facing claim
 - [ ] VERIFY: internal and external dimensions for every acrylic-case SKU.
 - [ ] VERIFY: exact fitment for Pokémon Center and specialty ETBs.
 - [ ] VERIFY: exact fitment for Japanese and specialty booster boxes.
-- [ ] VERIFY: product-by-product measurements for sealed Pokémon releases before claiming title-level compatibility; the Find Your Fit search currently maps catalog titles to verified format families only.
-- [ ] VERIFY: licensing and a supported update API before describing the Find Your Fit index as a live or exhaustive Collectr-equivalent catalog.
+- [ ] VERIFY: product-by-product measurements for sealed Pokémon releases before claiming title-level compatibility.
 - [ ] VERIFY: whether acrylic UV-resistance claims are documented.
 - [ ] VERIFY: whether PVC-free and acid-free claims are documented.
 - [ ] VERIFY: whether 8 mm construction applies to every acrylic SKU.
@@ -34,6 +33,4 @@ universal 8 mm wording, magnet counts, pickup timing, return promises, tax-inclu
 engraving prices, review counts, and private pickup addresses. The supplied acrylic video is treated
 as an interactive preview, not a seamless 360° claim, until the product match and clean export are
 verified. Legacy event flyers remain unpublished because their month/day labels do not provide a
-verified year or pickup cutoff. Sealed catalog product names are used to identify a general format
-only; title-level dimension compatibility and a live Collectr-equivalent inventory claim remain
-omitted.
+verified year or pickup cutoff. Title-level dimension compatibility claims remain omitted.

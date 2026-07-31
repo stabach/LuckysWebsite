@@ -152,10 +152,9 @@ export function ShopCatalog({ products, initialQuery = "", initialFit = "" }: Sh
           <div className="catalog-empty-state">
             <Search size={28} aria-hidden="true" />
             <h2>No products match those filters.</h2>
-            <p>Clear a filter or use Find Your Fit for a measurement-first recommendation.</p>
+            <p>Clear a filter or browse the full catalog to see every available product.</p>
             <div className="button-row">
               <button className="button button-primary" type="button" onClick={clearAll}>Clear filters</button>
-              <a className="button button-secondary" href="/find-your-fit">Find Your Fit</a>
             </div>
           </div>
         )}

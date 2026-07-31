@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Search, Sparkles, X } from "lucide-react";
+import { ChevronDown, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { RefObject } from "react";
@@ -78,10 +78,6 @@ export function MobileMenu({
         <button className="mobile-search-button" type="button" onClick={openSearch}>
           <Search size={18} aria-hidden="true" /> Search products
         </button>
-        <Link className="mobile-fit-callout" href="/find-your-fit" onClick={onClose}>
-          <Sparkles size={18} aria-hidden="true" />
-          <span><strong>Find Your Fit</strong><small>Match your collectible to the right protection.</small></span>
-        </Link>
         <nav className="mobile-phone-nav" aria-label="Phone navigation">
           {phoneNavigation.map((link) => {
             const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);

@@ -245,7 +245,7 @@ const rawCatalog = [
       },
       {
         question: "Does this fit every grading company?",
-        answer: "No universal fit is claimed. Use the Fit Finder and measure before ordering for non-PSA slabs."
+        answer: "No universal fit is claimed. Measure before ordering and send a Product Fit Question for non-PSA slabs."
       }
     ],
     relatedProductIds: ["psa-guards"],

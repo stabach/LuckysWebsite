@@ -87,7 +87,7 @@ export function SearchDialog({ open, onClose, triggerRef }: SearchDialogProps) {
           ) : (
             <div className="search-empty">
               <p>No exact match yet.</p>
-              <Link href="/find-your-fit" onClick={onClose}>Use Find Your Fit</Link>
+              <Link href="/shop" onClick={onClose}>Browse all products</Link>
             </div>
           )}
         </div>

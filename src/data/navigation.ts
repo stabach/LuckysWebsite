@@ -9,7 +9,6 @@ export const primaryNavigation: ReadonlyArray<NavigationLink> = [
   { href: "/collections/acrylic-cases", label: "Acrylic Cases" },
   { href: "/collections/slab-protection", label: "PSA Guards" },
   { href: "/collections/toploader-binders", label: "Binders" },
-  { href: "/find-your-fit", label: "Find Your Fit" },
   { href: "/events", label: "Events" }
 ];
 
@@ -39,7 +38,6 @@ export const shopNavigationGroups: ReadonlyArray<{
   {
     title: "Helpful tools",
     links: [
-      { href: "/find-your-fit", label: "Find Your Fit" },
       { href: "/pickup-and-returns", label: "Pickup & Returns" },
       { href: "/events", label: "Upcoming Events" }
     ]
@@ -62,7 +60,6 @@ export const footerNavigation: ReadonlyArray<{
   {
     title: "Help",
     links: [
-      { href: "/find-your-fit", label: "Find Your Fit" },
       { href: "/faq", label: "FAQ" },
       { href: "/pickup-and-returns", label: "Pickup & Returns" },
       { href: "/contact", label: "Contact" }

@@ -1,4 +1,4 @@
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { ShopCatalog } from "@/components/catalog/shop-catalog";
 import type { Product } from "@/lib/catalog-schema";
@@ -34,11 +34,6 @@ export function CatalogPage({
             <h1>{title}</h1>
             <p>{description}</p>
           </div>
-          <Link className="catalog-fit-callout" href="/find-your-fit">
-            <Sparkles size={20} aria-hidden="true" />
-            <span><strong>Not sure what fits?</strong><small>Use Find Your Fit</small></span>
-            <ChevronRight size={18} aria-hidden="true" />
-          </Link>
         </div>
       </header>
       <ShopCatalog

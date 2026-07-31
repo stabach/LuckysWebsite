@@ -10,7 +10,6 @@ const publicRoutes = [
   "/collections/toploader-binders",
   "/collections/protect-sealed-product",
   "/collections/protect-graded-cards",
-  "/find-your-fit",
   "/events",
   "/reviews",
   "/about",

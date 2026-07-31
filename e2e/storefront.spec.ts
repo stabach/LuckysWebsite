@@ -9,7 +9,6 @@ const responsiveRoutes = [
   "/binders",
   "/sealed-product",
   "/products/crystal-slab-acrylic-case",
-  "/find-your-fit?mode=sealed&q=Surging+Sparks+Elite+Trainer+Box&product=tcg-3-565630",
   "/events",
   "/contact?topic=product-fit",
   "/faq",
@@ -107,14 +106,7 @@ test("every phone menu destination works with browser Back navigation", async ({
   }
 
   await page.getByRole("button", { name: "Open menu" }).click();
-  let menu = page.getByRole("dialog", { name: "Lucky’s Loot" });
-  await menu.getByRole("link", { name: "Find Your Fit" }).click();
-  await expect.poll(() => new URL(page.url()).pathname).toBe("/find-your-fit");
-  await page.goBack();
-  await expect.poll(() => new URL(page.url()).pathname).toBe("/faq");
-
-  await page.getByRole("button", { name: "Open menu" }).click();
-  menu = page.getByRole("dialog", { name: "Lucky’s Loot" });
+  const menu = page.getByRole("dialog", { name: "Lucky’s Loot" });
   const accountLink = menu.locator('.mobile-phone-nav a[href="/login"], .mobile-phone-nav a[href="/account"]');
   const accountPath = new URL(await accountLink.getAttribute("href") ?? "/login", "http://localhost").pathname;
   await accountLink.click();
@@ -252,28 +244,6 @@ test("mixed Guard colors unlock the 25-unit tier", async ({ page }, testInfo) =>
   await expect(page.getByText("Best bulk price unlocked: $4 each.")).toBeVisible();
 });
 
-test("Fit Finder reaches a verified product and preserves selections in the URL", async ({ page }, testInfo) => {
-  test.skip(!isProject(testInfo, "tablet"));
-  await page.goto("/find-your-fit?mode=sealed");
-  const search = page.getByRole("combobox", { name: "Pokémon sealed product" });
-  await search.fill("Surging Sparks Elite Trainer Box");
-  const suggestion = page
-    .getByRole("option")
-    .filter({ hasText: "Surging Sparks Elite Trainer Box" })
-    .first();
-  await expect(suggestion).toBeVisible();
-  await suggestion.getByRole("button").click();
-  await expect(page).toHaveURL(
-    /mode=sealed.*q=Surging\+Sparks\+Elite\+Trainer\+Box.*product=tcg-3-565630/
-  );
-  await expect(page.getByText("Exact format match")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "ETB Acrylic Case" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /View product/ })).toHaveAttribute(
-    "href",
-    "/products/etb-acrylic-case"
-  );
-});
-
 test("eligible event pickup, cart changes, and removal persist correctly", async ({ page }, testInfo) => {
   test.skip(!isProject(testInfo, "tablet"));
   await page.goto("/shop");
@@ -364,18 +334,6 @@ test("captures final responsive screenshots", async ({ page }, testInfo) => {
     await waitForStablePage(page);
     await page.screenshot({
       path: "artifacts/screenshots/product-crystal-desktop-1440x900.png",
-      fullPage: true,
-      animations: "disabled"
-    });
-  }
-
-  if (isProject(testInfo, "mobile")) {
-    await page.goto(
-      "/find-your-fit?mode=sealed&q=Surging+Sparks+Elite+Trainer+Box&product=tcg-3-565630"
-    );
-    await waitForStablePage(page);
-    await page.screenshot({
-      path: "artifacts/screenshots/fit-mobile-390x844.png",
       fullPage: true,
       animations: "disabled"
     });

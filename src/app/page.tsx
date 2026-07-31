@@ -86,7 +86,7 @@ const faqs = [
   {
     question: "How do I determine the right fit?",
     answer:
-      "Use Find Your Fit for verified matches. If your item is a specialty format or different grader, measure it and send a Product Fit Question before ordering."
+      "Review the verified fit on each product page. If your item is a specialty format or different grader, measure it and send a Product Fit Question before ordering."
   },
   {
     question: "How does PSA Guard bulk pricing work?",
@@ -156,7 +156,6 @@ export default function HomePage() {
           </p>
           <div className="button-row">
             <ButtonLink href="/shop">Shop Supplies</ButtonLink>
-            <ButtonLink href="/find-your-fit" variant="secondary">Find Your Fit</ButtonLink>
           </div>
           <Link className="text-link" href="/contact?topic=product-fit">
             Ask a Product Question <ArrowRight size={17} aria-hidden="true" />

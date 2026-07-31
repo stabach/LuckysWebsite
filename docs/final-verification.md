@@ -3,8 +3,8 @@
 ## Delivery summary
 
 Lucky’s Loot V2 is a ground-up Next.js storefront on `codex/redesign/luckys-loot-v2`.
-It uses one Zod-validated catalog and server-owned pricing across discovery, product pages, Fit
-Finder, Your Loot, Stripe Checkout, webhook order snapshots, account history, metadata, and
+It uses one Zod-validated catalog and server-owned pricing across discovery, product pages, Your
+Loot, Stripe Checkout, webhook order snapshots, account history, metadata, and
 structured data. The UI is an original dark collector-showroom system based on the supplied Lucky’s
 Loot brand media; no Phantom source, copy, reviews, claims, marks, or customer-facing imagery is
 served.
@@ -19,7 +19,7 @@ served.
   `/products/booster-box-acrylic-case`, `/products/booster-bundle-acrylic-case`,
   `/products/psa-guards`, `/products/4-pocket-toploader-binder`,
   `/products/9-pocket-toploader-binder`
-- Guidance and content: `/find-your-fit`, `/events`, `/reviews`, `/about`, `/contact`, `/faq`,
+- Guidance and content: `/events`, `/reviews`, `/about`, `/contact`, `/faq`,
   `/pickup-and-returns`, `/privacy`, `/terms`, `/accessibility`
 - Authentication and account: `/login`, `/sign-up`, `/forgot-password`, `/reset-password`,
   `/account`, `/account/orders`, `/account/orders/[orderId]`, `/account/profile`
@@ -85,17 +85,16 @@ not expose a second catalog.
 - `npm audit --omit=dev`: 0 vulnerabilities.
 - `npm run typecheck`: passed with strict TypeScript.
 - `npm run lint`: passed with zero warnings.
-- `npm run test`: 10 files and 50 unit tests passed.
-- `npm run test:e2e`: Playwright projects at 390 × 844, 768 × 1024, and 1440 × 900; 14 applicable
-  scenarios passed and 16 viewport-specific cases skipped.
-- Axe WCAG A/AA scan: no serious or critical violations on home, shop, PSA Graded Guard Fit Acrylic Case product, Fit
-  Finder result, conditional contact, FAQ, login, and missing-provider account routes at all three
-  viewports.
-- `npm run build`: Next.js 15.5.20 production build compiled, typechecked, and generated 40 pages.
+- `npm run test`: 9 files and 46 unit tests passed.
+- `npm run test:e2e`: 34 applicable scenarios passed and 126 viewport-specific cases skipped across
+  ten mobile, tablet, and desktop viewport projects.
+- Axe WCAG A/AA scan: no serious or critical violations across the responsive route set, including
+  home, shop, product, contact, FAQ, login, and missing-provider account pages.
+- `npm run build`: Next.js 15.5.20 production build compiled, typechecked, and generated 39 pages.
 - Production route probe: every canonical page, machine-readable route, and representative account
   detail returned 200; compatibility routes returned 307.
 - Structured-data probe: canonical and Open Graph metadata plus Organization, WebSite, Product,
-  Breadcrumb, visible FAQ, and conditional Event JSON-LD were present; sitemap contained 24 URLs.
+  Breadcrumb, visible FAQ, and conditional Event JSON-LD were present; sitemap contained 23 URLs.
 - API failure probes: malformed contact and checkout payloads returned safe 4xx JSON errors.
 
 Failures found during QA—product-benefit contrast, checkout-success hydration order, an ambiguous
@@ -107,7 +106,6 @@ mobile selector, and a stale legacy favicon reference—were fixed and retested.
 - `artifacts/screenshots/home-tablet-768x1024.png`
 - `artifacts/screenshots/home-desktop-1440x900.png`
 - `artifacts/screenshots/product-crystal-desktop-1440x900.png`
-- `artifacts/screenshots/fit-mobile-390x844.png`
 
 These are recaptured from the final production build with lazy images decoded before capture.
 
